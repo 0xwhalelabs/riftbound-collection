@@ -389,7 +389,8 @@ function buildChips() {
   const rEl = document.getElementById('rarityChips');
   rEl.innerHTML = '';
   const present = [...new Set(DATA.cards.map(rarityKey))];
-  present.sort((a, b) => (RARITY_ORDER.indexOf(a) + 99) % 100 - (RARITY_ORDER.indexOf(b) + 99) % 100);
+  const rIdx = k => { const i = RARITY_ORDER.indexOf(k); return i < 0 ? 99 : i; };
+  present.sort((a, b) => rIdx(a) - rIdx(b));
   present.forEach(k => {
     const c = document.createElement('span');
     c.className = 'chip';
