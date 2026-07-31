@@ -1,0 +1,12 @@
+{
+  "name": "민물고래의 Riftbound 도감",
+  "short_name": "민물고래도감",
+  "description": "League of Legends TCG Riftbound 카드 도감 & 컬렉션 트래커",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#0d1117",
+  "theme_color": "#0d1117",
+  "icons": [
+    { "src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }
+  ]
+}

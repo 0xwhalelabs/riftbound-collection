@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>민물고래의 Riftbound 도감</title>
+<meta name="theme-color" content="#0d1117">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<style>
+:root {
+  --bg: #0d1117; --panel: #161b22; --panel2: #1f2630; --border: #2d3540;
+  --text: #e6edf3; --muted: #8b949e; --accent: #d4a017; --accent2: #f0c040;
+  --owned: #2ea043; --danger: #da3633;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', 'Malgun Gothic', sans-serif; min-height: 100vh; }
+header { position: sticky; top: 0; z-index: 100; background: rgba(13,17,23,.95); backdrop-filter: blur(8px); border-bottom: 1px solid var(--border); padding: 12px 20px; }
+h1 { font-size: 20px; color: var(--accent2); letter-spacing: 1px; margin-bottom: 10px; }
+h1 small { color: var(--muted); font-weight: normal; font-size: 13px; margin-left: 8px; }
+.toolbar { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.toolbar .spacer { flex: 1; }
+.btn-group { display: flex; flex-wrap: wrap; gap: 4px; background: var(--panel); border: 1px solid var(--border); border-radius: 8px; padding: 3px; }
+.btn { background: transparent; color: var(--muted); border: none; border-radius: 6px; padding: 6px 12px; cursor: pointer; font-size: 13px; transition: all .15s; white-space: nowrap; }
+.btn:hover { color: var(--text); background: var(--panel2); }
+.btn.active { background: var(--accent); color: #1a1a1a; font-weight: 600; }
+.btn .cnt { font-size: 11px; opacity: .7; margin-left: 3px; }
+select, input[type=text] { background: var(--panel); color: var(--text); border: 1px solid var(--border); border-radius: 8px; padding: 7px 10px; font-size: 13px; outline: none; }
+input[type=text] { width: 200px; }
+input[type=text]:focus, select:focus { border-color: var(--accent); }
+.chip { display: inline-flex; align-items: center; gap: 5px; background: var(--panel); border: 1px solid var(--border); border-radius: 16px; padding: 5px 12px; cursor: pointer; font-size: 12.5px; color: var(--muted); transition: all .15s; user-select: none; }
+.chip:hover { color: var(--text); }
+.chip.active { border-color: var(--chip-color, var(--accent)); color: var(--text); background: var(--panel2); box-shadow: 0 0 6px -2px var(--chip-color, var(--accent)); }
+.chip .dot { width: 10px; height: 10px; border-radius: 50%; background: var(--chip-color, var(--accent)); }
+.filter-row { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; align-items: center; }
+.filter-label { font-size: 12px; color: var(--muted); margin-right: 2px; min-width: 44px; }
+.stats-bar { padding: 8px 20px; display: flex; gap: 20px; flex-wrap: wrap; font-size: 13px; color: var(--muted); border-bottom: 1px solid var(--border); background: var(--panel); }
+.stats-bar b { color: var(--accent2); }
+.progress { flex: 1; min-width: 150px; max-width: 300px; align-self: center; height: 8px; background: var(--panel2); border-radius: 4px; overflow: hidden; }
+.progress > div { height: 100%; background: linear-gradient(90deg, var(--owned), #56d364); transition: width .3s; }
+#grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 14px; padding: 20px; }
+.card { background: var(--panel); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; position: relative; transition: transform .15s, box-shadow .15s; }
+.card:hover { transform: translateY(-3px); box-shadow: 0 6px 20px rgba(0,0,0,.5); }
+.card.unowned .imgwrap img { filter: grayscale(85%) brightness(.55); }
+.card .imgwrap { position: relative; aspect-ratio: 744/1039; background: var(--panel2); cursor: zoom-in; }
+.card .imgwrap img { width: 100%; height: 100%; object-fit: contain; display: block; }
+.card .imgwrap .noimg { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; color: var(--muted); font-size: 12px; }
+.qty-badge { position: absolute; top: 6px; right: 6px; background: var(--owned); color: #fff; font-size: 13px; font-weight: 700; min-width: 26px; height: 26px; border-radius: 13px; display: flex; align-items: center; justify-content: center; padding: 0 7px; box-shadow: 0 2px 6px rgba(0,0,0,.5); }
+.card-info { padding: 8px 10px; }
+.card-name { font-size: 13px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.card-meta { display: flex; align-items: center; gap: 5px; margin-top: 4px; font-size: 11px; color: var(--muted); }
+.domain-dot { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; }
+.rarity-tag { margin-left: auto; font-size: 10.5px; padding: 1px 6px; border-radius: 4px; background: var(--panel2); }
+.card-actions { display: flex; align-items: center; border-top: 1px solid var(--border); }
+.card-actions button { flex: 1; background: transparent; border: none; color: var(--text); font-size: 17px; padding: 7px 0; cursor: pointer; transition: background .15s; }
+.card-actions button:hover { background: var(--panel2); }
+.card-actions .minus:hover { color: var(--danger); }
+.card-actions .plus:hover { color: var(--owned); }
+.card-actions .qty-num { flex: 1; text-align: center; font-size: 14px; font-weight: 600; color: var(--muted); }
+.card-actions .qty-num.has { color: var(--owned); }
+#modal { position: fixed; inset: 0; background: rgba(0,0,0,.85); display: none; align-items: center; justify-content: center; z-index: 200; cursor: zoom-out; }
+#modal.show { display: flex; }
+#modal img { max-width: 90vw; max-height: 90vh; border-radius: 12px; }
+.empty-msg { grid-column: 1/-1; text-align: center; color: var(--muted); padding: 60px 0; font-size: 15px; }
+#loading { text-align: center; padding: 80px 0; color: var(--muted); }
+footer { padding: 14px 20px; color: var(--muted); font-size: 11.5px; border-top: 1px solid var(--border); text-align: center; }
+.auth-area { display: flex; align-items: center; gap: 8px; font-size: 13px; }
+.auth-area .user-email { color: var(--accent2); max-width: 160px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.sync-dot { font-size: 11.5px; color: var(--muted); }
+.sync-dot.saving { color: var(--accent2); }
+.sync-dot.saved { color: var(--owned); }
+.btn.outline { border: 1px solid var(--border); }
+.sns-btn { display: inline-flex; align-items: center; justify-content: center; width: 32px; height: 32px; border-radius: 8px; border: 1px solid var(--border); background: var(--panel); transition: all .15s; }
+.sns-btn:hover { transform: translateY(-1px); border-color: var(--accent); }
+.sns-btn svg { width: 17px; height: 17px; }
+#authModal { position: fixed; inset: 0; background: rgba(0,0,0,.7); display: none; align-items: center; justify-content: center; z-index: 300; }
+#authModal.show { display: flex; }
+.auth-box { background: var(--panel); border: 1px solid var(--border); border-radius: 14px; padding: 28px; width: 340px; max-width: 92vw; }
+.auth-box h2 { font-size: 17px; margin-bottom: 16px; color: var(--accent2); }
+.auth-box input { width: 100%; margin-bottom: 10px; padding: 10px 12px; }
+.auth-box .full-btn { width: 100%; padding: 10px; border-radius: 8px; border: none; cursor: pointer; font-size: 14px; font-weight: 600; margin-bottom: 8px; }
+.auth-box .primary { background: var(--accent); color: #1a1a1a; }
+.auth-box .google { background: #fff; color: #333; display: flex; align-items: center; justify-content: center; gap: 8px; }
+.auth-box .switch { font-size: 12.5px; color: var(--muted); text-align: center; margin-top: 6px; cursor: pointer; }
+.auth-box .switch:hover { color: var(--text); }
+.auth-box .divider { display: flex; align-items: center; gap: 10px; color: var(--muted); font-size: 11px; margin: 12px 0; }
+.auth-box .divider::before, .auth-box .divider::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+.auth-box .err { color: var(--danger); font-size: 12px; margin-bottom: 8px; min-height: 15px; }
+.auth-box .close-auth { float: right; background: none; border: none; color: var(--muted); font-size: 18px; cursor: pointer; }
+@media (max-width: 640px) {
+  header { padding: 10px 10px; }
+  h1 { font-size: 15px; }
+  h1 small { display: none; }
+  #grid { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 10px; padding: 12px; }
+  input[type=text] { width: 100%; flex: 1; }
+  .btn { padding: 8px 10px; font-size: 12.5px; }
+  .card-actions button { padding: 11px 0; font-size: 19px; }
+  .stats-bar { padding: 8px 10px; gap: 10px; font-size: 12px; }
+  .filter-label { min-width: auto; }
+}
+</style>
+</head>
+<body>
+<header>
+  <h1 style="display:flex;align-items:center;flex-wrap:wrap;gap:8px">민물고래의 RIFTBOUND 도감 <small>League of Legends TCG Collection Tracker</small>
+    <a class="sns-btn" href="https://www.youtube.com/@riftbound-whale" target="_blank" rel="noopener" title="민물고래 유튜브"><svg viewBox="0 0 24 24" fill="#FF0000"><path d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.5 3.5 12 3.5 12 3.5s-7.5 0-9.4.6A3 3 0 0 0 .5 6.2 31 31 0 0 0 0 12a31 31 0 0 0 .5 5.8 3 3 0 0 0 2.1 2.1c1.9.6 9.4.6 9.4.6s7.5 0 9.4-.6a3 3 0 0 0 2.1-2.1A31 31 0 0 0 24 12a31 31 0 0 0-.5-5.8zM9.6 15.6V8.4L15.8 12l-6.2 3.6z"/></svg></a>
+    <a class="sns-btn" href="https://www.instagram.com/riftbound_whale/" target="_blank" rel="noopener" title="민물고래 인스타그램"><svg viewBox="0 0 24 24" fill="none" stroke="#E1306C" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4.5"/><circle cx="17.5" cy="6.5" r="1.2" fill="#E1306C" stroke="none"/></svg></a>
+    <span style="flex:1"></span>
+    <span class="sync-dot" id="syncDot"></span>
+    <span class="auth-area" id="authArea"><button class="btn outline" id="loginBtn">로그인</button></span>
+  </h1>
+  <div class="toolbar">
+    <div class="btn-group" id="setTabs"></div>
+    <div class="spacer"></div>
+    <div class="btn-group" id="langTabs">
+      <button class="btn active" data-lang="en">영문판</button>
+      <button class="btn" data-lang="cn">중문판</button>
+    </div>
+    <select id="sortSel">
+      <option value="num">넘버순</option>
+      <option value="domain">도메인 색상별</option>
+      <option value="rarity">등급별</option>
+      <option value="name">이름순</option>
+    </select>
+    <input type="text" id="searchInput" placeholder="카드 이름/번호 검색...">
+  </div>
+  <div class="filter-row">
+    <span class="filter-label">보유</span>
+    <div class="btn-group" id="ownTabs">
+      <button class="btn active" data-own="all">전체</button>
+      <button class="btn" data-own="owned">보유중</button>
+      <button class="btn" data-own="unowned">미보유</button>
+    </div>
+    <span class="filter-label" style="margin-left:10px">도메인</span>
+    <span id="domainChips"></span>
+    <span class="filter-label" style="margin-left:10px">등급</span>
+    <span id="rarityChips"></span>
+    <div class="spacer"></div>
+    <button class="btn" id="exportBtn" style="border:1px solid var(--border)">내보내기</button>
+    <button class="btn" id="importBtn" style="border:1px solid var(--border)">가져오기</button>
+    <input type="file" id="importFile" accept=".json" style="display:none">
+  </div>
+</header>
+<div class="stats-bar">
+  <span>표시 <b id="statShown">0</b>장</span>
+  <span><b id="statLang">영문판</b> 보유 종류 <b id="statOwnedKinds">0</b> / <b id="statTotal">0</b></span>
+  <span>총 보유 수량 <b id="statOwnedQty">0</b>장</span>
+  <div class="progress"><div id="progressBar" style="width:0%"></div></div>
+  <span id="statPct">0%</span>
+</div>
+<div id="loading">카드 데이터 로딩 중...</div>
+<div id="grid"></div>
+<div id="modal"><img id="modalImg" alt=""></div>
+<div id="authModal">
+  <div class="auth-box">
+    <button class="close-auth" id="closeAuth">✕</button>
+    <h2 id="authTitle">로그인</h2>
+    <button class="full-btn google" id="googleBtn"><svg width="17" height="17" viewBox="0 0 48 48"><path fill="#FFC107" d="M43.6 20H24v8h11.3C33.7 33.4 29.3 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3 0 5.8 1.1 7.9 3l5.7-5.7C34 5.9 29.3 4 24 4 13 4 4 13 4 24s9 20 20 20 20-9 20-20c0-1.3-.1-2.7-.4-4z"/><path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.7 15.1 19 12 24 12c3 0 5.8 1.1 7.9 3l5.7-5.7C34 5.9 29.3 4 24 4 16.3 4 9.7 8.3 6.3 14.7z"/><path fill="#4CAF50" d="M24 44c5.2 0 9.9-1.8 13.4-4.9l-6.2-5.2C29.2 35.3 26.7 36 24 36c-5.3 0-9.7-2.6-11.3-7l-6.5 5C9.5 39.6 16.2 44 24 44z"/><path fill="#1976D2" d="M43.6 20H24v8h11.3c-.8 2.2-2.2 4.1-4.1 5.5l6.2 5.2C41.4 34.9 44 29.9 44 24c0-1.3-.1-2.7-.4-4z"/></svg>Google로 계속</button>
+    <div class="divider">또는 이메일로</div>
+    <div class="err" id="authErr"></div>
+    <input type="text" id="authEmail" placeholder="이메일" autocomplete="email">
+    <input type="password" id="authPw" placeholder="비밀번호 (6자 이상)" autocomplete="current-password">
+    <button class="full-btn primary" id="emailAuthBtn">로그인</button>
+    <div class="switch" id="authSwitch">계정이 없으신가요? 회원가입</div>
+    <div class="switch" id="resetPw">비밀번호를 잊으셨나요?</div>
+  </div>
+</div>
+<footer>이미지 출처: playriftbound.com (EN) / playloltcg.com (CN) · 로그인 시 클라우드에, 미로그인 시 브라우저에 보유 데이터가 저장됩니다.</footer>
+<script>
+const DOMAIN_META = {
+  fury:  { label: '분노(적)',   color: '#e5484d' },
+  calm:  { label: '평온(녹)',   color: '#46a758' },
+  mind:  { label: '정신(청)',   color: '#3e8ede' },
+  body:  { label: '신체(주황)', color: '#f76b15' },
+  chaos: { label: '혼돈(보라)', color: '#8e4ec6' },
+  order: { label: '질서(노랑)', color: '#f5d90a' },
+};
+// CN color id -> EN domain id
+const CN_COLOR_MAP = { red:'fury', green:'calm', blue:'mind', orange:'body', purple:'chaos', yellow:'order' };
+const RARITY_ORDER = ['common','uncommon','rare','epic','showcase'];
+const RARITY_META = {
+  common:   { ko: '커먼',      color: '#9aa4ae', shape: '●' }, // 회색 원
+  uncommon: { ko: '언커먼',  color: '#41b4d8', shape: '▲' }, // 파란 삼각형
+  rare:     { ko: '레어',      color: '#a06be0', shape: '◆' }, // 보라 다이아몬드
+  epic:     { ko: '에픽',      color: '#f76b15', shape: '⬟' }, // 주황 오각형
+  showcase: { ko: '쇼케이스', color: '#f5d90a', shape: '⬢' }, // 노란 육각형
+};
+const RARITY_KO = Object.fromEntries(Object.entries(RARITY_META).map(([k, v]) => [k, v.ko]));
+const SET_NAME_KO = { ARC: '아케인 콜라보', FND: '프로모', OGN: 'Origins', OGS: 'Proving Grounds', SFD: 'Spiritforged', UNL: 'Unleashed', VEN: 'Vendetta' };
+
+const LS_KEY = 'riftbound_collection_v2';
+const LS_KEY_OLD = 'riftbound_collection_v1';
+let DATA = null;
+let currentUid = null;      // 로그인 상태면 uid, 아니면 null(게스트)
+let cloudSaver = null;      // Firebase 모듈이 주입하는 저장 함수
+let cloudTimer = null;
+let collection = loadCollection();
+let state = { set: 'ALL', lang: 'en', sort: 'num', own: 'all', domains: new Set(), rarities: new Set(), search: '' };
+
+function lsKey() { return currentUid ? LS_KEY + '_' + currentUid : LS_KEY; }
+function loadCollection() {
+  const v2 = localStorage.getItem(lsKey());
+  if (v2) {
+    const obj = JSON.parse(v2);
+    return { en: obj.en || {}, cn: obj.cn || {} };
+  }
+  // v1(언어 구분 없음) 데이터가 있으면 영문판으로 이전
+  const v1 = localStorage.getItem(LS_KEY_OLD);
+  if (v1 && !currentUid) {
+    const migrated = { en: JSON.parse(v1), cn: {} };
+    localStorage.setItem(LS_KEY, JSON.stringify(migrated));
+    localStorage.removeItem(LS_KEY_OLD);
+    return migrated;
+  }
+  return { en: {}, cn: {} };
+}
+function setSync(cls, txt) {
+  const el = document.getElementById('syncDot');
+  el.className = 'sync-dot ' + (cls || '');
+  el.textContent = txt || '';
+}
+function saveCollection(pushCloud = true) {
+  localStorage.setItem(lsKey(), JSON.stringify(collection));
+  if (pushCloud && cloudSaver) {
+    setSync('saving', '저장 중...');
+    clearTimeout(cloudTimer);
+    cloudTimer = setTimeout(() => {
+      cloudSaver(collection)
+        .then(() => setSync('saved', '클라우드 저장됨'))
+        .catch(() => setSync('', '저장 실패 - 재시도 예정'));
+    }, 700);
+  }
+}
+function qty(code) { return collection[state.lang][code] || 0; }
+
+// ===== Firebase 모듈이 사용하는 훅 =====
+window.appHooks = {
+  getCollection: () => collection,
+  setCollection(data) {
+    collection = { en: (data && data.en) || {}, cn: (data && data.cn) || {} };
+    saveCollection(false);
+    if (DATA) render();
+  },
+  setUser(user) {
+    currentUid = user ? user.uid : null;
+    const area = document.getElementById('authArea');
+    if (user) {
+      area.innerHTML = '<span class="user-email" title="' + (user.email || '') + '">' + (user.email || '사용자') + '</span>' +
+        '<button class="btn outline" id="logoutBtn">로그아웃</button>';
+      document.getElementById('logoutBtn').onclick = () => window.fbLogout && window.fbLogout();
+      document.getElementById('authModal').classList.remove('show');
+    } else {
+      area.innerHTML = '<button class="btn outline" id="loginBtn">로그인</button>';
+      bindLoginBtn();
+      collection = loadCollection();
+      setSync('', '');
+      if (DATA) render();
+    }
+  },
+  setCloudSaver(fn) { cloudSaver = fn; },
+  cloudDisabled() {
+    document.getElementById('authArea').innerHTML = '<span style="color:var(--muted);font-size:12px" title="firebase-config.js 설정 필요">로컬 모드</span>';
+  },
+};
+
+function normDomains(card) {
+  return card.domains.map(d => CN_COLOR_MAP[d] || d).filter(d => DOMAIN_META[d]);
+}
+function rarityKey(card) { return card.rarity || 'unknown'; }
+function rarityLabel(card) {
+  const k = rarityKey(card);
+  return RARITY_KO[k] || card.rarityEn || card.rarityCn || k;
+}
+function cardName(card) {
+  if (state.lang === 'cn') return card.nameCn || card.nameEn || card.code;
+  return card.nameEn || card.nameCn || card.code;
+}
+function cardImg(card) {
+  // 언어별로 해당 판 이미지만 사용 (교차 대체 없음)
+  return state.lang === 'cn' ? (card.imgCn || '') : (card.imgEn || '');
+}
+function inCurrentLang(card) {
+  return state.lang === 'cn' ? !!card.imgCn : !!card.imgEn;
+}
+
+function buildSetTabs() {
+  const el = document.getElementById('setTabs');
+  el.innerHTML = '';
+  const pool = DATA.cards.filter(inCurrentLang);
+  const counts = {};
+  pool.forEach(c => counts[c.set] = (counts[c.set] || 0) + 1);
+  if (state.set !== 'ALL' && !counts[state.set]) state.set = 'ALL';
+  const mk = (id, name, cnt) => {
+    const b = document.createElement('button');
+    b.className = 'btn' + (state.set === id ? ' active' : '');
+    b.innerHTML = name + '<span class="cnt">' + cnt + '</span>';
+    b.onclick = () => { state.set = id; buildSetTabs(); render(); };
+    el.appendChild(b);
+  };
+  mk('ALL', '전체', pool.length);
+  DATA.sets.filter(s => counts[s.id]).forEach(s => mk(s.id, SET_NAME_KO[s.id] || s.name, counts[s.id]));
+}
+
+function buildChips() {
+  const dEl = document.getElementById('domainChips');
+  dEl.innerHTML = '';
+  Object.entries(DOMAIN_META).forEach(([id, m]) => {
+    const c = document.createElement('span');
+    c.className = 'chip';
+    c.style.setProperty('--chip-color', m.color);
+    c.innerHTML = '<span class="dot"></span>' + m.label;
+    c.onclick = () => { state.domains.has(id) ? state.domains.delete(id) : state.domains.add(id); c.classList.toggle('active'); render(); };
+    dEl.appendChild(c);
+  });
+  const rEl = document.getElementById('rarityChips');
+  rEl.innerHTML = '';
+  const present = [...new Set(DATA.cards.map(rarityKey))];
+  present.sort((a, b) => (RARITY_ORDER.indexOf(a) + 99) % 100 - (RARITY_ORDER.indexOf(b) + 99) % 100);
+  present.forEach(k => {
+    const c = document.createElement('span');
+    c.className = 'chip';
+    const m = RARITY_META[k];
+    if (m) {
+      c.style.setProperty('--chip-color', m.color);
+      c.innerHTML = '<span style="color:' + m.color + ';font-size:11px">' + m.shape + '</span>' + m.ko;
+    } else c.textContent = k;
+    c.onclick = () => { state.rarities.has(k) ? state.rarities.delete(k) : state.rarities.add(k); c.classList.toggle('active'); render(); };
+    rEl.appendChild(c);
+  });
+}
+
+function filteredCards() {
+  const q = state.search.toLowerCase();
+  let list = DATA.cards.filter(c => {
+    if (!inCurrentLang(c)) return false;
+    if (state.set !== 'ALL' && c.set !== state.set) return false;
+    const own = qty(c.code);
+    if (state.own === 'owned' && own === 0) return false;
+    if (state.own === 'unowned' && own > 0) return false;
+    if (state.domains.size) {
+      const ds = normDomains(c);
+      if (!ds.some(d => state.domains.has(d))) return false;
+    }
+    if (state.rarities.size && !state.rarities.has(rarityKey(c))) return false;
+    if (q && !(
+      (c.nameEn || '').toLowerCase().includes(q) ||
+      (c.nameCn || '').toLowerCase().includes(q) ||
+      c.code.toLowerCase().includes(q) ||
+      (c.publicCode || '').toLowerCase().includes(q)
+    )) return false;
+    return true;
+  });
+  const domainIdx = c => {
+    const ds = normDomains(c);
+    return ds.length ? Object.keys(DOMAIN_META).indexOf(ds[0]) : 99;
+  };
+  const rarityIdx = c => { const i = RARITY_ORDER.indexOf(rarityKey(c)); return i < 0 ? 99 : i; };
+  const byNum = (a, b) => a.set.localeCompare(b.set) || (a.num - b.num) || a.code.localeCompare(b.code);
+  if (state.sort === 'num') list.sort(byNum);
+  else if (state.sort === 'domain') list.sort((a, b) => domainIdx(a) - domainIdx(b) || byNum(a, b));
+  else if (state.sort === 'rarity') list.sort((a, b) => rarityIdx(a) - rarityIdx(b) || byNum(a, b));
+  else if (state.sort === 'name') list.sort((a, b) => cardName(a).localeCompare(cardName(b)));
+  return list;
+}
+
+function render() {
+  const grid = document.getElementById('grid');
+  const list = filteredCards();
+  grid.innerHTML = '';
+  if (!list.length) {
+    grid.innerHTML = '<div class="empty-msg">조건에 맞는 카드가 없습니다.</div>';
+  }
+  const frag = document.createDocumentFragment();
+  list.forEach(c => frag.appendChild(cardEl(c)));
+  grid.appendChild(frag);
+  updateStats(list.length);
+}
+
+function cardEl(c) {
+  const own = qty(c.code);
+  const div = document.createElement('div');
+  div.className = 'card' + (own === 0 ? ' unowned' : '');
+  const ds = normDomains(c);
+  const img = cardImg(c);
+  const dotHtml = ds.map(d => '<span class="domain-dot" style="background:' + DOMAIN_META[d].color + '" title="' + DOMAIN_META[d].label + '"></span>').join('');
+  div.innerHTML =
+    '<div class="imgwrap">' +
+      (img ? '<img loading="lazy" src="' + img + '" alt="">' : '<div class="noimg">이미지 없음</div>') +
+      (own > 0 ? '<div class="qty-badge">' + own + '</div>' : '') +
+    '</div>' +
+    '<div class="card-info">' +
+      '<div class="card-name" title="' + cardName(c).replace(/"/g, '&quot;') + '">' + cardName(c) + '</div>' +
+      '<div class="card-meta">' + dotHtml + '<span>' + (c.publicCode || c.code) + '</span>' +
+        '<span class="rarity-tag"' + (RARITY_META[rarityKey(c)] ? ' style="color:' + RARITY_META[rarityKey(c)].color + '"' : '') + '>' + (RARITY_META[rarityKey(c)] ? RARITY_META[rarityKey(c)].shape + ' ' : '') + rarityLabel(c) + '</span></div>' +
+    '</div>' +
+    '<div class="card-actions">' +
+      '<button class="minus">−</button>' +
+      '<span class="qty-num' + (own > 0 ? ' has' : '') + '">' + own + '</span>' +
+      '<button class="plus">＋</button>' +
+    '</div>';
+  div.querySelector('.imgwrap').onclick = () => { if (img) openModal(img); };
+  div.querySelector('.plus').onclick = () => changeQty(c.code, 1, div, c);
+  div.querySelector('.minus').onclick = () => changeQty(c.code, -1, div, c);
+  return div;
+}
+
+function changeQty(code, delta, div, c) {
+  const n = Math.max(0, qty(code) + delta);
+  if (n === 0) delete collection[state.lang][code]; else collection[state.lang][code] = n;
+  saveCollection();
+  // update card in place
+  div.className = 'card' + (n === 0 ? ' unowned' : '');
+  const qn = div.querySelector('.qty-num');
+  qn.textContent = n;
+  qn.className = 'qty-num' + (n > 0 ? ' has' : '');
+  let badge = div.querySelector('.qty-badge');
+  if (n > 0) {
+    if (!badge) { badge = document.createElement('div'); badge.className = 'qty-badge'; div.querySelector('.imgwrap').appendChild(badge); }
+    badge.textContent = n;
+  } else if (badge) badge.remove();
+  updateStats(document.querySelectorAll('#grid .card').length);
+  if (state.own !== 'all') render();
+}
+
+function updateStats(shown) {
+  const pool = DATA.cards.filter(inCurrentLang);
+  const scope = state.set === 'ALL' ? pool : pool.filter(c => c.set === state.set);
+  const ownedKinds = scope.filter(c => qty(c.code) > 0).length;
+  const ownedQty = scope.reduce((s, c) => s + qty(c.code), 0);
+  document.getElementById('statLang').textContent = state.lang === 'cn' ? '중문판' : '영문판';
+  document.getElementById('statShown').textContent = shown;
+  document.getElementById('statOwnedKinds').textContent = ownedKinds;
+  document.getElementById('statTotal').textContent = scope.length;
+  document.getElementById('statOwnedQty').textContent = ownedQty;
+  const pct = scope.length ? Math.round(ownedKinds / scope.length * 1000) / 10 : 0;
+  document.getElementById('progressBar').style.width = pct + '%';
+  document.getElementById('statPct').textContent = pct + '%';
+}
+
+function openModal(src) {
+  document.getElementById('modalImg').src = src;
+  document.getElementById('modal').classList.add('show');
+}
+document.getElementById('modal').onclick = () => document.getElementById('modal').classList.remove('show');
+
+document.getElementById('langTabs').querySelectorAll('.btn').forEach(b => {
+  b.onclick = () => {
+    state.lang = b.dataset.lang;
+    document.querySelectorAll('#langTabs .btn').forEach(x => x.classList.toggle('active', x === b));
+    buildSetTabs();
+    render();
+  };
+});
+document.getElementById('ownTabs').querySelectorAll('.btn').forEach(b => {
+  b.onclick = () => {
+    state.own = b.dataset.own;
+    document.querySelectorAll('#ownTabs .btn').forEach(x => x.classList.toggle('active', x === b));
+    render();
+  };
+});
+document.getElementById('sortSel').onchange = e => { state.sort = e.target.value; render(); };
+let searchTimer;
+document.getElementById('searchInput').oninput = e => {
+  clearTimeout(searchTimer);
+  searchTimer = setTimeout(() => { state.search = e.target.value.trim(); render(); }, 200);
+};
+
+document.getElementById('exportBtn').onclick = () => {
+  const blob = new Blob([JSON.stringify(collection, null, 2)], { type: 'application/json' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'riftbound-collection.json';
+  a.click();
+};
+document.getElementById('importBtn').onclick = () => document.getElementById('importFile').click();
+document.getElementById('importFile').onchange = e => {
+  const f = e.target.files[0];
+  if (!f) return;
+  const r = new FileReader();
+  r.onload = () => {
+    try {
+      const obj = JSON.parse(r.result);
+      if (typeof obj !== 'object' || Array.isArray(obj)) throw 0;
+      // v2 형식({en,cn}) 또는 구형식(단일 맵) 모두 지원
+      if (obj.en || obj.cn) collection = { en: obj.en || {}, cn: obj.cn || {} };
+      else collection = { ...collection, [state.lang]: obj };
+      saveCollection();
+      render();
+      alert('가져오기 완료');
+    } catch { alert('잘못된 파일입니다.'); }
+  };
+  r.readAsText(f);
+  e.target.value = '';
+};
+
+// ===== 인증 모달 UI =====
+function bindLoginBtn() {
+  const b = document.getElementById('loginBtn');
+  if (b) b.onclick = () => document.getElementById('authModal').classList.add('show');
+}
+bindLoginBtn();
+document.getElementById('closeAuth').onclick = () => document.getElementById('authModal').classList.remove('show');
+document.getElementById('authModal').onclick = e => { if (e.target.id === 'authModal') e.target.classList.remove('show'); };
+let authMode = 'login';
+document.getElementById('authSwitch').onclick = () => {
+  authMode = authMode === 'login' ? 'signup' : 'login';
+  document.getElementById('authTitle').textContent = authMode === 'login' ? '로그인' : '회원가입';
+  document.getElementById('emailAuthBtn').textContent = authMode === 'login' ? '로그인' : '회원가입';
+  document.getElementById('authSwitch').textContent = authMode === 'login' ? '계정이 없으신가요? 회원가입' : '이미 계정이 있나요? 로그인';
+  document.getElementById('authErr').textContent = '';
+};
+const AUTH_ERR_KO = {
+  'auth/invalid-email': '이메일 형식이 올바르지 않습니다.',
+  'auth/user-not-found': '등록되지 않은 계정입니다.',
+  'auth/wrong-password': '비밀번호가 틀렸습니다.',
+  'auth/invalid-credential': '이메일 또는 비밀번호가 틀렸습니다.',
+  'auth/email-already-in-use': '이미 가입된 이메일입니다.',
+  'auth/weak-password': '비밀번호는 6자 이상이어야 합니다.',
+  'auth/popup-closed-by-user': '로그인 창이 닫혔습니다.',
+};
+function authError(e) {
+  document.getElementById('authErr').textContent = AUTH_ERR_KO[e && e.code] || '오류: ' + (e && e.code || e);
+}
+document.getElementById('emailAuthBtn').onclick = () => {
+  const email = document.getElementById('authEmail').value.trim();
+  const pw = document.getElementById('authPw').value;
+  if (!email || !pw) { document.getElementById('authErr').textContent = '이메일과 비밀번호를 입력하세요.'; return; }
+  if (!window.fbEmailAuth) { document.getElementById('authErr').textContent = '클라우드 미설정 상태입니다.'; return; }
+  window.fbEmailAuth(authMode, email, pw).catch(authError);
+};
+document.getElementById('googleBtn').onclick = () => {
+  if (!window.fbGoogleLogin) { document.getElementById('authErr').textContent = '클라우드 미설정 상태입니다.'; return; }
+  window.fbGoogleLogin().catch(authError);
+};
+document.getElementById('resetPw').onclick = () => {
+  const email = document.getElementById('authEmail').value.trim();
+  if (!email) { document.getElementById('authErr').textContent = '재설정 메일을 받을 이메일을 입력하세요.'; return; }
+  if (!window.fbResetPw) { document.getElementById('authErr').textContent = '클라우드 미설정 상태입니다.'; return; }
+  window.fbResetPw(email)
+    .then(() => { document.getElementById('authErr').style.color = 'var(--owned)'; document.getElementById('authErr').textContent = '재설정 메일을 보냈습니다. 메일함을 확인하세요.'; })
+    .catch(authError);
+};
+
+fetch('data/cards.json')
+  .then(r => r.json())
+  .then(d => {
+    DATA = d;
+    document.getElementById('loading').style.display = 'none';
+    buildSetTabs();
+    buildChips();
+    render();
+  })
+  .catch(() => {
+    document.getElementById('loading').textContent = 'data/cards.json 로드 실패 — 먼저 python scrape.py 를 실행하세요.';
+  });
+</script>
+<script src="firebase-config.js"></script>
+<script type="module">
+if (window.FIREBASE_CONFIG) {
+  const [{ initializeApp }, authMod, fsMod] = await Promise.all([
+    import('https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js'),
+    import('https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js'),
+    import('https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js'),
+  ]);
+  const { getAuth, onAuthStateChanged, GoogleAuthProvider, signInWithPopup,
+          signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut,
+          sendPasswordResetEmail } = authMod;
+  const { getFirestore, doc, getDoc, setDoc } = fsMod;
+  const app = initializeApp(window.FIREBASE_CONFIG);
+  const auth = getAuth(app);
+  const db = getFirestore(app);
+
+  window.fbGoogleLogin = () => signInWithPopup(auth, new GoogleAuthProvider());
+  window.fbEmailAuth = (mode, email, pw) =>
+    mode === 'signup' ? createUserWithEmailAndPassword(auth, email, pw)
+                      : signInWithEmailAndPassword(auth, email, pw);
+  window.fbLogout = () => signOut(auth);
+  window.fbResetPw = email => sendPasswordResetEmail(auth, email);
+
+  onAuthStateChanged(auth, async user => {
+    if (user) {
+      const guestData = window.appHooks.getCollection();
+      window.appHooks.setUser(user);
+      const ref = doc(db, 'collections', user.uid);
+      try {
+        const snap = await getDoc(ref);
+        if (snap.exists()) {
+          window.appHooks.setCollection(snap.data());
+        } else {
+          // 첫 로그인: 게스트(로컬) 데이터를 클라우드로 이전
+          await setDoc(ref, guestData);
+          window.appHooks.setCollection(guestData);
+        }
+        window.appHooks.setCloudSaver(col => setDoc(ref, col));
+      } catch (e) {
+        console.error('Firestore 로드 실패', e);
+      }
+    } else {
+      window.appHooks.setCloudSaver(null);
+      window.appHooks.setUser(null);
+    }
+  });
+} else {
+  window.appHooks.cloudDisabled();
+}
+</script>
+</body>
+</html>
