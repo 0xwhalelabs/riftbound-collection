@@ -177,6 +177,7 @@ footer { padding: 14px 20px; color: var(--muted); font-size: 11.5px; border-top:
   <span>표시 <b id="statShown">0</b>장</span>
   <span><b id="statLang">영문판</b> 보유 종류 <b id="statOwnedKinds">0</b> / <b id="statTotal">0</b></span>
   <span>총 보유 수량 <b id="statOwnedQty">0</b>장</span>
+  <span title="TCGplayer 시세 기준">내 도감 가치 <b id="statValue" style="color:var(--accent2)">$0</b><small style="display:block;font-size:9.5px;color:var(--muted)">총액은 12시간에 한 번씩 갱신됩니다</small></span>
   <div class="progress"><div id="progressBar" style="width:0%"></div></div>
   <span id="statPct">0%</span>
 </div>
@@ -535,6 +536,13 @@ function updateStats(shown) {
   const scope = state.set === 'ALL' ? pool : pool.filter(c => c.set === state.set);
   const ownedKinds = scope.filter(c => qty(c.code) > 0).length;
   const ownedQty = scope.reduce((s, c) => s + qty(c.code), 0);
+  const totalValue = scope.reduce((s, c) => {
+    const n = qty(c.code);
+    if (!n) return s;
+    const p = PRICES[c.code];
+    return s + n * ((p && (p.usd || p.foil)) || 0);
+  }, 0);
+  document.getElementById('statValue').textContent = '$' + totalValue.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
   document.getElementById('statLang').textContent = state.lang === 'cn' ? '중문판' : '영문판';
   document.getElementById('statShown').textContent = shown;
   document.getElementById('statOwnedKinds').textContent = ownedKinds;
