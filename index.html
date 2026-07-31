@@ -168,16 +168,13 @@ footer { padding: 14px 20px; color: var(--muted); font-size: 11.5px; border-top:
     <span class="filter-label" style="margin-left:10px">등급</span>
     <span id="rarityChips"></span>
     <div class="spacer"></div>
-    <button class="btn" id="exportBtn" style="border:1px solid var(--border)">내보내기</button>
-    <button class="btn" id="importBtn" style="border:1px solid var(--border)">가져오기</button>
-    <input type="file" id="importFile" accept=".json" style="display:none">
   </div>
 </header>
 <div class="stats-bar">
   <span>표시 <b id="statShown">0</b>장</span>
   <span><b id="statLang">영문판</b> 보유 종류 <b id="statOwnedKinds">0</b> / <b id="statTotal">0</b></span>
   <span>총 보유 수량 <b id="statOwnedQty">0</b>장</span>
-  <span title="TCGplayer 시세 기준">내 도감 가치 <b id="statValue" style="color:var(--accent2)">$0</b><small style="display:block;font-size:9.5px;color:var(--muted)">총액은 12시간에 한 번씩 갱신됩니다</small></span>
+  <span title="TCGplayer 시세 기준">내 도감 가치 <b id="statValue" style="color:var(--accent2)">$0</b><small style="display:block;font-size:9.5px;color:var(--muted)">가격은 영문판 기준 · 총액은 12시간에 한 번씩 갱신됩니다</small></span>
   <div class="progress"><div id="progressBar" style="width:0%"></div></div>
   <span id="statPct">0%</span>
 </div>
@@ -199,7 +196,7 @@ footer { padding: 14px 20px; color: var(--muted); font-size: 11.5px; border-top:
         <img id="dImg" alt="">
         <div class="buy-box" id="dBuyBox" style="display:none">
           <a class="buy-btn" id="dBuyBtn" target="_blank" rel="noopener"><span>🛒 TCGplayer에서 구매</span><span class="price" id="dPrice"></span></a>
-          <div class="buy-note">TCGplayer 시세(Market Price) 기준 · 매일 갱신</div>
+          <div class="buy-note">TCGplayer 시세(Market Price) · 영문판 기준 · 12시간마다 갱신</div>
         </div>
       </div>
       <div class="detail-right">
@@ -451,13 +448,26 @@ function render() {
   list.forEach((c, i) => {
     frag.appendChild(cardEl(c));
     // 광고 삽입: every장마다 광고 카드 한 장씩 순환
-    if (ADS.ads.length && (i + 1) % (ADS.every || 12) === 0 && i < list.length - 1) {
-      frag.appendChild(adEl(ADS.ads[adIdx % ADS.ads.length]));
-      adIdx++;
+    if ((i + 1) % (ADS.every || 12) === 0 && i < list.length - 1) {
+      if (ADS.ads.length) {
+        frag.appendChild(adEl(ADS.ads[adIdx % ADS.ads.length]));
+        adIdx++;
+      } else {
+        frag.appendChild(adPlaceholderEl());
+      }
     }
   });
   grid.appendChild(frag);
   updateStats(list.length);
+}
+
+function adPlaceholderEl() {
+  const div = document.createElement('div');
+  div.className = 'card ad-card';
+  div.innerHTML = '<span class="ad-tag">AD</span>' +
+    '<a href="https://www.instagram.com/riftbound_whale/" target="_blank" rel="noopener" style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;aspect-ratio:5/7;text-decoration:none;color:var(--muted);background:repeating-linear-gradient(45deg,var(--panel),var(--panel) 10px,var(--panel2) 10px,var(--panel2) 20px)">' +
+    '<span style="font-size:26px">📢</span><span style="font-size:13px;font-weight:700;color:var(--accent2)">광고 자리</span><span style="font-size:11px">광고 문의: 인스타 DM</span></a>';
+  return div;
 }
 
 function adEl(ad) {
@@ -631,34 +641,6 @@ let searchTimer;
 document.getElementById('searchInput').oninput = e => {
   clearTimeout(searchTimer);
   searchTimer = setTimeout(() => { state.search = e.target.value.trim(); render(); }, 200);
-};
-
-document.getElementById('exportBtn').onclick = () => {
-  const blob = new Blob([JSON.stringify(collection, null, 2)], { type: 'application/json' });
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
-  a.download = 'riftbound-collection.json';
-  a.click();
-};
-document.getElementById('importBtn').onclick = () => document.getElementById('importFile').click();
-document.getElementById('importFile').onchange = e => {
-  const f = e.target.files[0];
-  if (!f) return;
-  const r = new FileReader();
-  r.onload = () => {
-    try {
-      const obj = JSON.parse(r.result);
-      if (typeof obj !== 'object' || Array.isArray(obj)) throw 0;
-      // v2 형식({en,cn}) 또는 구형식(단일 맵) 모두 지원
-      if (obj.en || obj.cn) collection = { en: obj.en || {}, cn: obj.cn || {} };
-      else collection = { ...collection, [state.lang]: obj };
-      saveCollection();
-      render();
-      alert('가져오기 완료');
-    } catch { alert('잘못된 파일입니다.'); }
-  };
-  r.readAsText(f);
-  e.target.value = '';
 };
 
 // ===== 인증 모달 UI =====
