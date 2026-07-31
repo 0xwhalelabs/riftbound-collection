@@ -207,7 +207,6 @@ footer { padding: 14px 20px; color: var(--muted); font-size: 11.5px; border-top:
           <div class="d-field"><div class="lbl">세트</div><div class="val" id="dSet"></div></div>
           <div class="d-field"><div class="lbl">카드 번호</div><div class="val plain" id="dNum"></div></div>
           <div class="d-field"><div class="lbl">등급</div><div class="val" id="dRarity"></div></div>
-          <div class="d-field"><div class="lbl">코스트(에너지)</div><div class="val plain" id="dCost"></div></div>
           <div class="d-field"><div class="lbl">카드 타입</div><div class="val" id="dType"></div></div>
           <div class="d-field wide"><div class="lbl">도메인(색상)</div><div class="val plain" id="dDomains"></div></div>
           <div class="d-field wide" id="dCnRow"><div class="lbl">중문명</div><div class="val plain" id="dCnName"></div></div>
@@ -259,7 +258,7 @@ const RARITY_META = {
 };
 const RARITY_KO = Object.fromEntries(Object.entries(RARITY_META).map(([k, v]) => [k, v.ko]));
 const SET_NAME_KO = { ARC: '아케인 콜라보', FND: '프로모', OGN: 'Origins', OGS: 'Proving Grounds', SFD: 'Spiritforged', UNL: 'Unleashed', VEN: 'Vendetta' };
-const TYPE_KO = { unit: '유닛', spell: '스펠', legend: '리전드', gear: '기어', battlefield: '전장', rune: '룬', legendary: '레전더리', hero_unit: '영웅 유닛', equipment: '장비', indicator_unit: '토큰 유닛' };
+const TYPE_KO = { unit: '유닛', spell: '스펠', legend: '레전드', gear: '기어', battlefield: '전장', rune: '룬', legendary: '레전더리', hero_unit: '영웅 유닛', equipment: '장비', indicator_unit: '토큰 유닛' };
 let PRICES = {};
 let ADS = { every: 12, ads: [] };
 
@@ -565,7 +564,6 @@ function openDetail(c) {
   document.getElementById('dSet').textContent = c.set + ' - ' + (SET_NAME_KO[c.set] || c.set);
   document.getElementById('dNum').textContent = c.publicCode || c.code;
   document.getElementById('dRarity').innerHTML = rm ? '<span style="color:' + rm.color + '">' + rm.shape + ' ' + rm.ko + '</span>' : rarityLabel(c);
-  document.getElementById('dCost').textContent = (c.energy !== null && c.energy !== undefined) ? c.energy : '-';
   document.getElementById('dType').textContent = c.typeIds.map(t => TYPE_KO[t] || t).join(', ') || '-';
   const ds = normDomains(c);
   document.getElementById('dDomains').innerHTML = ds.length
@@ -703,7 +701,10 @@ document.getElementById('resetPw').onclick = () => {
 
 Promise.all([
   fetch('data/cards.json').then(r => r.json()),
-  fetch('data/prices.json').then(r => r.json()).catch(() => ({})),
+  // 가격: GitHub 최신본 우선(12시간마다 자동 갱신), 실패 시 로컬 파일
+  fetch('https://raw.githubusercontent.com/0xwhalelabs/riftbound-collection/master/data/prices.json', { cache: 'no-cache' })
+    .then(r => { if (!r.ok) throw 0; return r.json(); })
+    .catch(() => fetch('data/prices.json').then(r => r.json()).catch(() => ({}))),
   fetch('data/ads.json').then(r => r.json()).catch(() => null),
 ])
   .then(([d, prices, ads]) => {
