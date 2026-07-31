@@ -73,6 +73,8 @@ footer { padding: 14px 20px; color: var(--muted); font-size: 11.5px; border-top:
 .sns-btn { display: inline-flex; align-items: center; justify-content: center; width: 32px; height: 32px; border-radius: 8px; border: 1px solid var(--border); background: var(--panel); transition: all .15s; }
 .sns-btn:hover { transform: translateY(-1px); border-color: var(--accent); }
 .sns-btn svg { width: 17px; height: 17px; }
+#toast { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%) translateY(20px); background: var(--panel2); color: var(--text); border: 1px solid var(--accent); border-radius: 10px; padding: 12px 22px; font-size: 14px; z-index: 400; opacity: 0; pointer-events: none; transition: all .25s; box-shadow: 0 6px 24px rgba(0,0,0,.6); }
+#toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 #authModal { position: fixed; inset: 0; background: rgba(0,0,0,.7); display: none; align-items: center; justify-content: center; z-index: 300; }
 #authModal.show { display: flex; }
 .auth-box { background: var(--panel); border: 1px solid var(--border); border-radius: 14px; padding: 28px; width: 340px; max-width: 92vw; }
@@ -151,6 +153,7 @@ footer { padding: 14px 20px; color: var(--muted); font-size: 11.5px; border-top:
 <div id="loading">카드 데이터 로딩 중...</div>
 <div id="grid"></div>
 <div id="modal"><img id="modalImg" alt=""></div>
+<div id="toast"></div>
 <div id="authModal">
   <div class="auth-box">
     <button class="close-auth" id="closeAuth">✕</button>
@@ -404,7 +407,21 @@ function cardEl(c) {
   return div;
 }
 
+let toastTimer = null;
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 2500);
+}
+
 function changeQty(code, delta, div, c) {
+  if (!currentUid && window.FIREBASE_CONFIG) {
+    showToast('로그인을 하셔야 도감이 저장됩니다.');
+    document.getElementById('authModal').classList.add('show');
+    return;
+  }
   const n = Math.max(0, qty(code) + delta);
   if (n === 0) delete collection[state.lang][code]; else collection[state.lang][code] = n;
   saveCollection();
