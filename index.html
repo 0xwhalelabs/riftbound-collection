@@ -172,7 +172,7 @@ footer { padding: 14px 20px; color: var(--muted); font-size: 11.5px; border-top:
 </header>
 <div class="stats-bar">
   <span>표시 <b id="statShown">0</b>장</span>
-  <span><b id="statLang">영문판</b> 보유 종류 <b id="statOwnedKinds">0</b> / <b id="statTotal">0</b></span>
+  <span>전체 도감 <b id="statOwnedKinds">0</b> / <b id="statTotal">0</b></span>
   <span>총 보유 수량 <b id="statOwnedQty">0</b>장</span>
   <span title="TCGplayer 시세 기준">내 도감 가치 <b id="statValue" style="color:var(--accent2)">$0</b><small style="display:block;font-size:9.5px;color:var(--muted)">가격은 영문판 기준 · 총액은 12시간에 한 번씩 갱신됩니다</small></span>
   <div class="progress"><div id="progressBar" style="width:0%"></div></div>
@@ -274,7 +274,7 @@ function loadCollection() {
   const v2 = localStorage.getItem(lsKey());
   if (v2) {
     const obj = JSON.parse(v2);
-    return { en: obj.en || {}, cn: obj.cn || {} };
+    return { en: obj.en || {}, cn: obj.cn || {}, nick: obj.nick || '' };
   }
   // v1(언어 구분 없음) 데이터가 있으면 영문판으로 이전
   const v1 = localStorage.getItem(LS_KEY_OLD);
@@ -306,28 +306,45 @@ function saveCollection(pushCloud = true) {
 function qty(code) { return collection[state.lang][code] || 0; }
 
 // ===== Firebase 모듈이 사용하는 훅 =====
+let currentUser = null;
+function renderAuthArea() {
+  const area = document.getElementById('authArea');
+  if (currentUser) {
+    const label = collection.nick || currentUser.email || '사용자';
+    area.innerHTML = '<span class="user-email" id="nickLabel" title="클릭해서 닉네임 변경" style="cursor:pointer">' + label + ' ✏️</span>' +
+      '<button class="btn outline" id="logoutBtn">로그아웃</button>';
+    document.getElementById('logoutBtn').onclick = () => window.fbLogout && window.fbLogout();
+    document.getElementById('nickLabel').onclick = () => {
+      const nick = prompt('사용할 닉네임을 입력하세요 (비우면 이메일 표시)', collection.nick || '');
+      if (nick === null) return;
+      collection.nick = nick.trim().slice(0, 20);
+      saveCollection();
+      renderAuthArea();
+    };
+  } else {
+    area.innerHTML = '<button class="btn outline" id="loginBtn">로그인</button>';
+    bindLoginBtn();
+  }
+}
 window.appHooks = {
   getCollection: () => collection,
   setCollection(data) {
-    collection = { en: (data && data.en) || {}, cn: (data && data.cn) || {} };
+    collection = { en: (data && data.en) || {}, cn: (data && data.cn) || {}, nick: (data && data.nick) || '' };
     saveCollection(false);
+    renderAuthArea();
     if (DATA) render();
   },
   setUser(user) {
     currentUid = user ? user.uid : null;
-    const area = document.getElementById('authArea');
+    currentUser = user;
     if (user) {
-      area.innerHTML = '<span class="user-email" title="' + (user.email || '') + '">' + (user.email || '사용자') + '</span>' +
-        '<button class="btn outline" id="logoutBtn">로그아웃</button>';
-      document.getElementById('logoutBtn').onclick = () => window.fbLogout && window.fbLogout();
       document.getElementById('authModal').classList.remove('show');
     } else {
-      area.innerHTML = '<button class="btn outline" id="loginBtn">로그인</button>';
-      bindLoginBtn();
       collection = loadCollection();
       setSync('', '');
       if (DATA) render();
     }
+    renderAuthArea();
   },
   setCloudSaver(fn) { cloudSaver = fn; },
   cloudDisabled() {
@@ -542,26 +559,28 @@ function changeQty(code, delta, div, c) {
 }
 
 function updateStats(shown) {
-  const pool = DATA.cards.filter(inCurrentLang);
-  const scope = state.set === 'ALL' ? pool : pool.filter(c => c.set === state.set);
-  const ownedKinds = scope.filter(c => qty(c.code) > 0).length;
-  const ownedQty = scope.reduce((s, c) => s + qty(c.code), 0);
-  // 도감 가치는 세트 탭과 무관하게 현재 언어판 전체 기준
-  const totalValue = pool.reduce((s, c) => {
-    const n = qty(c.code);
-    if (!n) return s;
-    const p = PRICES[c.code];
-    return s + n * ((p && (p.usd || p.foil)) || 0);
-  }, 0);
+  // 전체 도감(영문판+중문판) 기준 통계
+  const enPool = DATA.cards.filter(c => c.imgEn);
+  const cnPool = DATA.cards.filter(c => c.imgCn);
+  const ownedKinds = enPool.filter(c => (collection.en[c.code] || 0) > 0).length
+                   + cnPool.filter(c => (collection.cn[c.code] || 0) > 0).length;
+  const totalKinds = enPool.length + cnPool.length;
+  const ownedQty = enPool.reduce((s, c) => s + (collection.en[c.code] || 0), 0)
+                 + cnPool.reduce((s, c) => s + (collection.cn[c.code] || 0), 0);
+  const totalValue = enPool.reduce((s, c) => s + (collection.en[c.code] || 0) * priceOf(c.code), 0)
+                   + cnPool.reduce((s, c) => s + (collection.cn[c.code] || 0) * priceOf(c.code), 0);
   document.getElementById('statValue').textContent = '$' + totalValue.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-  document.getElementById('statLang').textContent = state.lang === 'cn' ? '중문판' : '영문판';
   document.getElementById('statShown').textContent = shown;
   document.getElementById('statOwnedKinds').textContent = ownedKinds;
-  document.getElementById('statTotal').textContent = scope.length;
+  document.getElementById('statTotal').textContent = totalKinds;
   document.getElementById('statOwnedQty').textContent = ownedQty;
-  const pct = scope.length ? Math.round(ownedKinds / scope.length * 1000) / 10 : 0;
+  const pct = totalKinds ? Math.round(ownedKinds / totalKinds * 1000) / 10 : 0;
   document.getElementById('progressBar').style.width = pct + '%';
   document.getElementById('statPct').textContent = pct + '%';
+}
+function priceOf(code) {
+  const p = PRICES[code];
+  return (p && (p.usd || p.foil)) || 0;
 }
 
 function openModal(src) {
