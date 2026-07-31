@@ -49,7 +49,12 @@ http.createServer((req, res) => {
   if (!filePath.startsWith(ROOT)) { res.writeHead(403); res.end(); return; }
   fs.stat(filePath, (err, st) => {
     if (err || !st.isFile()) { res.writeHead(404); res.end('Not Found'); return; }
-    res.writeHead(200, { 'Content-Type': MIME[path.extname(filePath).toLowerCase()] || 'application/octet-stream' });
+    const ext = path.extname(filePath).toLowerCase();
+    const noCache = ['.html', '.js', '.css', '.json'].includes(ext);
+    res.writeHead(200, {
+      'Content-Type': MIME[ext] || 'application/octet-stream',
+      'Cache-Control': noCache ? 'no-cache' : 'public, max-age=86400',
+    });
     fs.createReadStream(filePath).pipe(res);
   });
 }).listen(PORT, '0.0.0.0', () => console.log('listening on ' + PORT));
