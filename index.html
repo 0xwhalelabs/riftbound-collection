@@ -536,7 +536,8 @@ function updateStats(shown) {
   const scope = state.set === 'ALL' ? pool : pool.filter(c => c.set === state.set);
   const ownedKinds = scope.filter(c => qty(c.code) > 0).length;
   const ownedQty = scope.reduce((s, c) => s + qty(c.code), 0);
-  const totalValue = scope.reduce((s, c) => {
+  // 도감 가치는 세트 탭과 무관하게 현재 언어판 전체 기준
+  const totalValue = pool.reduce((s, c) => {
     const n = qty(c.code);
     if (!n) return s;
     const p = PRICES[c.code];
