@@ -170,22 +170,6 @@ def build():
 
     print("Matched CN->EN: %d ; total cards: %d" % (matched, len(order)))
 
-    # EN 갤러리에 아직 없는 변형(별표/알파벳 접미사) 카드 폴백:
-    # 기본 카드(접미사 제거)가 EN에 존재하면 EN판에도 실재하는 카드로 보고 CN 이미지를 대체 사용
-    fallback = 0
-    for code in order:
-        card = merged[code]
-        if card["imgEn"] or not card["imgCn"]:
-            continue
-        m = re.match(r"^([A-Z]+-\d{3})[a-z*]+$", code)
-        if m and m.group(1) in merged and merged[m.group(1)]["imgEn"]:
-            card["imgEn"] = card["imgCn"]
-            if not card["nameEn"]:
-                base = merged[m.group(1)]
-                card["nameEn"] = base["nameEn"]
-            fallback += 1
-    print("EN fallback variants (CN image used): %d" % fallback)
-
     # ensure set names include CN-only sets
     for code in order:
         sid = merged[code]["set"]
