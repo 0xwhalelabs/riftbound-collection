@@ -2,7 +2,7 @@
 // 값이 null이면 클라우드 저장 없이 브라우저 로컬 저장만 사용됩니다.
 window.FIREBASE_CONFIG = {
   apiKey: "AIzaSyBWes1a5WDfbftA4e6hy_8m5IKXGaSJnD0",
-  authDomain: "riftbound-whale-28edd.firebaseapp.com",
+  authDomain: "www.rbwhale.com",
   projectId: "riftbound-whale-28edd",
   storageBucket: "riftbound-whale-28edd.firebasestorage.app",
   messagingSenderId: "692429934162",
