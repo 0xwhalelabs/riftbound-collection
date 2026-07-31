@@ -73,6 +73,36 @@ footer { padding: 14px 20px; color: var(--muted); font-size: 11.5px; border-top:
 .sns-btn { display: inline-flex; align-items: center; justify-content: center; width: 32px; height: 32px; border-radius: 8px; border: 1px solid var(--border); background: var(--panel); transition: all .15s; }
 .sns-btn:hover { transform: translateY(-1px); border-color: var(--accent); }
 .sns-btn svg { width: 17px; height: 17px; }
+#detailModal { position: fixed; inset: 0; background: rgba(0,0,0,.85); display: none; align-items: center; justify-content: center; z-index: 250; padding: 16px; }
+#detailModal.show { display: flex; }
+.detail-box { background: #10151c; border: 1px solid var(--border); border-radius: 16px; width: 860px; max-width: 96vw; max-height: 92vh; overflow-y: auto; }
+.detail-head { display: flex; align-items: center; gap: 10px; padding: 14px 18px; border-bottom: 1px solid var(--border); position: sticky; top: 0; background: #10151c; z-index: 1; }
+.detail-head .d-rarity { font-size: 18px; }
+.detail-head .d-title { font-size: 17px; font-weight: 700; }
+.detail-head .d-sub { font-size: 12px; color: var(--muted); }
+.detail-head .d-close { margin-left: auto; background: none; border: none; color: var(--muted); font-size: 20px; cursor: pointer; }
+.detail-body { display: flex; gap: 18px; padding: 18px; flex-wrap: wrap; }
+.detail-left { flex: 0 0 320px; max-width: 100%; }
+.detail-left img { width: 100%; border-radius: 12px; cursor: zoom-in; display: block; }
+.buy-box { margin-top: 12px; background: var(--panel); border: 1px solid var(--border); border-radius: 10px; padding: 10px; }
+.buy-btn { display: flex; align-items: center; justify-content: space-between; gap: 10px; width: 100%; background: var(--accent); color: #1a1a1a; border: none; border-radius: 8px; padding: 10px 14px; font-size: 14px; font-weight: 700; cursor: pointer; text-decoration: none; }
+.buy-btn:hover { background: var(--accent2); }
+.buy-btn .price { font-size: 15px; }
+.buy-note { font-size: 10.5px; color: var(--muted); margin-top: 6px; text-align: center; }
+.detail-right { flex: 1; min-width: 260px; background: var(--panel); border: 1px solid var(--border); border-radius: 12px; padding: 16px; align-self: flex-start; }
+.d-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.d-field.wide { grid-column: 1 / -1; }
+.d-field .lbl { font-size: 11px; color: var(--muted); margin-bottom: 4px; }
+.d-field .val { background: var(--panel2); border: 1px solid var(--border); border-radius: 8px; padding: 9px 12px; font-size: 13.5px; color: var(--accent2); min-height: 20px; }
+.d-field .val.plain { color: var(--text); }
+.d-field .val .domain-dot { width: 9px; height: 9px; margin-right: 5px; }
+.detail-qty { display: flex; align-items: center; gap: 12px; margin-top: 14px; background: var(--panel2); border: 1px solid var(--border); border-radius: 8px; padding: 8px 12px; }
+.detail-qty button { background: var(--panel); border: 1px solid var(--border); color: var(--text); width: 34px; height: 34px; border-radius: 8px; font-size: 17px; cursor: pointer; }
+.detail-qty .dq-num { font-size: 16px; font-weight: 700; min-width: 30px; text-align: center; }
+.card.ad-card { border-color: var(--accent); position: relative; }
+.card.ad-card .imgwrap { aspect-ratio: 5/7; }
+.card.ad-card img { width: 100%; height: 100%; object-fit: cover; }
+.card.ad-card .ad-tag { position: absolute; top: 6px; left: 6px; background: rgba(0,0,0,.65); color: var(--accent2); font-size: 10px; padding: 2px 7px; border-radius: 6px; letter-spacing: 1px; z-index: 1; }
 #toast { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%) translateY(20px); background: var(--panel2); color: var(--text); border: 1px solid var(--accent); border-radius: 10px; padding: 12px 22px; font-size: 14px; z-index: 400; opacity: 0; pointer-events: none; transition: all .25s; box-shadow: 0 6px 24px rgba(0,0,0,.6); }
 #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 #authModal { position: fixed; inset: 0; background: rgba(0,0,0,.7); display: none; align-items: center; justify-content: center; z-index: 300; }
@@ -153,6 +183,45 @@ footer { padding: 14px 20px; color: var(--muted); font-size: 11.5px; border-top:
 <div id="loading">카드 데이터 로딩 중...</div>
 <div id="grid"></div>
 <div id="modal"><img id="modalImg" alt=""></div>
+<div id="detailModal">
+  <div class="detail-box">
+    <div class="detail-head">
+      <span class="d-rarity" id="dRarityIcon"></span>
+      <div>
+        <div class="d-title" id="dTitle"></div>
+        <div class="d-sub" id="dSub"></div>
+      </div>
+      <button class="d-close" id="dClose">✕</button>
+    </div>
+    <div class="detail-body">
+      <div class="detail-left">
+        <img id="dImg" alt="">
+        <div class="buy-box" id="dBuyBox" style="display:none">
+          <a class="buy-btn" id="dBuyBtn" target="_blank" rel="noopener"><span>🛒 TCGplayer에서 구매</span><span class="price" id="dPrice"></span></a>
+          <div class="buy-note">TCGplayer 시세(Market Price) 기준 · 매일 갱신</div>
+        </div>
+      </div>
+      <div class="detail-right">
+        <div class="d-grid">
+          <div class="d-field"><div class="lbl">이름</div><div class="val" id="dName"></div></div>
+          <div class="d-field"><div class="lbl">세트</div><div class="val" id="dSet"></div></div>
+          <div class="d-field"><div class="lbl">카드 번호</div><div class="val plain" id="dNum"></div></div>
+          <div class="d-field"><div class="lbl">등급</div><div class="val" id="dRarity"></div></div>
+          <div class="d-field"><div class="lbl">코스트(에너지)</div><div class="val plain" id="dCost"></div></div>
+          <div class="d-field"><div class="lbl">카드 타입</div><div class="val" id="dType"></div></div>
+          <div class="d-field wide"><div class="lbl">도메인(색상)</div><div class="val plain" id="dDomains"></div></div>
+          <div class="d-field wide" id="dCnRow"><div class="lbl">중문명</div><div class="val plain" id="dCnName"></div></div>
+        </div>
+        <div class="detail-qty">
+          <span style="font-size:13px;color:var(--muted)">보유 수량</span>
+          <button id="dMinus">−</button>
+          <span class="dq-num" id="dQty">0</span>
+          <button id="dPlus">＋</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
 <div id="toast"></div>
 <div id="authModal">
   <div class="auth-box">
@@ -190,6 +259,9 @@ const RARITY_META = {
 };
 const RARITY_KO = Object.fromEntries(Object.entries(RARITY_META).map(([k, v]) => [k, v.ko]));
 const SET_NAME_KO = { ARC: '아케인 콜라보', FND: '프로모', OGN: 'Origins', OGS: 'Proving Grounds', SFD: 'Spiritforged', UNL: 'Unleashed', VEN: 'Vendetta' };
+const TYPE_KO = { unit: '유닛', spell: '스펠', legend: '리전드', gear: '기어', battlefield: '전장', rune: '룬', legendary: '레전더리', hero_unit: '영웅 유닛', equipment: '장비', indicator_unit: '토큰 유닛' };
+let PRICES = {};
+let ADS = { every: 12, ads: [] };
 
 const LS_KEY = 'riftbound_collection_v2';
 const LS_KEY_OLD = 'riftbound_collection_v1';
@@ -374,9 +446,27 @@ function render() {
     grid.innerHTML = '<div class="empty-msg">조건에 맞는 카드가 없습니다.</div>';
   }
   const frag = document.createDocumentFragment();
-  list.forEach(c => frag.appendChild(cardEl(c)));
+  let adIdx = 0;
+  list.forEach((c, i) => {
+    frag.appendChild(cardEl(c));
+    // 광고 삽입: every장마다 광고 카드 한 장씩 순환
+    if (ADS.ads.length && (i + 1) % (ADS.every || 12) === 0 && i < list.length - 1) {
+      frag.appendChild(adEl(ADS.ads[adIdx % ADS.ads.length]));
+      adIdx++;
+    }
+  });
   grid.appendChild(frag);
   updateStats(list.length);
+}
+
+function adEl(ad) {
+  const div = document.createElement('div');
+  div.className = 'card ad-card';
+  const inner = '<span class="ad-tag">AD</span><div class="imgwrap"><img loading="lazy" src="' + ad.img + '" alt="' + (ad.alt || '광고') + '"></div>';
+  if (ad.link) {
+    div.innerHTML = '<a href="' + ad.link + '" target="_blank" rel="noopener sponsored" style="display:block">' + inner + '</a>';
+  } else div.innerHTML = inner;
+  return div;
 }
 
 function cardEl(c) {
@@ -401,7 +491,8 @@ function cardEl(c) {
       '<span class="qty-num' + (own > 0 ? ' has' : '') + '">' + own + '</span>' +
       '<button class="plus">＋</button>' +
     '</div>';
-  div.querySelector('.imgwrap').onclick = () => { if (img) openModal(img); };
+  div.dataset.code = c.code;
+  div.querySelector('.imgwrap').onclick = () => openDetail(c);
   div.querySelector('.plus').onclick = () => changeQty(c.code, 1, div, c);
   div.querySelector('.minus').onclick = () => changeQty(c.code, -1, div, c);
   return div;
@@ -459,6 +550,58 @@ function openModal(src) {
   document.getElementById('modal').classList.add('show');
 }
 document.getElementById('modal').onclick = () => document.getElementById('modal').classList.remove('show');
+
+// ===== 카드 상세 모달 =====
+let detailCard = null;
+function openDetail(c) {
+  detailCard = c;
+  const img = cardImg(c);
+  const rm = RARITY_META[rarityKey(c)];
+  document.getElementById('dRarityIcon').innerHTML = rm ? '<span style="color:' + rm.color + '">' + rm.shape + '</span>' : '';
+  document.getElementById('dTitle').textContent = (c.publicCode || c.code) + ' ' + cardName(c);
+  document.getElementById('dSub').textContent = c.typeIds.map(t => TYPE_KO[t] || t).join(' / ');
+  document.getElementById('dImg').src = img;
+  document.getElementById('dName').textContent = c.nameEn || c.nameCn || c.code;
+  document.getElementById('dSet').textContent = c.set + ' - ' + (SET_NAME_KO[c.set] || c.set);
+  document.getElementById('dNum').textContent = c.publicCode || c.code;
+  document.getElementById('dRarity').innerHTML = rm ? '<span style="color:' + rm.color + '">' + rm.shape + ' ' + rm.ko + '</span>' : rarityLabel(c);
+  document.getElementById('dCost').textContent = (c.energy !== null && c.energy !== undefined) ? c.energy : '-';
+  document.getElementById('dType').textContent = c.typeIds.map(t => TYPE_KO[t] || t).join(', ') || '-';
+  const ds = normDomains(c);
+  document.getElementById('dDomains').innerHTML = ds.length
+    ? ds.map(d => '<span class="domain-dot" style="background:' + DOMAIN_META[d].color + ';display:inline-block"></span>' + DOMAIN_META[d].label).join(' &nbsp; ')
+    : '-';
+  const cnRow = document.getElementById('dCnRow');
+  if (c.nameCn && c.nameCn !== c.nameEn) { cnRow.style.display = ''; document.getElementById('dCnName').textContent = c.nameCn; }
+  else cnRow.style.display = 'none';
+  // 가격
+  const p = PRICES[c.code];
+  const buyBox = document.getElementById('dBuyBox');
+  if (p && (p.usd || p.foil)) {
+    buyBox.style.display = '';
+    document.getElementById('dPrice').textContent = '$' + (p.usd || p.foil).toFixed(2) + (p.foil && p.usd ? ' (포일 $' + p.foil.toFixed(2) + ')' : '');
+    document.getElementById('dBuyBtn').href = p.url;
+  } else if (p && p.url) {
+    buyBox.style.display = '';
+    document.getElementById('dPrice').textContent = '시세 보기';
+    document.getElementById('dBuyBtn').href = p.url;
+  } else buyBox.style.display = 'none';
+  updateDetailQty();
+  document.getElementById('detailModal').classList.add('show');
+}
+function updateDetailQty() {
+  if (detailCard) document.getElementById('dQty').textContent = qty(detailCard.code);
+}
+document.getElementById('dClose').onclick = () => document.getElementById('detailModal').classList.remove('show');
+document.getElementById('detailModal').onclick = e => { if (e.target.id === 'detailModal') e.target.classList.remove('show'); };
+document.getElementById('dImg').onclick = () => { if (detailCard) openModal(cardImg(detailCard)); };
+document.getElementById('dPlus').onclick = () => { if (detailCard) { detailChangeQty(1); } };
+document.getElementById('dMinus').onclick = () => { if (detailCard) { detailChangeQty(-1); } };
+function detailChangeQty(delta) {
+  const div = document.querySelector('#grid .card[data-code="' + detailCard.code + '"]');
+  if (div) changeQty(detailCard.code, delta, div, detailCard);
+  updateDetailQty();
+}
 
 document.getElementById('langTabs').querySelectorAll('.btn').forEach(b => {
   b.onclick = () => {
@@ -558,10 +701,15 @@ document.getElementById('resetPw').onclick = () => {
     .catch(authError);
 };
 
-fetch('data/cards.json')
-  .then(r => r.json())
-  .then(d => {
+Promise.all([
+  fetch('data/cards.json').then(r => r.json()),
+  fetch('data/prices.json').then(r => r.json()).catch(() => ({})),
+  fetch('data/ads.json').then(r => r.json()).catch(() => null),
+])
+  .then(([d, prices, ads]) => {
     DATA = d;
+    PRICES = prices || {};
+    if (ads && Array.isArray(ads.ads)) ADS = ads;
     document.getElementById('loading').style.display = 'none';
     buildSetTabs();
     buildChips();
