@@ -146,10 +146,11 @@ footer { padding: 14px 20px; color: var(--muted); font-size: 11.5px; border-top:
 </head>
 <body>
 <header>
-  <h1 style="display:flex;align-items:center;flex-wrap:wrap;gap:8px">민물고래의 RIFTBOUND 도감 <small>League of Legends TCG Collection Tracker</small>
+  <h1 style="display:flex;align-items:center;flex-wrap:wrap;gap:8px"><span id="siteTitle">민물고래의 RIFTBOUND 도감</span> <small>League of Legends TCG Collection Tracker</small>
     <a class="sns-btn" href="https://www.youtube.com/@riftbound-whale" target="_blank" rel="noopener" title="민물고래 유튜브"><svg viewBox="0 0 24 24" fill="#FF0000"><path d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.5 3.5 12 3.5 12 3.5s-7.5 0-9.4.6A3 3 0 0 0 .5 6.2 31 31 0 0 0 0 12a31 31 0 0 0 .5 5.8 3 3 0 0 0 2.1 2.1c1.9.6 9.4.6 9.4.6s7.5 0 9.4-.6a3 3 0 0 0 2.1-2.1A31 31 0 0 0 24 12a31 31 0 0 0-.5-5.8zM9.6 15.6V8.4L15.8 12l-6.2 3.6z"/></svg></a>
     <a class="sns-btn" href="https://www.instagram.com/riftbound_whale/" target="_blank" rel="noopener" title="민물고래 인스타그램"><svg viewBox="0 0 24 24" fill="none" stroke="#E1306C" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4.5"/><circle cx="17.5" cy="6.5" r="1.2" fill="#E1306C" stroke="none"/></svg></a>
     <span style="flex:1"></span>
+    <button class="btn outline" id="uiLangBtn" title="Language">🌐 EN</button>
     <span class="sync-dot" id="syncDot"></span>
     <span class="auth-area" id="authArea"><button class="btn outline" id="loginBtn">로그인</button></span>
   </h1>
@@ -169,24 +170,24 @@ footer { padding: 14px 20px; color: var(--muted); font-size: 11.5px; border-top:
     <input type="text" id="searchInput" placeholder="카드 이름/번호 검색...">
   </div>
   <div class="filter-row">
-    <span class="filter-label">보유</span>
+    <span class="filter-label" id="lblOwn">보유</span>
     <div class="btn-group" id="ownTabs">
       <button class="btn active" data-own="all">전체</button>
       <button class="btn" data-own="owned">보유중</button>
       <button class="btn" data-own="unowned">미보유</button>
     </div>
-    <span class="filter-label" style="margin-left:10px">도메인</span>
+    <span class="filter-label" style="margin-left:10px" id="lblDomain">도메인</span>
     <span id="domainChips"></span>
-    <span class="filter-label" style="margin-left:10px">등급</span>
+    <span class="filter-label" style="margin-left:10px" id="lblRarity">등급</span>
     <span id="rarityChips"></span>
     <div class="spacer"></div>
   </div>
 </header>
 <div class="stats-bar">
-  <span>표시 <b id="statShown">0</b>장</span>
-  <span>전체 도감 <b id="statOwnedKinds">0</b> / <b id="statTotal">0</b></span>
-  <span>총 보유 수량 <b id="statOwnedQty">0</b>장</span>
-  <span title="TCGplayer 시세 기준">내 도감 가치 <b id="statValue" style="color:var(--accent2)">$0</b><small style="display:block;font-size:9.5px;color:var(--muted)">가격은 영문판 기준 · 총액은 12시간에 한 번씩 갱신됩니다</small></span>
+  <span id="statShownWrap">표시 <b id="statShown">0</b>장</span>
+  <span id="statKindsWrap">전체 도감 <b id="statOwnedKinds">0</b> / <b id="statTotal">0</b></span>
+  <span id="statQtyWrap">총 보유 수량 <b id="statOwnedQty">0</b>장</span>
+  <span id="statValueWrap" title="TCGplayer">내 도감 가치 <b id="statValue" style="color:var(--accent2)">$0</b><small style="display:block;font-size:9.5px;color:var(--muted)">가격은 영문판 기준 · 총액은 12시간에 한 번씩 갱신됩니다</small></span>
   <div class="progress"><div id="progressBar" style="width:0%"></div></div>
   <span id="statPct">0%</span>
 </div>
@@ -207,22 +208,22 @@ footer { padding: 14px 20px; color: var(--muted); font-size: 11.5px; border-top:
       <div class="detail-left">
         <img id="dImg" alt="">
         <div class="buy-box" id="dBuyBox" style="display:none">
-          <a class="buy-btn" id="dBuyBtn" target="_blank" rel="noopener"><span>🛒 TCGplayer에서 구매</span><span class="price" id="dPrice"></span></a>
-          <div class="buy-note">TCGplayer 시세(Market Price) · 영문판 기준 · 12시간마다 갱신</div>
+          <a class="buy-btn" id="dBuyBtn" target="_blank" rel="noopener"><span id="dBuyText">🛒 TCGplayer에서 구매</span><span class="price" id="dPrice"></span></a>
+          <div class="buy-note" id="dBuyNote">TCGplayer 시세(Market Price) · 영문판 기준 · 12시간마다 갱신</div>
         </div>
       </div>
       <div class="detail-right">
         <div class="d-grid">
-          <div class="d-field"><div class="lbl">이름</div><div class="val" id="dName"></div></div>
-          <div class="d-field"><div class="lbl">세트</div><div class="val" id="dSet"></div></div>
-          <div class="d-field"><div class="lbl">카드 번호</div><div class="val plain" id="dNum"></div></div>
-          <div class="d-field"><div class="lbl">등급</div><div class="val" id="dRarity"></div></div>
-          <div class="d-field"><div class="lbl">카드 타입</div><div class="val" id="dType"></div></div>
-          <div class="d-field wide"><div class="lbl">도메인(색상)</div><div class="val plain" id="dDomains"></div></div>
-          <div class="d-field wide" id="dCnRow"><div class="lbl">중문명</div><div class="val plain" id="dCnName"></div></div>
+          <div class="d-field"><div class="lbl" id="dLblName">이름</div><div class="val" id="dName"></div></div>
+          <div class="d-field"><div class="lbl" id="dLblSet">세트</div><div class="val" id="dSet"></div></div>
+          <div class="d-field"><div class="lbl" id="dLblNum">카드 번호</div><div class="val plain" id="dNum"></div></div>
+          <div class="d-field"><div class="lbl" id="dLblRarity">등급</div><div class="val" id="dRarity"></div></div>
+          <div class="d-field"><div class="lbl" id="dLblType">카드 타입</div><div class="val" id="dType"></div></div>
+          <div class="d-field wide"><div class="lbl" id="dLblDomains">도메인(색상)</div><div class="val plain" id="dDomains"></div></div>
+          <div class="d-field wide" id="dCnRow"><div class="lbl" id="dLblCn">중문명</div><div class="val plain" id="dCnName"></div></div>
         </div>
         <div class="detail-qty">
-          <span style="font-size:13px;color:var(--muted)">보유 수량</span>
+          <span style="font-size:13px;color:var(--muted)" id="dQtyLbl">보유 수량</span>
           <button id="dMinus">−</button>
           <span class="dq-num" id="dQty">0</span>
           <button id="dPlus">＋</button>
@@ -236,8 +237,8 @@ footer { padding: 14px 20px; color: var(--muted); font-size: 11.5px; border-top:
   <div class="auth-box">
     <button class="close-auth" id="closeAuth">✕</button>
     <h2 id="authTitle">로그인</h2>
-    <button class="full-btn google" id="googleBtn"><svg width="17" height="17" viewBox="0 0 48 48"><path fill="#FFC107" d="M43.6 20H24v8h11.3C33.7 33.4 29.3 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3 0 5.8 1.1 7.9 3l5.7-5.7C34 5.9 29.3 4 24 4 13 4 4 13 4 24s9 20 20 20 20-9 20-20c0-1.3-.1-2.7-.4-4z"/><path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.7 15.1 19 12 24 12c3 0 5.8 1.1 7.9 3l5.7-5.7C34 5.9 29.3 4 24 4 16.3 4 9.7 8.3 6.3 14.7z"/><path fill="#4CAF50" d="M24 44c5.2 0 9.9-1.8 13.4-4.9l-6.2-5.2C29.2 35.3 26.7 36 24 36c-5.3 0-9.7-2.6-11.3-7l-6.5 5C9.5 39.6 16.2 44 24 44z"/><path fill="#1976D2" d="M43.6 20H24v8h11.3c-.8 2.2-2.2 4.1-4.1 5.5l6.2 5.2C41.4 34.9 44 29.9 44 24c0-1.3-.1-2.7-.4-4z"/></svg>Google로 계속</button>
-    <div class="divider">또는 이메일로</div>
+    <button class="full-btn google" id="googleBtn"><svg width="17" height="17" viewBox="0 0 48 48"><path fill="#FFC107" d="M43.6 20H24v8h11.3C33.7 33.4 29.3 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3 0 5.8 1.1 7.9 3l5.7-5.7C34 5.9 29.3 4 24 4 13 4 4 13 4 24s9 20 20 20 20-9 20-20c0-1.3-.1-2.7-.4-4z"/><path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.7 15.1 19 12 24 12c3 0 5.8 1.1 7.9 3l5.7-5.7C34 5.9 29.3 4 24 4 16.3 4 9.7 8.3 6.3 14.7z"/><path fill="#4CAF50" d="M24 44c5.2 0 9.9-1.8 13.4-4.9l-6.2-5.2C29.2 35.3 26.7 36 24 36c-5.3 0-9.7-2.6-11.3-7l-6.5 5C9.5 39.6 16.2 44 24 44z"/><path fill="#1976D2" d="M43.6 20H24v8h11.3c-.8 2.2-2.2 4.1-4.1 5.5l6.2 5.2C41.4 34.9 44 29.9 44 24c0-1.3-.1-2.7-.4-4z"/></svg><span id="googleBtnText">Google로 계속</span></button>
+    <div class="divider" id="authDivider">또는 이메일로</div>
     <div class="err" id="authErr"></div>
     <input type="text" id="authEmail" placeholder="이메일" autocomplete="email">
     <input type="password" id="authPw" placeholder="비밀번호 (6자 이상)" autocomplete="current-password">
@@ -246,29 +247,96 @@ footer { padding: 14px 20px; color: var(--muted); font-size: 11.5px; border-top:
     <div class="switch" id="resetPw">비밀번호를 잊으셨나요?</div>
   </div>
 </div>
-<footer>이미지 출처: playriftbound.com (EN) / playloltcg.com (CN) · 로그인 시 클라우드에, 미로그인 시 브라우저에 보유 데이터가 저장됩니다.</footer>
+<footer id="footerNote">이미지 출처: playriftbound.com (EN) / playloltcg.com (CN) · 로그인 시 클라우드에, 미로그인 시 브라우저에 보유 데이터가 저장됩니다.</footer>
 <script>
-const DOMAIN_META = {
-  fury:  { label: '분노', color: '#e5484d' },
-  calm:  { label: '평온', color: '#46a758' },
-  mind:  { label: '정신', color: '#3e8ede' },
-  body:  { label: '신체', color: '#f76b15' },
-  chaos: { label: '혼돈', color: '#8e4ec6' },
-  order: { label: '질서', color: '#f5d90a' },
+// ===== UI 언어 (한국어/영어) =====
+let UI = localStorage.getItem('rb_ui_lang') || 'ko';
+const STR = {
+  ko: {
+    title: '민물고래의 RIFTBOUND 도감', login: '로그인', logout: '로그아웃',
+    enPrint: '영문판', cnPrint: '중문판', all: '전체', owned: '보유중', unowned: '미보유',
+    own: '보유', domain: '도메인', rarity: '등급',
+    sortNum: '넘버순', sortDomain: '도메인 색상별', sortRarity: '등급별', sortName: '이름순',
+    searchPh: '카드 이름/번호 검색...',
+    statShown: '표시 <b id="statShown">0</b>장', statKinds: '전체 도감 <b id="statOwnedKinds">0</b> / <b id="statTotal">0</b>',
+    statQty: '총 보유 수량 <b id="statOwnedQty">0</b>장',
+    statValue: '내 도감 가치 <b id="statValue" style="color:var(--accent2)">$0</b><small style="display:block;font-size:9.5px;color:var(--muted)">가격은 영문판 기준 · 총액은 12시간에 한 번씩 갱신됩니다</small>',
+    loading: '카드 데이터 로딩 중...', empty: '조건에 맞는 카드가 없습니다.', noimg: '이미지 없음',
+    buy: '🛒 TCGplayer에서 구매', buyNote: 'TCGplayer 시세(Market Price) · 영문판 기준 · 12시간마다 갱신',
+    seePrice: '시세 보기', foil: '포일',
+    fName: '이름', fSet: '세트', fNum: '카드 번호', fRarity: '등급', fType: '카드 타입', fDomains: '도메인(색상)', fCn: '중문명', fQty: '보유 수량',
+    adSlot: '광고 자리', adContact: '광고 문의: 인스타 DM', ad: '광고',
+    loginToast: '로그인을 하셔야 도감이 저장됩니다.',
+    nickPrompt: '사용할 닉네임을 입력하세요 (비우면 이메일 표시)', nickTitle: '클릭해서 닉네임 변경', user: '사용자',
+    saving: '저장 중...', saved: '클라우드 저장됨', saveFail: '저장 실패 - 재시도 예정',
+    signup: '회원가입', googleBtn: 'Google로 계속', orEmail: '또는 이메일로',
+    emailPh: '이메일', pwPh: '비밀번호 (6자 이상)',
+    noAccount: '계정이 없으신가요? 회원가입', hasAccount: '이미 계정이 있나요? 로그인', forgotPw: '비밀번호를 잊으셨나요?',
+    needEmailPw: '이메일과 비밀번호를 입력하세요.', noCloud: '클라우드 미설정 상태입니다.',
+    needResetEmail: '재설정 메일을 받을 이메일을 입력하세요.', resetSent: '재설정 메일을 보냈습니다. 메일함을 확인하세요.',
+    localMode: '로컬 모드', loadFail: 'data/cards.json 로드 실패 — 먼저 python scrape.py 를 실행하세요.',
+    footer: '이미지 출처: playriftbound.com (EN) / playloltcg.com (CN) · 로그인 시 클라우드에, 미로그인 시 브라우저에 보유 데이터가 저장됩니다.',
+    err: '오류: ',
+  },
+  en: {
+    title: "Freshwater Whale's RIFTBOUND Collection", login: 'Log in', logout: 'Log out',
+    enPrint: 'EN Print', cnPrint: 'CN Print', all: 'All', owned: 'Owned', unowned: 'Not owned',
+    own: 'Owned', domain: 'Domain', rarity: 'Rarity',
+    sortNum: 'By number', sortDomain: 'By domain color', sortRarity: 'By rarity', sortName: 'By name',
+    searchPh: 'Search card name/number...',
+    statShown: 'Showing <b id="statShown">0</b>', statKinds: 'Collection <b id="statOwnedKinds">0</b> / <b id="statTotal">0</b>',
+    statQty: 'Total owned <b id="statOwnedQty">0</b>',
+    statValue: 'Collection value <b id="statValue" style="color:var(--accent2)">$0</b><small style="display:block;font-size:9.5px;color:var(--muted)">Prices based on EN print · updated every 12 hours</small>',
+    loading: 'Loading card data...', empty: 'No cards match the filters.', noimg: 'No image',
+    buy: '🛒 Buy on TCGplayer', buyNote: 'TCGplayer Market Price · EN print · updated every 12h',
+    seePrice: 'See price', foil: 'Foil',
+    fName: 'Name', fSet: 'Set', fNum: 'Card number', fRarity: 'Rarity', fType: 'Card type', fDomains: 'Domain (color)', fCn: 'Chinese name', fQty: 'Owned',
+    adSlot: 'Ad slot', adContact: 'Ad inquiries: Instagram DM', ad: 'Ad',
+    loginToast: 'Log in to save your collection.',
+    nickPrompt: 'Enter a nickname (leave empty to show email)', nickTitle: 'Click to change nickname', user: 'User',
+    saving: 'Saving...', saved: 'Saved to cloud', saveFail: 'Save failed - will retry',
+    signup: 'Sign up', googleBtn: 'Continue with Google', orEmail: 'or with email',
+    emailPh: 'Email', pwPh: 'Password (6+ characters)',
+    noAccount: "Don't have an account? Sign up", hasAccount: 'Already have an account? Log in', forgotPw: 'Forgot your password?',
+    needEmailPw: 'Enter your email and password.', noCloud: 'Cloud is not configured.',
+    needResetEmail: 'Enter the email to receive the reset link.', resetSent: 'Reset email sent. Check your inbox.',
+    localMode: 'Local mode', loadFail: 'Failed to load data/cards.json — run python scrape.py first.',
+    footer: 'Images: playriftbound.com (EN) / playloltcg.com (CN) · Collection is saved to the cloud when logged in, otherwise in your browser.',
+    err: 'Error: ',
+  },
 };
+function t(k) { return STR[UI][k] || STR.ko[k] || k; }
+
+const DOMAIN_META = {
+  fury:  { label: '분노', en: 'Fury',  color: '#e5484d' },
+  calm:  { label: '평온', en: 'Calm',  color: '#46a758' },
+  mind:  { label: '정신', en: 'Mind',  color: '#3e8ede' },
+  body:  { label: '신체', en: 'Body',  color: '#f76b15' },
+  chaos: { label: '혼돈', en: 'Chaos', color: '#8e4ec6' },
+  order: { label: '질서', en: 'Order', color: '#f5d90a' },
+};
+function domainLabel(id) { const m = DOMAIN_META[id]; return UI === 'en' ? m.en : m.label; }
 // CN color id -> EN domain id
 const CN_COLOR_MAP = { red:'fury', green:'calm', blue:'mind', orange:'body', purple:'chaos', yellow:'order' };
 const RARITY_ORDER = ['common','uncommon','rare','epic','showcase'];
 const RARITY_META = {
-  common:   { ko: '커먼',      color: '#9aa4ae', shape: '●' }, // 회색 원
-  uncommon: { ko: '언커먼',  color: '#41b4d8', shape: '▲' }, // 파란 삼각형
-  rare:     { ko: '레어',      color: '#a06be0', shape: '◆' }, // 보라 다이아몬드
-  epic:     { ko: '에픽',      color: '#f76b15', shape: '⬟' }, // 주황 오각형
-  showcase: { ko: '쇼케이스', color: '#f5d90a', shape: '⬢' }, // 노란 육각형
+  common:   { ko: '커먼',      en: 'Common',   color: '#9aa4ae', shape: '●' }, // 회색 원
+  uncommon: { ko: '언커먼',  en: 'Uncommon', color: '#41b4d8', shape: '▲' }, // 파란 삼각형
+  rare:     { ko: '레어',      en: 'Rare',     color: '#a06be0', shape: '◆' }, // 보라 다이아몬드
+  epic:     { ko: '에픽',      en: 'Epic',     color: '#f76b15', shape: '⬟' }, // 주황 오각형
+  showcase: { ko: '쇼케이스', en: 'Showcase', color: '#f5d90a', shape: '⬢' }, // 노란 육각형
 };
-const RARITY_KO = Object.fromEntries(Object.entries(RARITY_META).map(([k, v]) => [k, v.ko]));
+function rarityName(k) { const m = RARITY_META[k]; return m ? (UI === 'en' ? m.en : m.ko) : k; }
 const SET_NAME_KO = { ARC: 'Project K 아케인 콜라보', FND: 'Project K 프로모', OGN: 'Origins', OGS: 'Proving Grounds', SFD: 'Spiritforged', UNL: 'Unleashed', VEN: 'Vendetta' };
-const TYPE_KO = { unit: '유닛', spell: '스펠', legend: '레전드', gear: '기어', battlefield: '전장', rune: '룬', legendary: '레전더리', hero_unit: '영웅 유닛', equipment: '장비', indicator_unit: '토큰 유닛' };
+const SET_NAME_EN = { ARC: 'Project K Arcane Collab', FND: 'Project K Promo', OGN: 'Origins', OGS: 'Proving Grounds', SFD: 'Spiritforged', UNL: 'Unleashed', VEN: 'Vendetta' };
+function setName(id, fallback) { return (UI === 'en' ? SET_NAME_EN[id] : SET_NAME_KO[id]) || fallback || id; }
+const TYPE_NAMES = {
+  unit: { ko: '유닛', en: 'Unit' }, spell: { ko: '스펠', en: 'Spell' }, legend: { ko: '레전드', en: 'Legend' },
+  gear: { ko: '기어', en: 'Gear' }, battlefield: { ko: '전장', en: 'Battlefield' }, rune: { ko: '룬', en: 'Rune' },
+  legendary: { ko: '레전더리', en: 'Legendary' }, hero_unit: { ko: '영웅 유닛', en: 'Hero Unit' },
+  equipment: { ko: '장비', en: 'Equipment' }, indicator_unit: { ko: '토큰 유닛', en: 'Token Unit' },
+};
+function typeName(id) { const m = TYPE_NAMES[id]; return m ? (UI === 'en' ? m.en : m.ko) : id; }
 let PRICES = {};
 let ADS = { every: 12, ads: [] };
 
@@ -306,12 +374,12 @@ function setSync(cls, txt) {
 function saveCollection(pushCloud = true) {
   localStorage.setItem(lsKey(), JSON.stringify(collection));
   if (pushCloud && cloudSaver) {
-    setSync('saving', '저장 중...');
+    setSync('saving', t('saving'));
     clearTimeout(cloudTimer);
     cloudTimer = setTimeout(() => {
       cloudSaver(collection)
-        .then(() => setSync('saved', '클라우드 저장됨'))
-        .catch(() => setSync('', '저장 실패 - 재시도 예정'));
+        .then(() => setSync('saved', t('saved')))
+        .catch(() => setSync('', t('saveFail')));
     }, 700);
   }
 }
@@ -322,19 +390,19 @@ let currentUser = null;
 function renderAuthArea() {
   const area = document.getElementById('authArea');
   if (currentUser) {
-    const label = collection.nick || currentUser.email || '사용자';
-    area.innerHTML = '<span class="user-email" id="nickLabel" title="클릭해서 닉네임 변경" style="cursor:pointer">' + label + ' ✏️</span>' +
-      '<button class="btn outline" id="logoutBtn">로그아웃</button>';
+    const label = collection.nick || currentUser.email || t('user');
+    area.innerHTML = '<span class="user-email" id="nickLabel" title="' + t('nickTitle') + '" style="cursor:pointer">' + label + ' ✏️</span>' +
+      '<button class="btn outline" id="logoutBtn">' + t('logout') + '</button>';
     document.getElementById('logoutBtn').onclick = () => window.fbLogout && window.fbLogout();
     document.getElementById('nickLabel').onclick = () => {
-      const nick = prompt('사용할 닉네임을 입력하세요 (비우면 이메일 표시)', collection.nick || '');
+      const nick = prompt(t('nickPrompt'), collection.nick || '');
       if (nick === null) return;
       collection.nick = nick.trim().slice(0, 20);
       saveCollection();
       renderAuthArea();
     };
   } else {
-    area.innerHTML = '<button class="btn outline" id="loginBtn">로그인</button>';
+    area.innerHTML = '<button class="btn outline" id="loginBtn">' + t('login') + '</button>';
     bindLoginBtn();
   }
 }
@@ -360,7 +428,7 @@ window.appHooks = {
   },
   setCloudSaver(fn) { cloudSaver = fn; },
   cloudDisabled() {
-    document.getElementById('authArea').innerHTML = '<span style="color:var(--muted);font-size:12px" title="firebase-config.js 설정 필요">로컬 모드</span>';
+    document.getElementById('authArea').innerHTML = '<span style="color:var(--muted);font-size:12px" title="firebase-config.js">' + t('localMode') + '</span>';
   },
 };
 
@@ -370,7 +438,7 @@ function normDomains(card) {
 function rarityKey(card) { return card.rarity || 'unknown'; }
 function rarityLabel(card) {
   const k = rarityKey(card);
-  return RARITY_KO[k] || card.rarityEn || card.rarityCn || k;
+  return (RARITY_META[k] && rarityName(k)) || card.rarityEn || card.rarityCn || k;
 }
 function cardName(card) {
   if (state.lang === 'cn') return card.nameCn || card.nameEn || card.code;
@@ -398,8 +466,8 @@ function buildSetTabs() {
     b.onclick = () => { state.set = id; buildSetTabs(); render(); };
     el.appendChild(b);
   };
-  mk('ALL', '전체', pool.length);
-  DATA.sets.filter(s => counts[s.id]).forEach(s => mk(s.id, SET_NAME_KO[s.id] || s.name, counts[s.id]));
+  mk('ALL', t('all'), pool.length);
+  DATA.sets.filter(s => counts[s.id]).forEach(s => mk(s.id, setName(s.id, s.name), counts[s.id]));
 }
 
 function buildChips() {
@@ -407,9 +475,9 @@ function buildChips() {
   dEl.innerHTML = '';
   Object.entries(DOMAIN_META).forEach(([id, m]) => {
     const c = document.createElement('span');
-    c.className = 'chip';
+    c.className = 'chip' + (state.domains.has(id) ? ' active' : '');
     c.style.setProperty('--chip-color', m.color);
-    c.innerHTML = '<span class="dot"></span>' + m.label;
+    c.innerHTML = '<span class="dot"></span>' + domainLabel(id);
     c.onclick = () => { state.domains.has(id) ? state.domains.delete(id) : state.domains.add(id); c.classList.toggle('active'); render(); };
     dEl.appendChild(c);
   });
@@ -420,11 +488,11 @@ function buildChips() {
   present.sort((a, b) => rIdx(a) - rIdx(b));
   present.forEach(k => {
     const c = document.createElement('span');
-    c.className = 'chip';
+    c.className = 'chip' + (state.rarities.has(k) ? ' active' : '');
     const m = RARITY_META[k];
     if (m) {
       c.style.setProperty('--chip-color', m.color);
-      c.innerHTML = '<span style="color:' + m.color + ';font-size:11px">' + m.shape + '</span>' + m.ko;
+      c.innerHTML = '<span style="color:' + m.color + ';font-size:11px">' + m.shape + '</span>' + rarityName(k);
     } else c.textContent = k;
     c.onclick = () => { state.rarities.has(k) ? state.rarities.delete(k) : state.rarities.add(k); c.classList.toggle('active'); render(); };
     rEl.appendChild(c);
@@ -470,7 +538,7 @@ function render() {
   const list = filteredCards();
   grid.innerHTML = '';
   if (!list.length) {
-    grid.innerHTML = '<div class="empty-msg">조건에 맞는 카드가 없습니다.</div>';
+    grid.innerHTML = '<div class="empty-msg">' + t('empty') + '</div>';
   }
   const frag = document.createDocumentFragment();
   let adIdx = 0;
@@ -495,14 +563,14 @@ function adPlaceholderEl() {
   div.className = 'card ad-card';
   div.innerHTML = '<span class="ad-tag">AD</span>' +
     '<a href="https://www.instagram.com/riftbound_whale/" target="_blank" rel="noopener" style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;aspect-ratio:5/7;text-decoration:none;color:var(--muted);background:repeating-linear-gradient(45deg,var(--panel),var(--panel) 10px,var(--panel2) 10px,var(--panel2) 20px)">' +
-    '<span style="font-size:26px">📢</span><span style="font-size:13px;font-weight:700;color:var(--accent2)">광고 자리</span><span style="font-size:11px">광고 문의: 인스타 DM</span></a>';
+    '<span style="font-size:26px">📢</span><span style="font-size:13px;font-weight:700;color:var(--accent2)">' + t('adSlot') + '</span><span style="font-size:11px">' + t('adContact') + '</span></a>';
   return div;
 }
 
 function adEl(ad) {
   const div = document.createElement('div');
   div.className = 'card ad-card';
-  const inner = '<span class="ad-tag">AD</span><div class="imgwrap"><img loading="lazy" src="' + ad.img + '" alt="' + (ad.alt || '광고') + '"></div>';
+  const inner = '<span class="ad-tag">AD</span><div class="imgwrap"><img loading="lazy" src="' + ad.img + '" alt="' + (ad.alt || t('ad')) + '"></div>';
   if (ad.link) {
     div.innerHTML = '<a href="' + ad.link + '" target="_blank" rel="noopener sponsored" style="display:block">' + inner + '</a>';
   } else div.innerHTML = inner;
@@ -515,10 +583,10 @@ function cardEl(c) {
   div.className = 'card' + (own === 0 ? ' unowned' : '');
   const ds = normDomains(c);
   const img = cardImg(c);
-  const dotHtml = ds.map(d => '<span class="domain-dot" style="background:' + DOMAIN_META[d].color + '" title="' + DOMAIN_META[d].label + '"></span>').join('');
+  const dotHtml = ds.map(d => '<span class="domain-dot" style="background:' + DOMAIN_META[d].color + '" title="' + domainLabel(d) + '"></span>').join('');
   div.innerHTML =
     '<div class="imgwrap">' +
-      (img ? '<img loading="lazy" src="' + img + '" alt="">' : '<div class="noimg">이미지 없음</div>') +
+      (img ? '<img loading="lazy" src="' + img + '" alt="">' : '<div class="noimg">' + t('noimg') + '</div>') +
       (own > 0 ? '<div class="qty-badge">' + own + '</div>' : '') +
     '</div>' +
     '<div class="card-info">' +
@@ -540,16 +608,16 @@ function cardEl(c) {
 
 let toastTimer = null;
 function showToast(msg) {
-  const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.classList.add('show');
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.classList.add('show');
   clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => t.classList.remove('show'), 2500);
+  toastTimer = setTimeout(() => el.classList.remove('show'), 2500);
 }
 
 function changeQty(code, delta, div, c) {
   if (!currentUid && window.FIREBASE_CONFIG) {
-    showToast('로그인을 하셔야 도감이 저장됩니다.');
+    showToast(t('loginToast'));
     document.getElementById('authModal').classList.add('show');
     return;
   }
@@ -609,16 +677,16 @@ function openDetail(c) {
   const rm = RARITY_META[rarityKey(c)];
   document.getElementById('dRarityIcon').innerHTML = rm ? '<span style="color:' + rm.color + '">' + rm.shape + '</span>' : '';
   document.getElementById('dTitle').textContent = (c.publicCode || c.code) + ' ' + cardName(c);
-  document.getElementById('dSub').textContent = c.typeIds.map(t => TYPE_KO[t] || t).join(' / ');
+  document.getElementById('dSub').textContent = c.typeIds.map(typeName).join(' / ');
   document.getElementById('dImg').src = img;
   document.getElementById('dName').textContent = c.nameEn || c.nameCn || c.code;
-  document.getElementById('dSet').textContent = c.set + ' - ' + (SET_NAME_KO[c.set] || c.set);
+  document.getElementById('dSet').textContent = c.set + ' - ' + setName(c.set);
   document.getElementById('dNum').textContent = c.publicCode || c.code;
-  document.getElementById('dRarity').innerHTML = rm ? '<span style="color:' + rm.color + '">' + rm.shape + ' ' + rm.ko + '</span>' : rarityLabel(c);
-  document.getElementById('dType').textContent = c.typeIds.map(t => TYPE_KO[t] || t).join(', ') || '-';
+  document.getElementById('dRarity').innerHTML = rm ? '<span style="color:' + rm.color + '">' + rm.shape + ' ' + rarityName(rarityKey(c)) + '</span>' : rarityLabel(c);
+  document.getElementById('dType').textContent = c.typeIds.map(typeName).join(', ') || '-';
   const ds = normDomains(c);
   document.getElementById('dDomains').innerHTML = ds.length
-    ? ds.map(d => '<span class="domain-dot" style="background:' + DOMAIN_META[d].color + ';display:inline-block"></span>' + DOMAIN_META[d].label).join(' &nbsp; ')
+    ? ds.map(d => '<span class="domain-dot" style="background:' + DOMAIN_META[d].color + ';display:inline-block"></span>' + domainLabel(d)).join(' &nbsp; ')
     : '-';
   const cnRow = document.getElementById('dCnRow');
   if (c.nameCn && c.nameCn !== c.nameEn) { cnRow.style.display = ''; document.getElementById('dCnName').textContent = c.nameCn; }
@@ -628,11 +696,11 @@ function openDetail(c) {
   const buyBox = document.getElementById('dBuyBox');
   if (p && (p.usd || p.foil)) {
     buyBox.style.display = '';
-    document.getElementById('dPrice').textContent = '$' + (p.usd || p.foil).toFixed(2) + (p.foil && p.usd ? ' (포일 $' + p.foil.toFixed(2) + ')' : '');
+    document.getElementById('dPrice').textContent = '$' + (p.usd || p.foil).toFixed(2) + (p.foil && p.usd ? ' (' + t('foil') + ' $' + p.foil.toFixed(2) + ')' : '');
     document.getElementById('dBuyBtn').href = p.url;
   } else if (p && p.url) {
     buyBox.style.display = '';
-    document.getElementById('dPrice').textContent = '시세 보기';
+    document.getElementById('dPrice').textContent = t('seePrice');
     document.getElementById('dBuyBtn').href = p.url;
   } else buyBox.style.display = 'none';
   updateDetailQty();
@@ -683,42 +751,56 @@ bindLoginBtn();
 document.getElementById('closeAuth').onclick = () => document.getElementById('authModal').classList.remove('show');
 document.getElementById('authModal').onclick = e => { if (e.target.id === 'authModal') e.target.classList.remove('show'); };
 let authMode = 'login';
+function refreshAuthModal() {
+  document.getElementById('authTitle').textContent = authMode === 'login' ? t('login') : t('signup');
+  document.getElementById('emailAuthBtn').textContent = authMode === 'login' ? t('login') : t('signup');
+  document.getElementById('authSwitch').textContent = authMode === 'login' ? t('noAccount') : t('hasAccount');
+}
 document.getElementById('authSwitch').onclick = () => {
   authMode = authMode === 'login' ? 'signup' : 'login';
-  document.getElementById('authTitle').textContent = authMode === 'login' ? '로그인' : '회원가입';
-  document.getElementById('emailAuthBtn').textContent = authMode === 'login' ? '로그인' : '회원가입';
-  document.getElementById('authSwitch').textContent = authMode === 'login' ? '계정이 없으신가요? 회원가입' : '이미 계정이 있나요? 로그인';
+  refreshAuthModal();
   document.getElementById('authErr').textContent = '';
 };
-const AUTH_ERR_KO = {
-  'auth/invalid-email': '이메일 형식이 올바르지 않습니다.',
-  'auth/user-not-found': '등록되지 않은 계정입니다.',
-  'auth/wrong-password': '비밀번호가 틀렸습니다.',
-  'auth/invalid-credential': '이메일 또는 비밀번호가 틀렸습니다.',
-  'auth/email-already-in-use': '이미 가입된 이메일입니다.',
-  'auth/weak-password': '비밀번호는 6자 이상이어야 합니다.',
-  'auth/popup-closed-by-user': '로그인 창이 닫혔습니다.',
+const AUTH_ERR = {
+  ko: {
+    'auth/invalid-email': '이메일 형식이 올바르지 않습니다.',
+    'auth/user-not-found': '등록되지 않은 계정입니다.',
+    'auth/wrong-password': '비밀번호가 틀렸습니다.',
+    'auth/invalid-credential': '이메일 또는 비밀번호가 틀렸습니다.',
+    'auth/email-already-in-use': '이미 가입된 이메일입니다.',
+    'auth/weak-password': '비밀번호는 6자 이상이어야 합니다.',
+    'auth/popup-closed-by-user': '로그인 창이 닫혔습니다.',
+  },
+  en: {
+    'auth/invalid-email': 'Invalid email format.',
+    'auth/user-not-found': 'Account not found.',
+    'auth/wrong-password': 'Wrong password.',
+    'auth/invalid-credential': 'Wrong email or password.',
+    'auth/email-already-in-use': 'This email is already registered.',
+    'auth/weak-password': 'Password must be at least 6 characters.',
+    'auth/popup-closed-by-user': 'Sign-in window was closed.',
+  },
 };
 function authError(e) {
-  document.getElementById('authErr').textContent = AUTH_ERR_KO[e && e.code] || '오류: ' + (e && e.code || e);
+  document.getElementById('authErr').textContent = AUTH_ERR[UI][e && e.code] || t('err') + (e && e.code || e);
 }
 document.getElementById('emailAuthBtn').onclick = () => {
   const email = document.getElementById('authEmail').value.trim();
   const pw = document.getElementById('authPw').value;
-  if (!email || !pw) { document.getElementById('authErr').textContent = '이메일과 비밀번호를 입력하세요.'; return; }
-  if (!window.fbEmailAuth) { document.getElementById('authErr').textContent = '클라우드 미설정 상태입니다.'; return; }
+  if (!email || !pw) { document.getElementById('authErr').textContent = t('needEmailPw'); return; }
+  if (!window.fbEmailAuth) { document.getElementById('authErr').textContent = t('noCloud'); return; }
   window.fbEmailAuth(authMode, email, pw).catch(authError);
 };
 document.getElementById('googleBtn').onclick = () => {
-  if (!window.fbGoogleLogin) { document.getElementById('authErr').textContent = '클라우드 미설정 상태입니다.'; return; }
+  if (!window.fbGoogleLogin) { document.getElementById('authErr').textContent = t('noCloud'); return; }
   window.fbGoogleLogin().catch(authError);
 };
 document.getElementById('resetPw').onclick = () => {
   const email = document.getElementById('authEmail').value.trim();
-  if (!email) { document.getElementById('authErr').textContent = '재설정 메일을 받을 이메일을 입력하세요.'; return; }
-  if (!window.fbResetPw) { document.getElementById('authErr').textContent = '클라우드 미설정 상태입니다.'; return; }
+  if (!email) { document.getElementById('authErr').textContent = t('needResetEmail'); return; }
+  if (!window.fbResetPw) { document.getElementById('authErr').textContent = t('noCloud'); return; }
   window.fbResetPw(email)
-    .then(() => { document.getElementById('authErr').style.color = 'var(--owned)'; document.getElementById('authErr').textContent = '재설정 메일을 보냈습니다. 메일함을 확인하세요.'; })
+    .then(() => { document.getElementById('authErr').style.color = 'var(--owned)'; document.getElementById('authErr').textContent = t('resetSent'); })
     .catch(authError);
 };
 
@@ -740,8 +822,61 @@ Promise.all([
     render();
   })
   .catch(() => {
-    document.getElementById('loading').textContent = 'data/cards.json 로드 실패 — 먼저 python scrape.py 를 실행하세요.';
+    document.getElementById('loading').textContent = t('loadFail');
   });
+
+// ===== UI 언어 토글 =====
+function applyUILang() {
+  document.documentElement.lang = UI === 'en' ? 'en' : 'ko';
+  document.title = t('title');
+  document.getElementById('siteTitle').textContent = t('title');
+  document.getElementById('uiLangBtn').textContent = UI === 'en' ? '🌐 한국어' : '🌐 EN';
+  document.querySelector('#langTabs [data-lang="en"]').textContent = t('enPrint');
+  document.querySelector('#langTabs [data-lang="cn"]').textContent = t('cnPrint');
+  const sortSel = document.getElementById('sortSel');
+  sortSel.options[0].text = t('sortNum');
+  sortSel.options[1].text = t('sortDomain');
+  sortSel.options[2].text = t('sortRarity');
+  sortSel.options[3].text = t('sortName');
+  document.getElementById('searchInput').placeholder = t('searchPh');
+  document.getElementById('lblOwn').textContent = t('own');
+  document.getElementById('lblDomain').textContent = t('domain');
+  document.getElementById('lblRarity').textContent = t('rarity');
+  document.querySelector('#ownTabs [data-own="all"]').textContent = t('all');
+  document.querySelector('#ownTabs [data-own="owned"]').textContent = t('owned');
+  document.querySelector('#ownTabs [data-own="unowned"]').textContent = t('unowned');
+  document.getElementById('statShownWrap').innerHTML = t('statShown');
+  document.getElementById('statKindsWrap').innerHTML = t('statKinds');
+  document.getElementById('statQtyWrap').innerHTML = t('statQty');
+  document.getElementById('statValueWrap').innerHTML = t('statValue');
+  document.getElementById('loading').textContent = t('loading');
+  document.getElementById('dBuyText').textContent = t('buy');
+  document.getElementById('dBuyNote').textContent = t('buyNote');
+  document.getElementById('dLblName').textContent = t('fName');
+  document.getElementById('dLblSet').textContent = t('fSet');
+  document.getElementById('dLblNum').textContent = t('fNum');
+  document.getElementById('dLblRarity').textContent = t('fRarity');
+  document.getElementById('dLblType').textContent = t('fType');
+  document.getElementById('dLblDomains').textContent = t('fDomains');
+  document.getElementById('dLblCn').textContent = t('fCn');
+  document.getElementById('dQtyLbl').textContent = t('fQty');
+  document.getElementById('googleBtnText').textContent = t('googleBtn');
+  document.getElementById('authDivider').textContent = t('orEmail');
+  document.getElementById('authEmail').placeholder = t('emailPh');
+  document.getElementById('authPw').placeholder = t('pwPh');
+  document.getElementById('resetPw').textContent = t('forgotPw');
+  document.getElementById('footerNote').textContent = t('footer');
+  refreshAuthModal();
+  renderAuthArea();
+  if (DATA) { buildSetTabs(); buildChips(); render(); }
+}
+document.getElementById('uiLangBtn').onclick = () => {
+  UI = UI === 'ko' ? 'en' : 'ko';
+  localStorage.setItem('rb_ui_lang', UI);
+  applyUILang();
+  if (detailCard) openDetail(detailCard); // 열려있는 상세 모달도 갱신
+};
+applyUILang();
 </script>
 <script src="firebase-config.js"></script>
 <script type="module">
