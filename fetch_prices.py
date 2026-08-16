@@ -3,6 +3,7 @@
 tcgcsv.com(TCGplayer 미러)에서 Riftbound 카드 시세를 수집해 data/prices.json 생성.
 사용법: python fetch_prices.py  (하루 1회 정도 실행하면 충분)
 """
+import datetime
 import json
 import os
 import re
@@ -34,10 +35,12 @@ def main():
     now = int(time.time())
     boxes = []
     out = {}
+    today = datetime.date.today().isoformat()
     for g in groups:
         gid, abbr = g["groupId"], (g.get("abbreviation") or "").upper()
         if not abbr:
             continue
+        released = (g.get("publishedOn") or "")[:10] <= today
         products = get(f"https://tcgcsv.com/tcgplayer/{CATEGORY}/{gid}/products")["results"]
         prices = get(f"https://tcgcsv.com/tcgplayer/{CATEGORY}/{gid}/prices")["results"]
         price_by_pid = {}
@@ -46,7 +49,7 @@ def main():
         # 부스터 박스(Booster Display, Case 제외) 가격 수집
         for prod in products:
             name = prod["name"]
-            if "Booster Display" not in name or "Case" in name:
+            if not released or "Booster Display" not in name or "Case" in name:
                 continue
             pp = price_by_pid.get(prod["productId"], {})
             usd = pp.get("Normal") or pp.get("Foil")
