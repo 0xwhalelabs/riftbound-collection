@@ -98,6 +98,32 @@ def fetch_cn():
     return cards
 
 
+def fetch_tcg_images():
+    """tcgcsv.com(TCGplayer 미러)에서 카드 이미지/이름 맵을 수집 (공식 EN 데이터에 없는 변형 카드 보완용)."""
+    print("Fetching TCGplayer product images (tcgcsv)...")
+    imgs = {}
+    try:
+        groups = json.loads(http_get("https://tcgcsv.com/tcgplayer/89/groups"))["results"]
+        for g in groups:
+            abbr = (g.get("abbreviation") or "").upper()
+            if not abbr:
+                continue
+            products = json.loads(http_get("https://tcgcsv.com/tcgplayer/89/%d/products" % g["groupId"]))["results"]
+            for p in products:
+                ext = {e["name"]: e["value"] for e in p.get("extendedData") or []}
+                num = (ext.get("Number") or "").split("/")[0].strip()
+                if not num:
+                    continue
+                code = normalize_code("%s-%s" % (abbr, num))
+                name = re.sub(r"\s*\([^)]*\)\s*$", "", p["name"])
+                url = "https://tcgplayer-cdn.tcgplayer.com/product/%d_in_1000x1000.jpg" % p["productId"]
+                imgs.setdefault(code, (url, name))
+    except Exception as e:
+        print("  tcgcsv fetch failed, skipping backfill:", e)
+    print("  TCG image entries:", len(imgs))
+    return imgs
+
+
 def build():
     sets, en_items, = fetch_en()
     cn_items = fetch_cn()
@@ -169,6 +195,22 @@ def build():
             card["rarity"] = cn_rarity
 
     print("Matched CN->EN: %d ; total cards: %d" % (matched, len(order)))
+
+    # 공식 EN 데이터에 없는 카드(시그니처/쇼케이스 등) 이미지를 TCGplayer에서 보완
+    tcg_imgs = fetch_tcg_images()
+    backfilled = 0
+    for code in order:
+        card = merged[code]
+        if card["imgEn"]:
+            continue
+        hit = tcg_imgs.get(code)
+        if not hit:
+            continue
+        card["imgEn"] = hit[0]
+        if not card["nameEn"]:
+            card["nameEn"] = hit[1]
+        backfilled += 1
+    print("Backfilled EN images from TCGplayer: %d" % backfilled)
 
     # ensure set names include CN-only sets
     for code in order:
