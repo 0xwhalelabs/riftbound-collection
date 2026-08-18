@@ -166,7 +166,8 @@ footer { padding: 14px 20px; color: var(--muted); font-size: 11.5px; border-top:
       <div id="exportMenu" style="display:none;position:absolute;top:110%;right:0;background:var(--panel2);border:1px solid var(--border);border-radius:8px;overflow:hidden;z-index:50;min-width:230px;box-shadow:0 6px 20px rgba(0,0,0,.5)">
         <button class="export-opt" id="exportCsvBtn">CSV — 전체 데이터 (엑셀용)</button>
         <button class="export-opt" id="exportTxtBtn">TXT — TCGplayer Mass Entry</button>
-      </div></span>
+        <button class="export-opt" id="importBtn2">⬆ 가져오기 (CSV/TXT)</button>
+      </div><input type="file" id="importFile" accept=".csv,.txt" style="display:none"></span>
     <button class="btn outline" id="uiLangBtn" title="Language">🌐 EN</button>
     <span class="sync-dot" id="syncDot"></span>
     <span class="auth-area" id="authArea"><button class="btn outline" id="loginBtn">로그인</button></span>
@@ -288,6 +289,7 @@ const STR = {
     nickPrompt: '사용할 닉네임을 입력하세요 (비우면 이메일 표시)', nickTitle: '클릭해서 닉네임 변경', user: '사용자',
     saving: '저장 중...', saved: '클라우드 저장됨', saveFail: '저장 실패 - 재시도 예정',
     exportBtn: '⬇ 내보내기', exportCsv: 'CSV — 전체 데이터 (엑셀용)', exportTxt: 'TXT — TCGplayer Mass Entry', exportEmpty: '보유 카드가 없습니다.',
+    importBtn2: '⬆ 가져오기 (CSV/TXT)', importConfirm: '{n}개 항목을 가져옵니다. 해당 카드의 기존 수량은 덮어씨집니다. 계속할까요?', importDone: '{n}개 항목을 가져왔습니다.', importNone: '가져올 항목을 찾지 못했습니다.',
     signup: '회원가입', googleBtn: 'Google로 계속', orEmail: '또는 이메일로',
     emailPh: '이메일', pwPh: '비밀번호 (6자 이상)',
     noAccount: '계정이 없으신가요? 회원가입', hasAccount: '이미 계정이 있나요? 로그인', forgotPw: '비밀번호를 잊으셨나요?',
@@ -315,6 +317,7 @@ const STR = {
     nickPrompt: 'Enter a nickname (leave empty to show email)', nickTitle: 'Click to change nickname', user: 'User',
     saving: 'Saving...', saved: 'Saved to cloud', saveFail: 'Save failed - will retry',
     exportBtn: '⬇ Export', exportCsv: 'CSV — full data (for Excel)', exportTxt: 'TXT — TCGplayer Mass Entry', exportEmpty: 'No owned cards to export.',
+    importBtn2: '⬆ Import (CSV/TXT)', importConfirm: 'Import {n} entries? Existing quantities for these cards will be overwritten.', importDone: 'Imported {n} entries.', importNone: 'No valid entries found.',
     signup: 'Sign up', googleBtn: 'Continue with Google', orEmail: 'or with email',
     emailPh: 'Email', pwPh: 'Password (6+ characters)',
     noAccount: "Don't have an account? Sign up", hasAccount: 'Already have an account? Log in', forgotPw: 'Forgot your password?',
@@ -899,6 +902,67 @@ document.addEventListener('click', () => { document.getElementById('exportMenu')
 document.getElementById('exportCsvBtn').onclick = () => exportCollection('csv');
 document.getElementById('exportTxtBtn').onclick = () => exportCollection('txt');
 
+// ===== 보유 카드 가져오기 (CSV / TXT) =====
+function parseCsvLine(line) {
+  const out = []; let cur = '', inQ = false;
+  for (let i = 0; i < line.length; i++) {
+    const ch = line[i];
+    if (inQ) {
+      if (ch === '"') { if (line[i + 1] === '"') { cur += '"'; i++; } else inQ = false; }
+      else cur += ch;
+    } else if (ch === '"') inQ = true;
+    else if (ch === ',') { out.push(cur); cur = ''; }
+    else cur += ch;
+  }
+  out.push(cur);
+  return out;
+}
+function importCollection(text) {
+  text = text.replace(/^\uFEFF/, '');
+  const lines = text.split(/\r?\n/).filter(l => l.trim());
+  if (!lines.length) { showToast(t('importNone')); return; }
+  const updates = [];
+  const codeSet = new Set(DATA.cards.map(c => c.code));
+  const head = parseCsvLine(lines[0]).map(h => h.trim().toLowerCase());
+  const codeIdx = head.indexOf('code');
+  if (codeIdx >= 0) {
+    // CSV (내보내기 형식): Code, ..., Print, Qty
+    const qtyIdx = head.indexOf('qty'), printIdx = head.indexOf('print');
+    for (let i = 1; i < lines.length; i++) {
+      const f = parseCsvLine(lines[i]);
+      const code = (f[codeIdx] || '').trim().toUpperCase();
+      const q = parseInt(f[qtyIdx >= 0 ? qtyIdx : 5], 10);
+      const lang = printIdx >= 0 && (f[printIdx] || '').trim().toUpperCase() === 'CN' ? 'cn' : 'en';
+      if (codeSet.has(code) && q > 0) updates.push({ lang, code, qty: q });
+    }
+  } else {
+    // TXT (Mass Entry): "4 카드이름" 또는 "4x 카드이름" — 영문판 이름 매칭
+    const byName = {};
+    DATA.cards.forEach(c => { if (c.imgEn && c.nameEn) byName[c.nameEn.toLowerCase()] = c.code; });
+    for (const line of lines) {
+      const m = line.trim().match(/^(\d+)\s*x?\s+(.+)$/i);
+      if (!m) continue;
+      const code = byName[m[2].trim().toLowerCase()];
+      if (code) updates.push({ lang: 'en', code, qty: parseInt(m[1], 10) });
+    }
+  }
+  if (!updates.length) { showToast(t('importNone')); return; }
+  if (!confirm(t('importConfirm').replace('{n}', updates.length))) return;
+  updates.forEach(u => { collection[u.lang][u.code] = u.qty; });
+  saveCollection();
+  render();
+  showToast(t('importDone').replace('{n}', updates.length));
+}
+document.getElementById('importBtn2').onclick = () => { document.getElementById('importFile').click(); };
+document.getElementById('importFile').onchange = e => {
+  const f = e.target.files[0];
+  if (!f) return;
+  const reader = new FileReader();
+  reader.onload = () => importCollection(String(reader.result));
+  reader.readAsText(f, 'utf-8');
+  e.target.value = '';
+};
+
 const BOX_ORDER = ['OGN', 'OGS', 'SFD', 'UNL', 'VEN', 'RAD'];
 function renderTicker() {
   const boxes = (PRICES._boxes || []).slice();
@@ -934,6 +998,7 @@ function applyUILang() {
   document.getElementById('exportBtn').textContent = t('exportBtn');
   document.getElementById('exportCsvBtn').textContent = t('exportCsv');
   document.getElementById('exportTxtBtn').textContent = t('exportTxt');
+  document.getElementById('importBtn2').textContent = t('importBtn2');
   document.querySelector('#langTabs [data-lang="en"]').textContent = t('enPrint');
   document.querySelector('#langTabs [data-lang="cn"]').textContent = t('cnPrint');
   const sortSel = document.getElementById('sortSel');
