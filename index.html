@@ -921,29 +921,67 @@ function importCollection(text) {
   text = text.replace(/^\uFEFF/, '');
   const lines = text.split(/\r?\n/).filter(l => l.trim());
   if (!lines.length) { showToast(t('importNone')); return; }
+  // 매칭용 맵: 카드 코드(대문자) / 단순화한 이름(영문·중문)
+  const simplify = v => String(v).toLowerCase().replace(/[^a-z0-9\u4e00-\u9fff\uac00-\ud7af]/g, '');
+  const codeMap = {}, nameMap = {};
+  DATA.cards.forEach(c => {
+    codeMap[c.code.toUpperCase()] = c;
+    if (c.imgEn && c.nameEn) nameMap[simplify(c.nameEn)] = { code: c.code, lang: 'en' };
+  });
+  DATA.cards.forEach(c => {
+    if (c.imgCn && c.nameCn && !(simplify(c.nameCn) in nameMap)) nameMap[simplify(c.nameCn)] = { code: c.code, lang: 'cn' };
+  });
+  const normCode = v => {
+    const u = String(v).trim().toUpperCase().replace(/[\u00b7\s]+/g, '-');
+    if (codeMap[u]) return u;
+    const m = u.match(/^([A-Z]{2,4})-?0*(\d{1,3})(\*?[A-Z]?)$/);
+    if (m) {
+      const cand = (m[1] + '-' + m[2].padStart(3, '0') + m[3]).toUpperCase();
+      if (codeMap[cand]) return cand;
+    }
+    return '';
+  };
   const updates = [];
-  const codeSet = new Set(DATA.cards.map(c => c.code));
-  const head = parseCsvLine(lines[0]).map(h => h.trim().toLowerCase());
-  const codeIdx = head.indexOf('code');
-  if (codeIdx >= 0) {
-    // CSV (내보내기 형식): Code, ..., Print, Qty
-    const qtyIdx = head.indexOf('qty'), printIdx = head.indexOf('print');
+  const addU = (card, lang, qty) => {
+    if (!card || !(qty > 0)) return;
+    if (lang === 'en' && !card.imgEn) lang = 'cn';
+    if (lang === 'cn' && !card.imgCn) lang = 'en';
+    updates.push({ lang, code: card.code, qty });
+  };
+  // 1) 헤더 있는 CSV: 열 이름으로 코드/이름/수량/판본 자동 인식
+  const head = parseCsvLine(lines[0]).map(h => simplify(h));
+  const findCol = keys => head.findIndex(h => keys.some(k => h === k || (h && h.includes(k))));
+  const codeIdx = findCol(['code', 'number', 'cardno', '카드번호', '번호', '코드']);
+  const nameIdx = findCol(['name', 'cardname', '이름', '카드명']);
+  const qtyIdx = findCol(['qty', 'quantity', 'count', '수량', '개수', '장수']);
+  const printIdx = findCol(['print', 'lang', '판본', '언어']);
+  if (head.length >= 2 && (codeIdx >= 0 || nameIdx >= 0)) {
     for (let i = 1; i < lines.length; i++) {
       const f = parseCsvLine(lines[i]);
-      const code = (f[codeIdx] || '').trim().toUpperCase();
-      const q = parseInt(f[qtyIdx >= 0 ? qtyIdx : 5], 10);
-      const lang = printIdx >= 0 && (f[printIdx] || '').trim().toUpperCase() === 'CN' ? 'cn' : 'en';
-      if (codeSet.has(code) && q > 0) updates.push({ lang, code, qty: q });
+      let q = qtyIdx >= 0 ? parseInt(f[qtyIdx], 10) : 1;
+      if (isNaN(q)) q = 1;
+      let lang = printIdx >= 0 && /cn|중문|중국/i.test(f[printIdx] || '') ? 'cn' : 'en';
+      let card = null;
+      if (codeIdx >= 0) { const cc = normCode(f[codeIdx] || ''); if (cc) card = codeMap[cc]; }
+      if (!card && nameIdx >= 0) {
+        const hit = nameMap[simplify(f[nameIdx] || '')];
+        if (hit) { card = codeMap[hit.code.toUpperCase()]; if (printIdx < 0) lang = hit.lang; }
+      }
+      addU(card, lang, q);
     }
   } else {
-    // TXT (Mass Entry): "4 카드이름" 또는 "4x 카드이름" — 영문판 이름 매칭
-    const byName = {};
-    DATA.cards.forEach(c => { if (c.imgEn && c.nameEn) byName[c.nameEn.toLowerCase()] = c.code; });
-    for (const line of lines) {
-      const m = line.trim().match(/^(\d+)\s*x?\s+(.+)$/i);
-      if (!m) continue;
-      const code = byName[m[2].trim().toLowerCase()];
-      if (code) updates.push({ lang: 'en', code, qty: parseInt(m[1], 10) });
+    // 2) 자유 형식: "4 이름", "4x 이름", "이름 x4", "이름,4", "코드 4", 이름/코드만(1장) 등
+    for (const line0 of lines) {
+      const raw = line0.trim().replace(/\s+/g, ' ');
+      if (!raw) continue;
+      let qty = 1, rest = raw, m;
+      if ((m = raw.match(/^(\d{1,3})\s*[xX]?[\s,;:]+(.+)$/))) { qty = +m[1]; rest = m[2]; }
+      else if ((m = raw.match(/^(.+?)[\s,;:]+[xX]?\s*(\d{1,3})$/))) { qty = +m[2]; rest = m[1]; }
+      rest = rest.trim();
+      const cc = normCode(rest);
+      if (cc) { addU(codeMap[cc], 'en', qty); continue; }
+      const hit = nameMap[simplify(rest)];
+      if (hit) addU(codeMap[hit.code.toUpperCase()], hit.lang, qty);
     }
   }
   if (!updates.length) { showToast(t('importNone')); return; }
