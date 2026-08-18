@@ -180,7 +180,7 @@ footer { padding: 14px 20px; color: var(--muted); font-size: 11.5px; border-top:
         <button class="export-opt cur-opt" data-cur="EUR">EUR €</button>
         <button class="export-opt cur-opt" data-cur="KRW">KRW ₩</button>
         <button class="export-opt cur-opt" data-cur="JPY">JPY ¥</button>
-        <button class="export-opt cur-opt" data-cur="GBP">GBP £</button>
+        <button class="export-opt cur-opt" data-cur="CNY">CNY ¥</button>
       </div></span>
     <button class="btn outline" id="uiLangBtn" title="Language">🌐 EN</button>
     <span class="sync-dot" id="syncDot"></span>
@@ -287,7 +287,7 @@ let UI = localStorage.getItem('rb_ui_lang') || 'ko';
 
 // ===== 통화 설정 + 실시간 환율 =====
 let CUR = localStorage.getItem('rb_currency') || 'USD';
-const CUR_SYM = { USD: '$', EUR: '\u20ac', KRW: '\u20a9', JPY: '\u00a5', GBP: '\u00a3' };
+const CUR_SYM = { USD: '$', EUR: '\u20ac', KRW: '\u20a9', JPY: '\u00a5', CNY: '\u00a5' };
 let FX = { USD: 1 };
 function money(usd) {
   let cur = CUR, rate = FX[cur];
@@ -302,7 +302,7 @@ function money(usd) {
   } catch (e) {}
   fetch('https://open.er-api.com/v6/latest/USD').then(r => r.json()).then(d => {
     if (d && d.rates) {
-      FX = { USD: 1, EUR: d.rates.EUR, KRW: d.rates.KRW, JPY: d.rates.JPY, GBP: d.rates.GBP };
+      FX = { USD: 1, EUR: d.rates.EUR, KRW: d.rates.KRW, JPY: d.rates.JPY, CNY: d.rates.CNY };
       localStorage.setItem('rb_fx', JSON.stringify({ ts: Date.now(), rates: FX }));
       if (typeof DATA !== 'undefined' && DATA) { render(); renderTicker(); }
     }
