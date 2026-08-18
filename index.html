@@ -60,6 +60,7 @@ input[type=text]:focus, select:focus { border-color: var(--accent); }
 .ticker-item .tk-flat { color: var(--muted); }
 .export-opt { display: block; width: 100%; text-align: left; background: none; border: none; color: var(--text); padding: 10px 14px; cursor: pointer; font-size: 12.5px; font-weight: 400; }
 .export-opt:hover { background: var(--panel); }
+.card .imgwrap:hover .qty-badge { opacity: .15; }
 .progress { flex: 1; min-width: 150px; max-width: 300px; align-self: center; height: 8px; background: var(--panel2); border-radius: 4px; overflow: hidden; }
 .progress > div { height: 100%; background: linear-gradient(90deg, var(--owned), #56d364); transition: width .3s; }
 #grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 14px; padding: 20px; }
@@ -69,7 +70,7 @@ input[type=text]:focus, select:focus { border-color: var(--accent); }
 .card .imgwrap { position: relative; aspect-ratio: 744/1039; background: var(--panel2); cursor: zoom-in; }
 .card .imgwrap img { width: 100%; height: 100%; object-fit: contain; display: block; }
 .card .imgwrap .noimg { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; color: var(--muted); font-size: 12px; }
-.qty-badge { position: absolute; top: 6px; right: 6px; background: var(--owned); color: #fff; font-size: 13px; font-weight: 700; min-width: 26px; height: 26px; border-radius: 13px; display: flex; align-items: center; justify-content: center; padding: 0 7px; box-shadow: 0 2px 6px rgba(0,0,0,.5); }
+.qty-badge { position: absolute; right: 6px; bottom: 6px; transition: opacity .15s; background: var(--owned); color: #fff; font-size: 13px; font-weight: 700; min-width: 26px; height: 26px; border-radius: 13px; display: flex; align-items: center; justify-content: center; padding: 0 7px; box-shadow: 0 2px 6px rgba(0,0,0,.5); }
 .card-info { padding: 8px 10px; }
 .card-name { font-size: 13px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .card-meta { display: flex; align-items: center; gap: 5px; margin-top: 4px; font-size: 11px; color: var(--muted); }
@@ -173,6 +174,14 @@ footer { padding: 14px 20px; color: var(--muted); font-size: 11.5px; border-top:
         <button class="export-opt" id="tmplCsvBtn">CSV 양식 다운로드</button>
         <button class="export-opt" id="tmplTxtBtn">TXT 양식 다운로드</button>
       </div><input type="file" id="importFile" accept=".csv,.txt" style="display:none"></span>
+    <span style="position:relative"><button class="btn outline" id="curBtn">💱 USD</button>
+      <div id="curMenu" style="display:none;position:absolute;top:110%;right:0;background:var(--panel2);border:1px solid var(--border);border-radius:8px;overflow:hidden;z-index:50;min-width:110px;box-shadow:0 6px 20px rgba(0,0,0,.5)">
+        <button class="export-opt cur-opt" data-cur="USD">USD $</button>
+        <button class="export-opt cur-opt" data-cur="EUR">EUR €</button>
+        <button class="export-opt cur-opt" data-cur="KRW">KRW ₩</button>
+        <button class="export-opt cur-opt" data-cur="JPY">JPY ¥</button>
+        <button class="export-opt cur-opt" data-cur="GBP">GBP £</button>
+      </div></span>
     <button class="btn outline" id="uiLangBtn" title="Language">🌐 EN</button>
     <span class="sync-dot" id="syncDot"></span>
     <span class="auth-area" id="authArea"><button class="btn outline" id="loginBtn">로그인</button></span>
@@ -275,6 +284,30 @@ footer { padding: 14px 20px; color: var(--muted); font-size: 11.5px; border-top:
 <script>
 // ===== UI 언어 (한국어/영어) =====
 let UI = localStorage.getItem('rb_ui_lang') || 'ko';
+
+// ===== 통화 설정 + 실시간 환율 =====
+let CUR = localStorage.getItem('rb_currency') || 'USD';
+const CUR_SYM = { USD: '$', EUR: '\u20ac', KRW: '\u20a9', JPY: '\u00a5', GBP: '\u00a3' };
+let FX = { USD: 1 };
+function money(usd) {
+  let cur = CUR, rate = FX[cur];
+  if (!rate) { cur = 'USD'; rate = 1; }
+  const noDec = cur === 'KRW' || cur === 'JPY';
+  return CUR_SYM[cur] + (usd * rate).toLocaleString('en-US', { minimumFractionDigits: noDec ? 0 : 2, maximumFractionDigits: noDec ? 0 : 2 });
+}
+(function loadFx() {
+  try {
+    const c = JSON.parse(localStorage.getItem('rb_fx') || 'null');
+    if (c && c.rates) { FX = c.rates; if (Date.now() - c.ts < 6 * 3600 * 1000) return; }
+  } catch (e) {}
+  fetch('https://open.er-api.com/v6/latest/USD').then(r => r.json()).then(d => {
+    if (d && d.rates) {
+      FX = { USD: 1, EUR: d.rates.EUR, KRW: d.rates.KRW, JPY: d.rates.JPY, GBP: d.rates.GBP };
+      localStorage.setItem('rb_fx', JSON.stringify({ ts: Date.now(), rates: FX }));
+      if (typeof DATA !== 'undefined' && DATA) { render(); renderTicker(); }
+    }
+  }).catch(() => {});
+})();
 const STR = {
   ko: {
     title: '민물고래의 RIFTBOUND 도감', login: '로그인', logout: '로그아웃',
@@ -677,7 +710,7 @@ function updateStats(shown) {
                  + cnPool.reduce((s, c) => s + (collection.cn[c.code] || 0), 0);
   // 시세는 영문판(TCGplayer)만 존재하므로 영문판 보유분만 합산
   const totalValue = enPool.reduce((s, c) => s + (collection.en[c.code] || 0) * priceOf(c.code), 0);
-  document.getElementById('statValue').textContent = '$' + totalValue.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  document.getElementById('statValue').textContent = money(totalValue);
   document.getElementById('statShown').textContent = shown;
   document.getElementById('statOwnedKinds').textContent = ownedKinds;
   document.getElementById('statTotal').textContent = totalKinds;
@@ -724,7 +757,7 @@ function openDetail(c) {
   const buyBox = document.getElementById('dBuyBox');
   if (p && (p.usd || p.foil)) {
     buyBox.style.display = '';
-    document.getElementById('dPrice').textContent = '$' + (p.usd || p.foil).toFixed(2) + (p.foil && p.usd ? ' (' + t('foil') + ' $' + p.foil.toFixed(2) + ')' : '');
+    document.getElementById('dPrice').textContent = money(p.usd || p.foil) + (p.foil && p.usd ? ' (' + t('foil') + ' ' + money(p.foil) + ')' : '');
     document.getElementById('dBuyBtn').href = p.url;
   } else if (p && p.url) {
     buyBox.style.display = '';
@@ -901,6 +934,7 @@ function exportCollection(fmt) {
 function closeMenus() {
   document.getElementById('exportMenu').style.display = 'none';
   document.getElementById('importMenu').style.display = 'none';
+  document.getElementById('curMenu').style.display = 'none';
 }
 document.getElementById('exportBtn').onclick = e => {
   e.stopPropagation();
@@ -917,6 +951,21 @@ document.getElementById('importBtn2').onclick = e => {
   if (open) m.style.display = 'block';
 };
 document.addEventListener('click', closeMenus);
+document.getElementById('curBtn').textContent = '💱 ' + CUR;
+document.getElementById('curBtn').onclick = e => {
+  e.stopPropagation();
+  const m = document.getElementById('curMenu');
+  const open = m.style.display === 'none';
+  closeMenus();
+  if (open) m.style.display = 'block';
+};
+document.querySelectorAll('.cur-opt').forEach(b => b.onclick = () => {
+  CUR = b.dataset.cur;
+  localStorage.setItem('rb_currency', CUR);
+  document.getElementById('curBtn').textContent = '💱 ' + CUR;
+  closeMenus();
+  if (typeof DATA !== 'undefined' && DATA) { render(); renderTicker(); }
+});
 document.getElementById('exportCsvBtn').onclick = () => exportCollection('csv');
 document.getElementById('exportTxtBtn').onclick = () => exportCollection('txt');
 
@@ -1044,7 +1093,7 @@ function renderTicker() {
     const sign = b.chg > 0 ? '+' : '';
     return '<a class="ticker-item" href="https://www.tcgplayer.com/product/' + b.pid + '" target="_blank" rel="noopener" title="' + b.name + '">' +
       '<span class="tk-abbr">' + b.abbr + '</span>' +
-      '<span>$' + b.usd.toFixed(2) + '</span>' +
+      '<span>' + money(b.usd) + '</span>' +
       '<span class="' + cls + '">' + sign + b.chg.toFixed(1) + '%</span></a>';
   }).join('');
   const track = document.getElementById('tickerTrack');
