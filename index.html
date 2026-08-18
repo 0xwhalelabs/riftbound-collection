@@ -197,7 +197,7 @@ footer { padding: 14px 20px; color: var(--muted); font-size: 11.5px; border-top:
   <span id="statShownWrap">표시 <b id="statShown">0</b>장</span>
   <span id="statKindsWrap">전체 도감 <b id="statOwnedKinds">0</b> / <b id="statTotal">0</b></span>
   <span id="statQtyWrap">총 보유 수량 <b id="statOwnedQty">0</b>장</span>
-  <span id="statValueWrap" title="TCGplayer">내 도감 가치 <b id="statValue" style="color:var(--accent2)">$0</b><small style="display:block;font-size:9.5px;color:var(--muted)">가격은 영문판 기준 · 총액은 12시간에 한 번씩 갱신됩니다</small></span>
+  <span id="statValueWrap" title="TCGplayer">내 도감 가치 <b id="statValue" style="color:var(--accent2)">$0</b><small style="display:block;font-size:9.5px;color:var(--muted)">영문판 보유분만 합산(TCGplayer 시세) · 12시간마다 갱신</small></span>
   <div class="progress"><div id="progressBar" style="width:0%"></div></div>
   <span id="statPct">0%</span>
 </div>
@@ -271,7 +271,7 @@ const STR = {
     searchPh: '카드 이름/번호 검색...',
     statShown: '표시 <b id="statShown">0</b>장', statKinds: '전체 도감 <b id="statOwnedKinds">0</b> / <b id="statTotal">0</b>',
     statQty: '총 보유 수량 <b id="statOwnedQty">0</b>장',
-    statValue: '내 도감 가치 <b id="statValue" style="color:var(--accent2)">$0</b><small style="display:block;font-size:9.5px;color:var(--muted)">가격은 영문판 기준 · 총액은 12시간에 한 번씩 갱신됩니다</small>',
+    statValue: '내 도감 가치 <b id="statValue" style="color:var(--accent2)">$0</b><small style="display:block;font-size:9.5px;color:var(--muted)">영문판 보유분만 합산(TCGplayer 시세) · 12시간마다 갱신</small>',
     loading: '카드 데이터 로딩 중...', empty: '조건에 맞는 카드가 없습니다.', noimg: '이미지 없음',
     buy: '🛒 TCGplayer에서 구매', buyNote: 'TCGplayer 시세(Market Price) · 영문판 기준 · 12시간마다 갱신',
     seePrice: '시세 보기', foil: '포일',
@@ -297,7 +297,7 @@ const STR = {
     searchPh: 'Search card name/number...',
     statShown: 'Showing <b id="statShown">0</b>', statKinds: 'Collection <b id="statOwnedKinds">0</b> / <b id="statTotal">0</b>',
     statQty: 'Total owned <b id="statOwnedQty">0</b>',
-    statValue: 'Collection value <b id="statValue" style="color:var(--accent2)">$0</b><small style="display:block;font-size:9.5px;color:var(--muted)">Prices based on EN print · updated every 12 hours</small>',
+    statValue: 'Collection value <b id="statValue" style="color:var(--accent2)">$0</b><small style="display:block;font-size:9.5px;color:var(--muted)">EN print holdings only (TCGplayer market) · updated every 12h</small>',
     loading: 'Loading card data...', empty: 'No cards match the filters.', noimg: 'No image',
     buy: '🛒 Buy on TCGplayer', buyNote: 'TCGplayer Market Price · EN print · updated every 12h',
     seePrice: 'See price', foil: 'Foil',
@@ -658,8 +658,8 @@ function updateStats(shown) {
   const totalKinds = enPool.length + cnPool.length;
   const ownedQty = enPool.reduce((s, c) => s + (collection.en[c.code] || 0), 0)
                  + cnPool.reduce((s, c) => s + (collection.cn[c.code] || 0), 0);
-  const totalValue = enPool.reduce((s, c) => s + (collection.en[c.code] || 0) * priceOf(c.code), 0)
-                   + cnPool.reduce((s, c) => s + (collection.cn[c.code] || 0) * priceOf(c.code), 0);
+  // 시세는 영문판(TCGplayer)만 존재하므로 영문판 보유분만 합산
+  const totalValue = enPool.reduce((s, c) => s + (collection.en[c.code] || 0) * priceOf(c.code), 0);
   document.getElementById('statValue').textContent = '$' + totalValue.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
   document.getElementById('statShown').textContent = shown;
   document.getElementById('statOwnedKinds').textContent = ownedKinds;
