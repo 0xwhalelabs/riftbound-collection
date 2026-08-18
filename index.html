@@ -58,6 +58,8 @@ input[type=text]:focus, select:focus { border-color: var(--accent); }
 .ticker-item .tk-up { color: #4ade80; }
 .ticker-item .tk-down { color: #f87171; }
 .ticker-item .tk-flat { color: var(--muted); }
+.export-opt { display: block; width: 100%; text-align: left; background: none; border: none; color: var(--text); padding: 10px 14px; cursor: pointer; font-size: 12.5px; font-weight: 400; }
+.export-opt:hover { background: var(--panel); }
 .progress { flex: 1; min-width: 150px; max-width: 300px; align-self: center; height: 8px; background: var(--panel2); border-radius: 4px; overflow: hidden; }
 .progress > div { height: 100%; background: linear-gradient(90deg, var(--owned), #56d364); transition: width .3s; }
 #grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 14px; padding: 20px; }
@@ -160,6 +162,11 @@ footer { padding: 14px 20px; color: var(--muted); font-size: 11.5px; border-top:
     <a class="sns-btn" href="https://www.youtube.com/@riftbound-whale" target="_blank" rel="noopener" title="민물고래 유튜브"><svg viewBox="0 0 24 24" fill="#FF0000"><path d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.5 3.5 12 3.5 12 3.5s-7.5 0-9.4.6A3 3 0 0 0 .5 6.2 31 31 0 0 0 0 12a31 31 0 0 0 .5 5.8 3 3 0 0 0 2.1 2.1c1.9.6 9.4.6 9.4.6s7.5 0 9.4-.6a3 3 0 0 0 2.1-2.1A31 31 0 0 0 24 12a31 31 0 0 0-.5-5.8zM9.6 15.6V8.4L15.8 12l-6.2 3.6z"/></svg></a>
     <a class="sns-btn" href="https://www.instagram.com/riftbound_whale/" target="_blank" rel="noopener" title="민물고래 인스타그램"><svg viewBox="0 0 24 24" fill="none" stroke="#E1306C" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4.5"/><circle cx="17.5" cy="6.5" r="1.2" fill="#E1306C" stroke="none"/></svg></a>
     <span style="flex:1"></span>
+    <span style="position:relative"><button class="btn outline" id="exportBtn">⬇ 내보내기</button>
+      <div id="exportMenu" style="display:none;position:absolute;top:110%;right:0;background:var(--panel2);border:1px solid var(--border);border-radius:8px;overflow:hidden;z-index:50;min-width:230px;box-shadow:0 6px 20px rgba(0,0,0,.5)">
+        <button class="export-opt" id="exportCsvBtn">CSV — 전체 데이터 (엑셀용)</button>
+        <button class="export-opt" id="exportTxtBtn">TXT — TCGplayer Mass Entry</button>
+      </div></span>
     <button class="btn outline" id="uiLangBtn" title="Language">🌐 EN</button>
     <span class="sync-dot" id="syncDot"></span>
     <span class="auth-area" id="authArea"><button class="btn outline" id="loginBtn">로그인</button></span>
@@ -280,6 +287,7 @@ const STR = {
     loginToast: '로그인을 하셔야 도감이 저장됩니다.',
     nickPrompt: '사용할 닉네임을 입력하세요 (비우면 이메일 표시)', nickTitle: '클릭해서 닉네임 변경', user: '사용자',
     saving: '저장 중...', saved: '클라우드 저장됨', saveFail: '저장 실패 - 재시도 예정',
+    exportBtn: '⬇ 내보내기', exportCsv: 'CSV — 전체 데이터 (엑셀용)', exportTxt: 'TXT — TCGplayer Mass Entry', exportEmpty: '보유 카드가 없습니다.',
     signup: '회원가입', googleBtn: 'Google로 계속', orEmail: '또는 이메일로',
     emailPh: '이메일', pwPh: '비밀번호 (6자 이상)',
     noAccount: '계정이 없으신가요? 회원가입', hasAccount: '이미 계정이 있나요? 로그인', forgotPw: '비밀번호를 잊으셨나요?',
@@ -306,6 +314,7 @@ const STR = {
     loginToast: 'Log in to save your collection.',
     nickPrompt: 'Enter a nickname (leave empty to show email)', nickTitle: 'Click to change nickname', user: 'User',
     saving: 'Saving...', saved: 'Saved to cloud', saveFail: 'Save failed - will retry',
+    exportBtn: '⬇ Export', exportCsv: 'CSV — full data (for Excel)', exportTxt: 'TXT — TCGplayer Mass Entry', exportEmpty: 'No owned cards to export.',
     signup: 'Sign up', googleBtn: 'Continue with Google', orEmail: 'or with email',
     emailPh: 'Email', pwPh: 'Password (6+ characters)',
     noAccount: "Don't have an account? Sign up", hasAccount: 'Already have an account? Log in', forgotPw: 'Forgot your password?',
@@ -838,6 +847,58 @@ Promise.all([
   });
 
 // ===== 부스터 박스 가격 티커 =====
+// ===== 보유 카드 내보내기 (CSV / TXT) =====
+function downloadFile(name, content, mime) {
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([content], { type: mime }));
+  a.download = name;
+  a.click();
+  URL.revokeObjectURL(a.href);
+}
+function ownedRows() {
+  const rows = [];
+  DATA.cards.forEach(c => {
+    const qEn = collection.en[c.code] || 0;
+    const qCn = collection.cn[c.code] || 0;
+    if (qEn > 0 && c.imgEn) rows.push({ c, qty: qEn, print: 'EN' });
+    if (qCn > 0 && c.imgCn) rows.push({ c, qty: qCn, print: 'CN' });
+  });
+  return rows;
+}
+function csvEsc(v) {
+  v = String(v == null ? '' : v);
+  return /[",\n]/.test(v) ? '"' + v.replace(/"/g, '""') + '"' : v;
+}
+function exportCollection(fmt) {
+  const rows = ownedRows();
+  if (!rows.length) { showToast(t('exportEmpty')); return; }
+  const today = new Date().toISOString().slice(0, 10);
+  if (fmt === 'csv') {
+    const head = ['Code', 'Name', 'Set', 'Rarity', 'Print', 'Qty', 'Price(USD)', 'Total(USD)'];
+    const lines = rows.map(r => {
+      const price = r.print === 'EN' ? priceOf(r.c.code) : 0;
+      return [r.c.code, r.c.nameEn || r.c.nameCn, r.c.set, r.c.rarity, r.print, r.qty,
+        price ? price.toFixed(2) : '', price ? (price * r.qty).toFixed(2) : ''].map(csvEsc).join(',');
+    });
+    downloadFile('rbwhale_collection_' + today + '.csv', '\uFEFF' + head.join(',') + '\n' + lines.join('\n'), 'text/csv;charset=utf-8');
+  } else {
+    // TCGplayer Mass Entry: "수량 카드이름" (영문판만)
+    const lines = rows.filter(r => r.print === 'EN' && r.c.nameEn)
+      .map(r => r.qty + ' ' + r.c.nameEn);
+    if (!lines.length) { showToast(t('exportEmpty')); return; }
+    downloadFile('rbwhale_tcgplayer_' + today + '.txt', lines.join('\n'), 'text/plain;charset=utf-8');
+  }
+  document.getElementById('exportMenu').style.display = 'none';
+}
+document.getElementById('exportBtn').onclick = e => {
+  e.stopPropagation();
+  const m = document.getElementById('exportMenu');
+  m.style.display = m.style.display === 'none' ? 'block' : 'none';
+};
+document.addEventListener('click', () => { document.getElementById('exportMenu').style.display = 'none'; });
+document.getElementById('exportCsvBtn').onclick = () => exportCollection('csv');
+document.getElementById('exportTxtBtn').onclick = () => exportCollection('txt');
+
 const BOX_ORDER = ['OGN', 'OGS', 'SFD', 'UNL', 'VEN', 'RAD'];
 function renderTicker() {
   const boxes = (PRICES._boxes || []).slice();
@@ -870,6 +931,9 @@ function applyUILang() {
   document.title = t('title');
   document.getElementById('siteTitle').textContent = t('title');
   document.getElementById('uiLangBtn').textContent = UI === 'en' ? '🌐 한국어' : '🌐 EN';
+  document.getElementById('exportBtn').textContent = t('exportBtn');
+  document.getElementById('exportCsvBtn').textContent = t('exportCsv');
+  document.getElementById('exportTxtBtn').textContent = t('exportTxt');
   document.querySelector('#langTabs [data-lang="en"]').textContent = t('enPrint');
   document.querySelector('#langTabs [data-lang="cn"]').textContent = t('cnPrint');
   const sortSel = document.getElementById('sortSel');
