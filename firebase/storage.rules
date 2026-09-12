@@ -5,8 +5,8 @@ service firebase.storage {
    function owner() { return request.auth != null && request.auth.uid == uid; }
    function approved() { return firestore.exists(/databases/(default)/documents/t1Reports/$(reportId)) && firestore.get(/databases/(default)/documents/t1Reports/$(reportId)).data.status == 'approved'; }
    allow read: if owner() || approved() || (request.auth != null && request.auth.token.admin == true);
-   allow create: if owner() && file in ['0.jpg','1.jpg','2.jpg'] && request.resource.size < 10 * 1024 * 1024 && request.resource.contentType == 'image/jpeg';
-   allow delete: if (owner() && !firestore.exists(/databases/(default)/documents/t1Reports/$(reportId))) || (request.auth != null && request.auth.token.admin == true);
+   allow create: if owner() && !firestore.exists(/databases/(default)/documents/t1Reports/$(reportId)) && file in ['0.jpg','1.jpg','2.jpg'] && request.resource.size < 10 * 1024 * 1024 && request.resource.contentType == 'image/jpeg';
+   allow delete: if (owner() && (!firestore.exists(/databases/(default)/documents/t1Reports/$(reportId)) || firestore.get(/databases/(default)/documents/t1Reports/$(reportId)).data.uid != uid)) || (request.auth != null && request.auth.token.admin == true);
    allow update: if false;
   }
  }

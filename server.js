@@ -30,6 +30,30 @@ http.createServer((req, res) => {
   catch { res.writeHead(400); res.end('Bad Request'); return; }
   if (urlPath === '/t1korean' || urlPath === '/t1korean/') urlPath = '/t1korean/index.html';
 
+  // Firebase public-read rules remain authoritative; no admin credential is used.
+  if (urlPath === '/api/t1-image') {
+    const photoPath = new URL(req.url, 'http://localhost').searchParams.get('path') || '';
+    if (req.method !== 'GET' || !/^t1Evidence\/[A-Za-z0-9_-]+\/KR-(Doran|Oner|Faker|Gumayusi|Keria)-[0-9]{1,4}\/[012]\.jpg$/.test(photoPath)) {
+      res.writeHead(400); res.end('Invalid image path'); return;
+    }
+    const upstream = https.get({
+      hostname: 'firebasestorage.googleapis.com',
+      path: '/v0/b/riftbound-whale-28edd.firebasestorage.app/o/' + encodeURIComponent(photoPath) + '?alt=media',
+      timeout: 15000,
+    }, image => {
+      if (image.statusCode !== 200) {
+        image.resume(); res.writeHead(404, {'Cache-Control':'no-store'}); res.end('Image unavailable'); return;
+      }
+      res.writeHead(200, {'Content-Type':'image/jpeg', 'Cache-Control':'no-store', 'X-Content-Type-Options':'nosniff'});
+      image.on('error', () => res.destroy());
+      image.pipe(res);
+    });
+    upstream.on('timeout', () => upstream.destroy());
+    upstream.on('error', () => { if (!res.headersSent) res.writeHead(502); res.end('Image unavailable'); });
+    res.on('close', () => upstream.destroy());
+    return;
+  }
+
   // Firebase 인증 핸들러 프록시
   if (urlPath.startsWith('/__/')) {
     const opts = {
