@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>링크 관리 | 민물고래</title>
+<meta name="robots" content="noindex">
+<link rel="icon" href="/favicon.ico" sizes="any">
+<style>
+:root{--bg:#0d1117;--panel:#161b22;--panel2:#1f2630;--border:#2d3540;--text:#e6edf3;--muted:#8b949e;--accent:#d4a017;--accent2:#f0c040;--owned:#2ea043;--danger:#da3633;--radius:12px}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:'Segoe UI','Malgun Gothic',system-ui,sans-serif;min-height:100vh}
+a{color:var(--accent);text-decoration:none}
+
+.container{max-width:600px;margin:0 auto;padding:24px 16px}
+.header{display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;flex-wrap:wrap;gap:8px}
+.header h1{font-size:20px;color:var(--accent2)}
+.header .back{font-size:13px;color:var(--muted)}
+.header .back:hover{color:var(--accent)}
+
+/* auth */
+.auth-box{text-align:center;padding:60px 20px}
+.auth-box p{color:var(--muted);margin-bottom:16px}
+.login-btn{background:var(--accent);color:#1a1a1a;border:none;border-radius:8px;padding:12px 28px;font-size:14px;font-weight:600;cursor:pointer;transition:opacity .15s}
+.login-btn:hover{opacity:.85}
+.denied{color:var(--danger);margin-top:12px;font-size:13px}
+
+/* link list */
+.link-list{display:flex;flex-direction:column;gap:8px;margin-bottom:24px}
+.link-item{display:flex;align-items:center;gap:10px;background:var(--panel);border:1px solid var(--border);border-radius:var(--radius);padding:12px 14px;transition:border-color .15s}
+.link-item:hover{border-color:var(--accent)}
+.link-item .grip{cursor:grab;color:var(--muted);font-size:16px;flex-shrink:0;user-select:none}
+.link-item .grip:active{cursor:grabbing}
+.link-item .emoji-cell{font-size:20px;flex-shrink:0;width:28px;text-align:center}
+.link-item .info{flex:1;min-width:0}
+.link-item .info .t{font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.link-item .info .u{font-size:11px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.link-item .status{font-size:10px;padding:2px 8px;border-radius:10px;flex-shrink:0}
+.link-item .status.on{background:rgba(46,160,67,.15);color:var(--owned)}
+.link-item .status.off{background:rgba(218,54,51,.1);color:var(--danger)}
+.link-item .actions{display:flex;gap:4px;flex-shrink:0}
+.link-item .actions button{background:none;border:1px solid var(--border);color:var(--muted);border-radius:6px;width:30px;height:30px;cursor:pointer;font-size:13px;transition:all .15s}
+.link-item .actions button:hover{color:var(--text);border-color:var(--accent)}
+.link-item .actions button.del:hover{color:var(--danger);border-color:var(--danger)}
+
+/* form */
+.form-card{background:var(--panel);border:1px solid var(--border);border-radius:var(--radius);padding:20px}
+.form-card h2{font-size:15px;margin-bottom:16px;color:var(--accent2)}
+.form-row{display:flex;gap:8px;margin-bottom:10px}
+.form-row.full{flex-direction:column}
+.form-row label{font-size:11px;color:var(--muted);margin-bottom:4px;display:block}
+.form-row input,.form-row select{width:100%;background:var(--panel2);color:var(--text);border:1px solid var(--border);border-radius:8px;padding:9px 12px;font-size:13px;outline:none}
+.form-row input:focus{border-color:var(--accent)}
+.form-row .emoji-input{width:60px;text-align:center;font-size:18px}
+.form-row .flex1{flex:1}
+.form-actions{display:flex;gap:8px;margin-top:14px}
+.form-actions button{border:none;border-radius:8px;padding:10px 20px;font-size:13px;font-weight:600;cursor:pointer;transition:opacity .15s}
+.form-actions .save{background:var(--accent);color:#1a1a1a}
+.form-actions .cancel{background:var(--panel2);color:var(--muted);border:1px solid var(--border)}
+.form-actions button:hover{opacity:.85}
+
+.toggle-row{display:flex;align-items:center;gap:8px;margin-top:6px}
+.toggle-row label{font-size:12px;color:var(--muted);cursor:pointer}
+.toggle-row input[type=checkbox]{accent-color:var(--accent);width:16px;height:16px}
+
+.empty{text-align:center;color:var(--muted);font-size:13px;padding:30px}
+.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--owned);color:#fff;padding:10px 24px;border-radius:20px;font-size:13px;font-weight:500;opacity:0;transition:opacity .3s;pointer-events:none;z-index:100}
+.toast.show{opacity:1}
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="header">
+    <h1>&#9881; &#xb9c1;&#xd06c; &#xad00;&#xb9ac;</h1>
+    <a class="back" href="/">&larr; &#xb3cc;&#xc544;&#xac00;&#xae30;</a>
+  </div>
+
+  <div id="auth" class="auth-box">
+    <p>관리자만 접근할 수 있습니다.</p>
+    <button class="login-btn" id="loginBtn">Google로 로그인</button>
+    <div class="denied" id="denied" style="display:none">관리자 계정이 아닙니다.</div>
+  </div>
+
+  <div id="panel" style="display:none">
+    <div class="link-list" id="linkList"></div>
+    <div class="form-card" id="formCard">
+      <h2 id="formTitle">새 링크 추가</h2>
+      <div class="form-row">
+        <div>
+          <label>이모지</label>
+          <input class="emoji-input" id="fEmoji" type="text" maxlength="4" placeholder="&#x1F517;">
+        </div>
+        <div class="flex1">
+          <label>제목 *</label>
+          <input id="fTitle" type="text" placeholder="링크 제목" required>
+        </div>
+      </div>
+      <div class="form-row full">
+        <label>URL *</label>
+        <input id="fUrl" type="url" placeholder="https://...">
+      </div>
+      <div class="form-row full">
+        <label>부제 (선택)</label>
+        <input id="fSub" type="text" placeholder="간단한 설명">
+      </div>
+      <div class="toggle-row">
+        <input type="checkbox" id="fActive" checked>
+        <label for="fActive">활성화 (홈에 표시)</label>
+      </div>
+      <div class="form-actions">
+        <button class="save" id="saveBtn">저장</button>
+        <button class="cancel" id="cancelBtn" style="display:none">취소</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script src="/firebase-config.js"></script>
+<script>
+(function(){
+  const ADMIN_UID = 'Wh9yv5Jz2eUO8om8H0YNTmz1Qbs1';
+  const app = firebase.initializeApp(window.FIREBASE_CONFIG);
+  const db = firebase.firestore();
+  const auth = firebase.auth();
+
+  const authBox = document.getElementById('auth');
+  const panel = document.getElementById('panel');
+  const loginBtn = document.getElementById('loginBtn');
+  const denied = document.getElementById('denied');
+  const linkList = document.getElementById('linkList');
+  const formCard = document.getElementById('formCard');
+  const formTitle = document.getElementById('formTitle');
+  const saveBtn = document.getElementById('saveBtn');
+  const cancelBtn = document.getElementById('cancelBtn');
+  const fEmoji = document.getElementById('fEmoji');
+  const fTitle = document.getElementById('fTitle');
+  const fUrl = document.getElementById('fUrl');
+  const fSub = document.getElementById('fSub');
+  const fActive = document.getElementById('fActive');
+  const toastEl = document.getElementById('toast');
+
+  let editingId = null;
+  let links = [];
+
+  loginBtn.addEventListener('click', () => {
+    auth.signInWithPopup(new firebase.auth.GoogleAuthProvider()).catch(e => console.error(e));
+  });
+
+  auth.onAuthStateChanged(user => {
+    if (!user) { authBox.style.display = ''; panel.style.display = 'none'; denied.style.display = 'none'; return; }
+    if (user.uid !== ADMIN_UID) { denied.style.display = ''; return; }
+    authBox.style.display = 'none';
+    panel.style.display = '';
+    loadLinks();
+  });
+
+  function loadLinks() {
+    db.collection('hubLinks').orderBy('order').get().then(snap => {
+      links = [];
+      snap.forEach(doc => links.push({ id: doc.id, ...doc.data() }));
+      renderList();
+    });
+  }
+
+  function renderList() {
+    if (!links.length) {
+      linkList.innerHTML = '<div class="empty">등록된 링크가 없습니다. 아래에서 추가하세요.</div>';
+      return;
+    }
+    linkList.innerHTML = links.map((l, i) => {
+      const st = l.active ? '<span class="status on">ON</span>' : '<span class="status off">OFF</span>';
+      return '<div class="link-item" data-id="' + l.id + '">' +
+        '<span class="grip" title="드래그로 순서 변경">&#x2630;</span>' +
+        '<span class="emoji-cell">' + (l.emoji || '\u{1F517}') + '</span>' +
+        '<div class="info"><div class="t">' + esc(l.title) + '</div><div class="u">' + esc(l.url) + '</div></div>' +
+        st +
+        '<div class="actions">' +
+          (i > 0 ? '<button class="up" title="위로">&uarr;</button>' : '') +
+          (i < links.length - 1 ? '<button class="down" title="아래로">&darr;</button>' : '') +
+          '<button class="edit" title="편집">&#9998;</button>' +
+          '<button class="del" title="삭제">&#10005;</button>' +
+        '</div></div>';
+    }).join('');
+
+    linkList.querySelectorAll('.edit').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const id = btn.closest('.link-item').dataset.id;
+        startEdit(id);
+      });
+    });
+    linkList.querySelectorAll('.del').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const id = btn.closest('.link-item').dataset.id;
+        deleteLink(id);
+      });
+    });
+    linkList.querySelectorAll('.up').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const id = btn.closest('.link-item').dataset.id;
+        moveLink(id, -1);
+      });
+    });
+    linkList.querySelectorAll('.down').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const id = btn.closest('.link-item').dataset.id;
+        moveLink(id, 1);
+      });
+    });
+  }
+
+  function startEdit(id) {
+    const l = links.find(x => x.id === id);
+    if (!l) return;
+    editingId = id;
+    fEmoji.value = l.emoji || '';
+    fTitle.value = l.title || '';
+    fUrl.value = l.url || '';
+    fSub.value = l.subtitle || '';
+    fActive.checked = l.active !== false;
+    formTitle.textContent = '\uD3B8\uC9D1: ' + l.title;
+    cancelBtn.style.display = '';
+    saveBtn.textContent = '\uC218\uC815';
+    formCard.scrollIntoView({ behavior: 'smooth' });
+  }
+
+  function resetForm() {
+    editingId = null;
+    fEmoji.value = '';
+    fTitle.value = '';
+    fUrl.value = '';
+    fSub.value = '';
+    fActive.checked = true;
+    formTitle.textContent = '\uC0C8 \uB9C1\uD06C \uCD94\uAC00';
+    cancelBtn.style.display = 'none';
+    saveBtn.textContent = '\uC800\uC7A5';
+  }
+
+  cancelBtn.addEventListener('click', resetForm);
+
+  saveBtn.addEventListener('click', () => {
+    const title = fTitle.value.trim();
+    const url = fUrl.value.trim();
+    if (!title || !url) { toast('\uC81C\uBAA9\uACFC URL\uC744 \uC785\uB825\uD574\uC8FC\uC138\uC694.'); return; }
+
+    const data = {
+      emoji: fEmoji.value.trim() || '\u{1F517}',
+      title: title,
+      url: url,
+      subtitle: fSub.value.trim(),
+      active: fActive.checked,
+    };
+
+    saveBtn.disabled = true;
+    if (editingId) {
+      db.collection('hubLinks').doc(editingId).update(data).then(() => {
+        toast('\uC218\uC815\uB428');
+        resetForm();
+        loadLinks();
+      }).finally(() => saveBtn.disabled = false);
+    } else {
+      data.order = links.length ? (links[links.length - 1].order || 0) + 1 : 0;
+      db.collection('hubLinks').add(data).then(() => {
+        toast('\uCD94\uAC00\uB428');
+        resetForm();
+        loadLinks();
+      }).finally(() => saveBtn.disabled = false);
+    }
+  });
+
+  function deleteLink(id) {
+    const l = links.find(x => x.id === id);
+    if (!confirm('"' + (l ? l.title : id) + '" \uC0AD\uC81C?')) return;
+    db.collection('hubLinks').doc(id).delete().then(() => {
+      toast('\uC0AD\uC81C\uB428');
+      loadLinks();
+    });
+  }
+
+  function moveLink(id, dir) {
+    const idx = links.findIndex(x => x.id === id);
+    const swapIdx = idx + dir;
+    if (swapIdx < 0 || swapIdx >= links.length) return;
+    const batch = db.batch();
+    const aRef = db.collection('hubLinks').doc(links[idx].id);
+    const bRef = db.collection('hubLinks').doc(links[swapIdx].id);
+    const aOrder = links[idx].order;
+    const bOrder = links[swapIdx].order;
+    batch.update(aRef, { order: bOrder });
+    batch.update(bRef, { order: aOrder });
+    batch.commit().then(() => {
+      toast('\uC21C\uC11C \uBCC0\uACBD');
+      loadLinks();
+    });
+  }
+
+  function esc(s) {
+    const d = document.createElement('div');
+    d.textContent = s || '';
+    return d.innerHTML;
+  }
+
+  function toast(msg) {
+    toastEl.textContent = msg;
+    toastEl.classList.add('show');
+    setTimeout(() => toastEl.classList.remove('show'), 2000);
+  }
+})();
+</script>
+</body>
+</html>

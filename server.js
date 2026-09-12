@@ -31,6 +31,8 @@ http.createServer((req, res) => {
   if (urlPath === '/t1korean' || urlPath === '/t1korean/') urlPath = '/t1korean/index.html';
 
   if (urlPath === '/t1korean/admin' || urlPath === '/t1korean/admin/') urlPath = '/t1korean/admin.html';
+  if (urlPath === '/collection' || urlPath === '/collection/') urlPath = '/collection.html';
+  if (urlPath === '/admin' || urlPath === '/admin/') urlPath = '/admin.html';
 
   // Firebase rules validate both public and authenticated administrator requests.
   if (urlPath === '/api/t1-image') {
