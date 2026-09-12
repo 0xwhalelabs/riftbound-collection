@@ -103,6 +103,14 @@ a{color:var(--accent);text-decoration:none}
         <label>부제 (선택)</label>
         <input id="fSub" type="text" placeholder="간단한 설명">
       </div>
+      <div class="form-row full">
+        <label>Title (EN)</label>
+        <input id="fTitleEn" type="text" placeholder="English title (optional)">
+      </div>
+      <div class="form-row full">
+        <label>Subtitle (EN)</label>
+        <input id="fSubEn" type="text" placeholder="English subtitle (optional)">
+      </div>
       <div class="toggle-row">
         <input type="checkbox" id="fActive" checked>
         <label for="fActive">활성화 (홈에 표시)</label>
@@ -142,6 +150,8 @@ a{color:var(--accent);text-decoration:none}
   const fUrl = document.getElementById('fUrl');
   const fSub = document.getElementById('fSub');
   const fActive = document.getElementById('fActive');
+  const fTitleEn = document.getElementById('fTitleEn');
+  const fSubEn = document.getElementById('fSubEn');
   const toastEl = document.getElementById('toast');
 
   let editingId = null;
@@ -222,6 +232,8 @@ a{color:var(--accent);text-decoration:none}
     fUrl.value = l.url || '';
     fSub.value = l.subtitle || '';
     fActive.checked = l.active !== false;
+    fTitleEn.value = l.titleEn || '';
+    fSubEn.value = l.subtitleEn || '';
     formTitle.textContent = '\uD3B8\uC9D1: ' + l.title;
     cancelBtn.style.display = '';
     saveBtn.textContent = '\uC218\uC815';
@@ -235,6 +247,8 @@ a{color:var(--accent);text-decoration:none}
     fUrl.value = '';
     fSub.value = '';
     fActive.checked = true;
+    fTitleEn.value = '';
+    fSubEn.value = '';
     formTitle.textContent = '\uC0C8 \uB9C1\uD06C \uCD94\uAC00';
     cancelBtn.style.display = 'none';
     saveBtn.textContent = '\uC800\uC7A5';
@@ -253,6 +267,8 @@ a{color:var(--accent);text-decoration:none}
       url: url,
       subtitle: fSub.value.trim(),
       active: fActive.checked,
+      titleEn: fTitleEn.value.trim(),
+      subtitleEn: fSubEn.value.trim(),
     };
 
     saveBtn.disabled = true;
