@@ -5,13 +5,13 @@ service cloud.firestore {
    allow read, write: if request.auth != null && request.auth.uid == userId;
   }
   match /t1Reports/{id} {
-   function admin() { return request.auth != null && request.auth.token.admin == true; }
+   function admin() { return request.auth != null && (request.auth.token.admin == true || request.auth.uid == 'Wh9yv5Jz2eUO8om8H0YNTmz1Qbs1'); }
    allow get: if !exists(/databases/$(database)/documents/t1Reports/$(id)) || resource.data.status == 'approved' || admin();
    allow list: if resource.data.status == 'approved' || admin();
    allow create: if request.auth != null
     && request.resource.data.keys().hasOnly(['player','serial','source','nickname','note','kind','edition','uid','photoPaths','status','createdAt'])
     && request.resource.data.uid == request.auth.uid
-    && request.resource.data.status == 'approved'
+    && request.resource.data.status == 'pending'
     && id == 'KR-' + request.resource.data.player + '-' + string(request.resource.data.serial)
     && request.resource.data.edition == 'KR'
     && request.resource.data.player in ['Doran','Oner','Faker','Gumayusi','Keria']

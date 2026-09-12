@@ -30,7 +30,9 @@ http.createServer((req, res) => {
   catch { res.writeHead(400); res.end('Bad Request'); return; }
   if (urlPath === '/t1korean' || urlPath === '/t1korean/') urlPath = '/t1korean/index.html';
 
-  // Firebase public-read rules remain authoritative; no admin credential is used.
+  if (urlPath === '/t1korean/admin' || urlPath === '/t1korean/admin/') urlPath = '/t1korean/admin.html';
+
+  // Firebase rules validate both public and authenticated administrator requests.
   if (urlPath === '/api/t1-image') {
     const photoPath = new URL(req.url, 'http://localhost').searchParams.get('path') || '';
     if (req.method !== 'GET' || !/^t1Evidence\/[A-Za-z0-9_-]+\/KR-(Doran|Oner|Faker|Gumayusi|Keria)-[0-9]{1,4}\/[012]\.jpg$/.test(photoPath)) {
@@ -40,6 +42,7 @@ http.createServer((req, res) => {
       hostname: 'firebasestorage.googleapis.com',
       path: '/v0/b/riftbound-whale-28edd.firebasestorage.app/o/' + encodeURIComponent(photoPath) + '?alt=media',
       timeout: 15000,
+      headers: req.headers.authorization ? {Authorization: req.headers.authorization} : {},
     }, image => {
       if (image.statusCode !== 200) {
         image.resume(); res.writeHead(404, {'Cache-Control':'no-store'}); res.end('Image unavailable'); return;
@@ -73,7 +76,7 @@ http.createServer((req, res) => {
 
   // 정적 파일 서빙
   let filePath = path.normalize(path.join(ROOT, urlPath === '/' ? 'index.html' : urlPath));
-  if (!filePath.startsWith(ROOT + path.sep) || urlPath.split('/').some(part => part.startsWith('.')) || urlPath.startsWith('/firebase/')) { res.writeHead(403); res.end(); return; }
+  if (!filePath.startsWith(ROOT + path.sep) || urlPath.split('/').some(part => part.startsWith('.')) || urlPath.startsWith('/firebase/') || urlPath === '/server.js' || urlPath === '/package.json' || urlPath === '/package-lock.json') { res.writeHead(403); res.end(); return; }
   fs.stat(filePath, (err, st) => {
     if (err || !st.isFile()) { res.writeHead(404); res.end('Not Found'); return; }
     const ext = path.extname(filePath).toLowerCase();
