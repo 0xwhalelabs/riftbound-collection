@@ -76,9 +76,12 @@ a{color:var(--accent);text-decoration:none}
   </div>
 
   <div id="auth" class="auth-box">
-    <p>관리자만 접근할 수 있습니다.</p>
-    <button class="login-btn" id="loginBtn">Google로 로그인</button>
-    <div class="denied" id="denied" style="display:none">관리자 계정이 아닙니다.</div>
+    <p>관리자 비밀번호를 입력하세요.</p>
+    <div style="display:flex;gap:8px;justify-content:center;align-items:center">
+      <input type="password" id="pwInput" placeholder="비밀번호" style="background:var(--panel2);color:var(--text);border:1px solid var(--border);border-radius:8px;padding:10px 14px;font-size:14px;outline:none;width:160px;text-align:center">
+      <button class="login-btn" id="loginBtn">확인</button>
+    </div>
+    <div class="denied" id="denied" style="display:none">비밀번호가 틀렸습니다.</div>
   </div>
 
   <div id="panel" style="display:none">
@@ -126,20 +129,19 @@ a{color:var(--accent);text-decoration:none}
 <div class="toast" id="toast"></div>
 
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <script src="/firebase-config.js"></script>
 <script>
 (function(){
-  const ADMIN_UID = 'Wh9yv5Jz2eUO8om8H0YNTmz1Qbs1';
+  const ADMIN_PW = '070823';
   const app = firebase.initializeApp(window.FIREBASE_CONFIG);
   const db = firebase.firestore();
-  const auth = firebase.auth();
 
   const authBox = document.getElementById('auth');
   const panel = document.getElementById('panel');
   const loginBtn = document.getElementById('loginBtn');
   const denied = document.getElementById('denied');
+  const pwInput = document.getElementById('pwInput');
   const linkList = document.getElementById('linkList');
   const formCard = document.getElementById('formCard');
   const formTitle = document.getElementById('formTitle');
@@ -157,17 +159,26 @@ a{color:var(--accent);text-decoration:none}
   let editingId = null;
   let links = [];
 
-  loginBtn.addEventListener('click', () => {
-    auth.signInWithPopup(new firebase.auth.GoogleAuthProvider()).catch(e => console.error(e));
-  });
+  function tryLogin() {
+    if (pwInput.value === ADMIN_PW) {
+      sessionStorage.setItem('rb_admin', '1');
+      authBox.style.display = 'none';
+      panel.style.display = '';
+      denied.style.display = 'none';
+      loadLinks();
+    } else {
+      denied.style.display = '';
+    }
+  }
+  loginBtn.addEventListener('click', tryLogin);
+  pwInput.addEventListener('keydown', function(e) { if (e.key === 'Enter') tryLogin(); });
 
-  auth.onAuthStateChanged(user => {
-    if (!user) { authBox.style.display = ''; panel.style.display = 'none'; denied.style.display = 'none'; return; }
-    if (user.uid !== ADMIN_UID) { denied.style.display = ''; return; }
+  // Auto-restore session
+  if (sessionStorage.getItem('rb_admin') === '1') {
     authBox.style.display = 'none';
     panel.style.display = '';
     loadLinks();
-  });
+  }
 
   function loadLinks() {
     db.collection('hubLinks').orderBy('order').get().then(snap => {
