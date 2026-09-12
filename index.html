@@ -84,21 +84,21 @@ a{color:inherit;text-decoration:none}
 
 <div class="hub">
   <div class="profile">
-    <img src="/profile.png" alt="\uBBFC\uBB3C\uACE0\uB798" width="120" height="120">
-    <h1>\uBBFC\uBB3C\uACE0\uB798</h1>
+    <img src="/profile.png" alt="민물고래" width="120" height="120">
+    <h1>민물고래</h1>
     <p id="profileDesc">Riftbound TCG Collector &amp; Community</p>
   </div>
 
   <div class="featured">
     <a class="featured-card" href="/collection">
       <img class="card-icon" src="/img-collection.png" alt="Card Collection">
-      <span class="title" data-ko="\uCE74\uB4DC \uB3C4\uAC10" data-en="Card Collection">\uCE74\uB4DC \uB3C4\uAC10</span>
-      <span class="desc" data-ko="\uCE74\uB4DC \uCEEC\uB809\uC158 \uD2B8\uB798\uCEE4\nTCGplayer \uC2DC\uC138 \xB7 \uBCF4\uC720 \uAD00\uB9AC" data-en="Collection Tracker\nTCGplayer Prices \xB7 Inventory">카드 컬렉션 트래커<br>TCGplayer 시세 · 보유 관리</span>
+      <span class="title" data-ko="카드 도감" data-en="Card Collection">카드 도감</span>
+      <span class="desc" data-ko="카드 컬렉션 트래커<br>TCGplayer 시세 · 보유 관리" data-en="Collection Tracker<br>TCGplayer Prices · Inventory">카드 컬렉션 트래커<br>TCGplayer 시세 · 보유 관리</span>
     </a>
     <a class="featured-card" href="/t1korean">
       <img class="card-icon" src="/img-t1.webp" alt="T1" style="background:#fff;padding:8px;border-radius:12px">
-      <span class="title" data-ko="T1 \uC2DC\uB9AC\uC5BC \uC544\uCE74\uC774\uBE0C" data-en="T1 Serial Archive">T1 시리얼 아카이브</span>
-      <span class="desc" data-ko="\uD55C\uAD6D\uD310 \uC2DC\uADF8\uB2C8\uCC98 \uC5D0\uB514\uC158\n\uC2DC\uB9AC\uC5BC \uB118\uBC84 \uAE30\uB85D" data-en="KR Signature Edition\nSerial Number Registry">한국판 시그니처 에디션<br>시리얼 넘버 기록</span>
+      <span class="title" data-ko="T1 시리얼 아카이브" data-en="T1 Serial Archive">T1 시리얼 아카이브</span>
+      <span class="desc" data-ko="한국판 시그니처 에디션<br>시리얼 넘버 기록" data-en="KR Signature Edition<br>Serial Number Registry">한국판 시그니처 에디션<br>시리얼 넘버 기록</span>
     </a>
   </div>
 
@@ -109,11 +109,11 @@ a{color:inherit;text-decoration:none}
   </div>
 
   <footer class="hub-footer">
-    &copy; 2025 \uBBFC\uBB3C\uACE0\uB798 \xB7 <a href="https://www.rbwhale.com">rbwhale.com</a>
+    &copy; 2025 민물고래 · <a href="https://www.rbwhale.com">rbwhale.com</a>
   </footer>
 </div>
 
-<button class="admin-fab" id="adminFab" title="\uAD00\uB9AC\uC790">&#9881;</button>
+<button class="admin-fab" id="adminFab" title="관리자">&#9881;</button>
 
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
@@ -133,7 +133,7 @@ a{color:inherit;text-decoration:none}
   /* ---- i18n ---- */
   var lang = localStorage.getItem('rb_hub_lang') || 'ko';
   var I = {
-    ko: { desc: 'Riftbound TCG Collector & Community', empty: '\uC544\uC9C1 \uB4F1\uB85D\uB41C \uB9C1\uD06C\uAC00 \uC5C6\uC2B5\uB2C8\uB2E4.', fail: '\uB9C1\uD06C\uB97C \uBD88\uB7EC\uC624\uC9C0 \uBABB\uD588\uC2B5\uB2C8\uB2E4.' },
+    ko: { desc: 'Riftbound TCG Collector & Community', empty: '아직 등록된 링크가 없습니다.', fail: '링크를 불러오지 못했습니다.' },
     en: { desc: 'Riftbound TCG Collector & Community', empty: 'No links registered yet.', fail: 'Failed to load links.' }
   };
 
@@ -142,7 +142,7 @@ a{color:inherit;text-decoration:none}
     document.getElementById('profileDesc').textContent = I[lang].desc;
     document.querySelectorAll('[data-ko]').forEach(function(el) {
       var t = el.getAttribute('data-' + lang) || '';
-      el.innerHTML = t.replace(/\n/g, '<br>');
+      el.innerHTML = t;
     });
     localStorage.setItem('rb_hub_lang', lang);
   }
@@ -156,17 +156,17 @@ a{color:inherit;text-decoration:none}
   /* ---- links ---- */
   function loadLinks() {
     db.collection('hubLinks')
-      .where('active', '==', true)
       .orderBy('order')
       .get()
       .then(function(snap) {
-        if (snap.empty) {
+        var docs = [];
+        snap.forEach(function(doc) { var dd = doc.data(); if (dd.active) docs.push(dd); });
+        if (!docs.length) {
           linksEl.innerHTML = '<div class="empty">' + I[lang].empty + '</div>';
           return;
         }
         linksEl.innerHTML = '';
-        snap.forEach(function(doc) {
-          var d = doc.data();
+        docs.forEach(function(d) {
           var title = lang === 'en' && d.titleEn ? d.titleEn : d.title;
           var sub = lang === 'en' && d.subtitleEn ? d.subtitleEn : (d.subtitle || '');
           var a = document.createElement('a');
@@ -180,7 +180,7 @@ a{color:inherit;text-decoration:none}
               '<div class="link-title">' + esc(title) + '</div>' +
               (sub ? '<div class="link-sub">' + esc(sub) + '</div>' : '') +
             '</div>' +
-            '<span class="arrow">\u203A</span>';
+            '<span class="arrow">›</span>';
           linksEl.appendChild(a);
         });
       })
