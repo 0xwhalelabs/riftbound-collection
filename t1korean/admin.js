@@ -1,6 +1,7 @@
 import {firebaseConfig} from './firebase-config.js';
 import {photoPreview} from './photos.js';
 import {ADMIN_UID,ADMIN_EMAIL} from './admin-config.js';
+import {categoryOf,recordTitle} from './catalog.js';
 const $=s=>document.querySelector(s),message=t=>$('#admin-message').textContent=t;
 const [appSDK,authSDK,dbSDK,storageSDK]=await Promise.all(['app','auth','firestore','storage'].map(n=>import(`https://www.gstatic.com/firebasejs/10.12.2/firebase-${n}.js`)));
 const app=appSDK.initializeApp(firebaseConfig,'archive-admin'),auth=authSDK.getAuth(app),db=dbSDK.getFirestore(app),storage=storageSDK.getStorage(app);
@@ -14,10 +15,10 @@ async function loadPhoto(path){
 function render(){
  revision++;releasePhotos();const area=$('#admin-records');area.replaceChildren();
  const pending=records.filter(r=>r.status==='pending').length;$('#counts').textContent=`승인 대기 ${pending}건 · 승인됨 ${records.length-pending}건`;
- const shown=records.filter(r=>$('#filter').value==='all'||r.status===$('#filter').value).sort((a,b)=>(b.createdAt?.seconds??0)-(a.createdAt?.seconds??0));
+ const shown=records.filter(r=>($('#filter').value==='all'||r.status===$('#filter').value)&&($('#category-filter').value==='all'||categoryOf(r)===$('#category-filter').value)).sort((a,b)=>(b.createdAt?.seconds??0)-(a.createdAt?.seconds??0));
  if(!shown.length){const p=document.createElement('p');p.textContent='해당 제보가 없습니다.';area.append(p)}
  for(const r of shown){
-  const card=document.createElement('article');card.className='admin-card';const h=document.createElement('h3');h.textContent=r.player+' #'+String(r.serial).padStart(4,'0');
+  const card=document.createElement('article');card.className='admin-card';const h=document.createElement('h3');h.textContent=recordTitle(r);
   const badge=document.createElement('p');badge.className='admin-status';badge.textContent=r.status==='pending'?'승인 대기':'승인됨';card.append(h,badge);
   for(const path of r.photoPaths??[])card.append(photoPreview(path,h.textContent+' 제보 사진',{load:loadPhoto}));
   const note=document.createElement('p');note.textContent='제보: '+(r.nickname||'익명')+(r.note?' · '+r.note:'');card.append(note);
@@ -37,6 +38,7 @@ $('#delete-confirm').onclick=()=>{const r=deleteTarget;$('#delete-dialog').close
  await dbSDK.deleteDoc(dbSDK.doc(db,'t1Reports',r.id));
 },'제보와 사진을 삭제했습니다. 해당 번호는 다시 접수할 수 있습니다.')};
 $('#filter').onchange=render;
+$('#category-filter').onchange=render;
 $('#login').onsubmit=async e=>{e.preventDefault();const button=$('#login button');button.disabled=true;message('로그인 확인 중…');try{
  const result=await authSDK.signInWithEmailAndPassword(auth,ADMIN_EMAIL,$('#password').value);$('#password').value='';
  if(result.user.uid!==ADMIN_UID){await authSDK.signOut(auth);throw Error('Unauthorized')}

@@ -35,7 +35,7 @@ http.createServer((req, res) => {
   // Firebase rules validate both public and authenticated administrator requests.
   if (urlPath === '/api/t1-image') {
     const photoPath = new URL(req.url, 'http://localhost').searchParams.get('path') || '';
-    if (req.method !== 'GET' || !/^t1Evidence\/[A-Za-z0-9_-]+\/KR-(Doran|Oner|Faker|Gumayusi|Keria)-[0-9]{1,4}\/[012]\.jpg$/.test(photoPath)) {
+    if (req.method !== 'GET' || !/^t1Evidence\/[A-Za-z0-9_-]+\/(?:KR-(Doran|Oner|Faker|Gumayusi|Keria)-[0-9]{1,4}|KR-BOX-(Doran|Oner|Faker|Gumayusi|Keria)-[A-Za-z0-9]{20})\/[012]\.jpg$/.test(photoPath)) {
       res.writeHead(400); res.end('Invalid image path'); return;
     }
     const upstream = https.get({

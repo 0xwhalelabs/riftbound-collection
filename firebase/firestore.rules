@@ -9,13 +9,19 @@ service cloud.firestore {
    allow get: if !exists(/databases/$(database)/documents/t1Reports/$(id)) || resource.data.status == 'approved' || admin();
    allow list: if resource.data.status == 'approved' || admin();
    allow create: if request.auth != null
-    && request.resource.data.keys().hasOnly(['player','serial','source','nickname','note','kind','edition','uid','photoPaths','status','createdAt'])
+    && request.resource.data.keys().hasOnly(['category','player','serial','source','nickname','note','kind','edition','uid','photoPaths','status','createdAt'])
     && request.resource.data.uid == request.auth.uid
     && request.resource.data.status == 'pending'
-    && id == 'KR-' + request.resource.data.player + '-' + string(request.resource.data.serial)
+    && ((request.resource.data.get('category', 'card') == 'card'
+      && request.resource.data.serial is int && request.resource.data.serial >= 1 && request.resource.data.serial <= 2025
+      && id == 'KR-' + request.resource.data.player + '-' + string(request.resource.data.serial))
+     || (request.resource.data.get('category', 'card') == 'box'
+      && id.matches('KR-BOX-' + request.resource.data.player + '-[A-Za-z0-9]{20}')
+      && request.resource.data.player in ['Doran','Oner','Faker','Keria']
+      && !request.resource.data.keys().hasAny(['serial'])
+      && request.resource.data.photoPaths.size() > 0))
     && request.resource.data.edition == 'KR'
     && request.resource.data.player in ['Doran','Oner','Faker','Gumayusi','Keria']
-    && request.resource.data.serial is int && request.resource.data.serial >= 1 && request.resource.data.serial <= 2025
     && request.resource.data.kind in ['opened','sighting']
     && request.resource.data.nickname is string && request.resource.data.nickname.size() <= 30
     && request.resource.data.note is string && request.resource.data.note.size() <= 300

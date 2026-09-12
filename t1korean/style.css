@@ -17,3 +17,8 @@
 @media(max-width:760px){.records.has-records{grid-auto-columns:72%;gap:12px;padding:0 0 12px}.photo-preview img,#detail-body .photo-preview img{max-height:60vh}.admin-main{padding-top:25px}}
 .brand span{font-size:16px;line-height:1.5}
 @media(max-width:760px){header{height:auto;min-height:72px;flex-wrap:wrap;padding-top:12px;padding-bottom:12px}header .brand{flex-basis:100%}header .brand span{display:block;font-size:15px}.back-home{margin-left:0}header .primary{margin-left:auto}footer .brand span{font-size:14px}}
+
+.registry-filters{display:flex;align-items:center;flex-wrap:wrap;gap:12px;margin:16px 0}.registry-filters button{font-size:13px}.registry-filters button[aria-pressed=true]{border-color:var(--red);background:#3a2028}.registry-filters .subtle{font-size:12px}.registry-empty{grid-column:1/-1;color:var(--muted);text-align:center;padding:20px}
+
+.category-tabs{display:flex;gap:12px;margin:28px 0 8px}.category-tabs button{flex:1;text-align:left;font-weight:700;padding:18px}.category-tabs button[aria-pressed=true]{border-color:var(--red);background:#341c24}.category-tabs small{display:block;color:var(--muted);font-weight:400;font-size:12px;margin-top:6px}.stats #supply-total{font:inherit;color:inherit}.box-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:16px}.box-contribute{min-height:180px;border-style:dashed;color:var(--muted);line-height:1.8}#box-help{line-height:1.8} @media(max-width:760px){.category-tabs{gap:8px}.category-tabs button{padding:14px;font-size:14px}.box-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.box-grid .record{padding:8px}.box-grid .record-open{font-size:12px}}
+#players.box-players{grid-template-columns:repeat(4,minmax(0,1fr))}
