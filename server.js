@@ -25,7 +25,10 @@ const MIME = {
 };
 
 http.createServer((req, res) => {
-  const urlPath = decodeURIComponent(req.url.split('?')[0]);
+  let urlPath;
+  try { urlPath = decodeURIComponent(req.url.split('?')[0]); }
+  catch { res.writeHead(400); res.end('Bad Request'); return; }
+  if (urlPath === '/t1korean' || urlPath === '/t1korean/') urlPath = '/t1korean/index.html';
 
   // Firebase 인증 핸들러 프록시
   if (urlPath.startsWith('/__/')) {
@@ -46,7 +49,7 @@ http.createServer((req, res) => {
 
   // 정적 파일 서빙
   let filePath = path.normalize(path.join(ROOT, urlPath === '/' ? 'index.html' : urlPath));
-  if (!filePath.startsWith(ROOT)) { res.writeHead(403); res.end(); return; }
+  if (!filePath.startsWith(ROOT + path.sep) || urlPath.split('/').some(part => part.startsWith('.')) || urlPath.startsWith('/firebase/')) { res.writeHead(403); res.end(); return; }
   fs.stat(filePath, (err, st) => {
     if (err || !st.isFile()) { res.writeHead(404); res.end('Not Found'); return; }
     const ext = path.extname(filePath).toLowerCase();
