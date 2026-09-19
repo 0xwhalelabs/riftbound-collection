@@ -14,6 +14,8 @@ import urllib.request
 
 EN_GALLERY_URL = "https://playriftbound.com/en-us/card-gallery/"
 EN_DATA_URL = "https://playriftbound.com/_next/data/{build_id}/en-us/card-gallery.json"
+KR_GALLERY_URL = "https://playriftbound.com/ko-kr/card-gallery/"
+KR_DATA_URL = "https://playriftbound.com/_next/data/{build_id}/ko-kr/card-gallery.json"
 CN_API_URL = "https://lol-api.playloltcg.com/xcx/card/searchCardCraftWeb"
 
 # CN rarity code -> standard rarity id
@@ -58,20 +60,37 @@ def normalize_code(code):
     return "%s-%03d%s" % (m.group(1).upper(), int(m.group(2)), m.group(3))
 
 
-def fetch_en():
-    print("Fetching EN gallery page for build id...")
-    html = http_get(EN_GALLERY_URL)
+def _get_build_id(gallery_url):
+    html = http_get(gallery_url)
     m = re.search(r'"buildId":"([^"]+)"', html)
     if not m:
-        sys.exit("Could not find Next.js buildId")
-    build_id = m.group(1)
+        sys.exit("Could not find Next.js buildId from %s" % gallery_url)
+    return m.group(1)
+
+
+def _fetch_gallery(gallery_url, data_url_tpl):
+    print("Fetching gallery page for build id...")
+    build_id = _get_build_id(gallery_url)
     print("Build id:", build_id)
-    data = json.loads(http_get(EN_DATA_URL.format(build_id=build_id)))
+    data = json.loads(http_get(data_url_tpl.format(build_id=build_id)))
     blades = data["pageProps"]["page"]["blades"]
     gallery = next(b for b in blades if b["type"] == "riftboundCardGallery")
     sets = {s["id"]: s["name"] for s in gallery["sets"]["items"]}
     items = gallery["cards"]["items"]
+    return sets, items
+
+
+def fetch_en():
+    print("Fetching EN cards...")
+    sets, items = _fetch_gallery(EN_GALLERY_URL, EN_DATA_URL)
     print("EN cards:", len(items))
+    return sets, items
+
+
+def fetch_kr():
+    print("Fetching KR cards...")
+    sets, items = _fetch_gallery(KR_GALLERY_URL, KR_DATA_URL)
+    print("KR cards:", len(items))
     return sets, items
 
 
@@ -141,6 +160,7 @@ def build():
             "set": (it["set"]["value"] or {}).get("id", code.split("-")[0]),
             "num": it.get("collectorNumber"),
             "nameEn": it.get("name", ""),
+            "nameKr": "",
             "nameCn": "",
             "typeIds": ctypes,
             "rarity": rarity.get("id", ""),
@@ -148,6 +168,7 @@ def build():
             "rarityCn": "",
             "domains": domains,
             "imgEn": (it.get("cardImage") or {}).get("url", ""),
+            "imgKr": "",
             "imgCn": "",
             "energy": it.get("energy"),
             "publicCode": it.get("publicCode", ""),
@@ -166,6 +187,7 @@ def build():
                 "set": code.split("-")[0],
                 "num": int(re.sub(r"\D", "", code.split("-")[-1]) or 0),
                 "nameEn": "",
+                "nameKr": "",
                 "nameCn": it.get("cardName", ""),
                 "typeIds": it.get("cardCategoryList") or [],
                 "rarity": CN_RARITY_MAP.get(it.get("rarity", ""), it.get("rarity", "")),
@@ -173,6 +195,7 @@ def build():
                 "rarityCn": it.get("rarityName", ""),
                 "domains": domains,
                 "imgEn": "",
+                "imgKr": "",
                 "imgCn": it.get("frontImage", ""),
                 "energy": it.get("energy"),
                 "publicCode": it.get("cardNo", ""),
@@ -195,6 +218,50 @@ def build():
             card["rarity"] = cn_rarity
 
     print("Matched CN->EN: %d ; total cards: %d" % (matched, len(order)))
+
+    # --- KR (한국어) 카드 병합 ---
+    kr_sets, kr_items = fetch_kr()
+    kr_matched = 0
+    for it in kr_items:
+        code = normalize_code(it["publicCode"])
+        name_kr = it.get("name", "")
+        img_kr = (it.get("cardImage") or {}).get("url", "")
+        card = merged.get(code)
+        if card is None:
+            # KR-only card (e.g. Korea-exclusive Ahri)
+            domains = [v["id"] for v in (it.get("domain") or {}).get("values", [])]
+            rarity = ((it.get("rarity") or {}).get("value") or {})
+            ctypes = [t["id"] for t in (it.get("cardType") or {}).get("type", [])]
+            card = {
+                "code": code,
+                "set": (it["set"]["value"] or {}).get("id", code.split("-")[0]),
+                "num": it.get("collectorNumber"),
+                "nameEn": "",
+                "nameKr": name_kr,
+                "nameCn": "",
+                "typeIds": ctypes,
+                "rarity": rarity.get("id", ""),
+                "rarityEn": rarity.get("label", ""),
+                "rarityCn": "",
+                "domains": domains,
+                "imgEn": "",
+                "imgKr": img_kr,
+                "imgCn": "",
+                "energy": it.get("energy"),
+                "publicCode": it.get("publicCode", ""),
+            }
+            merged[code] = card
+            order.append(code)
+        else:
+            kr_matched += 1
+            if not card["nameKr"]:
+                card["nameKr"] = name_kr
+            if not card["imgKr"]:
+                card["imgKr"] = img_kr
+    # KR sets
+    for k, v in kr_sets.items():
+        sets.setdefault(k, v)
+    print("Matched KR->EN: %d ; total cards: %d" % (kr_matched, len(order)))
 
     # 공식 EN 데이터에 없는 카드(시그니처/쇼케이스 등) 이미지를 TCGplayer에서 보완
     tcg_imgs = fetch_tcg_images()
