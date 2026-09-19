@@ -655,6 +655,8 @@ function cardEl(c) {
   div.className = 'card' + (own === 0 ? ' unowned' : '');
   const ds = normDomains(c);
   const img = cardImg(c);
+  var displayCode = (c.publicCode || c.code);
+  if (state.lang === 'kr') displayCode = displayCode.replace(/\*/g, 'S');
   const dotHtml = ds.map(d => '<span class="domain-dot" style="background:' + DOMAIN_META[d].color + '" title="' + domainLabel(d) + '"></span>').join('');
   div.innerHTML =
     '<div class="imgwrap">' +
