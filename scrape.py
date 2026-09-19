@@ -222,10 +222,15 @@ def build():
     # --- KR (한국어) 카드 병합 ---
     kr_sets, kr_items = fetch_kr()
     kr_matched = 0
+    def has_hangul(text):
+        return any("\uAC00" <= ch <= "\uD7A3" for ch in text)
+
     for it in kr_items:
         code = normalize_code(it["publicCode"])
         name_kr = it.get("name", "")
-        img_kr = (it.get("cardImage") or {}).get("url", "")
+        # 실제 한국어 번역이 있는 카드만 imgKr 설정
+        img_kr = (it.get("cardImage") or {}).get("url", "") if has_hangul(name_kr) else ""
+
         card = merged.get(code)
         if card is None:
             # KR-only card (e.g. Korea-exclusive Ahri)
