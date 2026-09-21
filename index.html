@@ -1,203 +1,1329 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="ko" class="scroll-smooth">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>민물고래 | RBWhale</title>
-<meta name="description" content="민물고래의 Riftbound TCG 허브 - 카드 도감, T1 시리얼 아카이브, 커뮤니티 링크">
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>민물고래 | Riftbound Creator · RBWhale</title>
+<meta name="description" content="리프트바운드(Riftbound) 콘텐츠 크리에이터 민물고래. 카드 도감, 카드깡, 플레이 가이드, T1 시리얼 아카이브.">
 <meta property="og:type" content="website">
-<meta property="og:title" content="민물고래 | RBWhale">
-<meta property="og:description" content="Riftbound TCG 허브 - 카드 도감, T1 시리얼 아카이브, 커뮤니티 링크">
+<meta property="og:title" content="민물고래 | Riftbound Creator · RBWhale">
+<meta property="og:description" content="리프트바운드 콘텐츠 크리에이터 민물고래 - 카드 도감, 카드깡, 플레이 가이드, 커뮤니티 링크">
 <meta property="og:url" content="https://www.rbwhale.com/">
 <meta property="og:image" content="https://www.rbwhale.com/og-image.jpg">
-<meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="민물고래 | RBWhale">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="민물고래 | Riftbound Creator · RBWhale">
 <meta name="twitter:image" content="https://www.rbwhale.com/og-image.jpg">
-<meta name="theme-color" content="#0d1117">
+<meta name="theme-color" content="#060810">
 <link rel="icon" href="/favicon.ico" sizes="any">
 <link rel="icon" href="/icon-192.png" type="image/png">
 <link rel="apple-touch-icon" href="/icon-192.png">
 <link rel="manifest" href="/manifest.json">
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+tailwind.config={theme:{extend:{colors:{bg:{950:'#060810',900:'#0a0d14',800:'#0f1219',700:'#141822',600:'#1a1f2e'},navy:{950:'#0d1525',900:'#132040',800:'#1a2d5a',700:'#213a6e',600:'#2a4a85',500:'#3460a8',400:'#4a7bc4',300:'#6d9be0',200:'#a0bff0',100:'#d0dffa'},gold:{500:'#d4a017',400:'#f0c040',300:'#f7d778'},ink:{DEFAULT:'#1e3a6e',light:'#2a4f8f',glow:'rgba(30,58,110,0.15)',border:'rgba(30,58,110,0.12)'},text:{100:'#e8edf5',200:'#c8d0de',300:'#a0aabb',400:'#7a8599',500:'#5a6478',600:'#404a5c'}},fontFamily:{display:['"Inter"','"Noto Sans KR"','system-ui','sans-serif'],mono:['"JetBrains Mono"','monospace']}}}}
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Noto+Sans+KR:wght@300;400;500;700;900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
 <style>
-:root{--bg:#0d1117;--panel:#161b22;--panel2:#1f2630;--border:#2d3540;--text:#e6edf3;--muted:#8b949e;--accent:#d4a017;--accent2:#f0c040;--radius:14px}
-*{box-sizing:border-box;margin:0;padding:0}
-body{background:var(--bg);color:var(--text);font-family:'Segoe UI','Malgun Gothic',system-ui,sans-serif;min-height:100vh;display:flex;flex-direction:column;align-items:center}
-a{color:inherit;text-decoration:none}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Inter','Noto Sans KR',system-ui,sans-serif;background:#060810;color:#a0aabb;overflow-x:hidden;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}
+a{text-decoration:none}
+::selection{background:rgba(30,58,110,0.4);color:#e8edf5}
+::-webkit-scrollbar{width:3px}
+::-webkit-scrollbar-track{background:#060810}
+::-webkit-scrollbar-thumb{background:rgba(30,58,110,0.3);border-radius:2px}
+::-webkit-scrollbar-thumb:hover{background:rgba(30,58,110,0.5)}
 
-.hub{width:100%;max-width:520px;padding:40px 20px 60px;display:flex;flex-direction:column;align-items:center;gap:28px}
+.fade-up{opacity:0;transform:translateY(24px);transition:opacity 0.75s cubic-bezier(0.16,1,0.3,1),transform 0.75s cubic-bezier(0.16,1,0.3,1)}
+.fade-up.visible{opacity:1;transform:translateY(0)}
+.s1{transition-delay:.06s}.s2{transition-delay:.12s}.s3{transition-delay:.18s}.s4{transition-delay:.24s}.s5{transition-delay:.3s}
 
-/* lang toggle */
-.lang-toggle{position:fixed;top:16px;right:16px;background:var(--panel);border:1px solid var(--border);color:var(--muted);border-radius:20px;padding:5px 14px;font-size:12px;font-weight:600;cursor:pointer;transition:all .2s;z-index:50;letter-spacing:1px}
-.lang-toggle:hover{border-color:var(--accent);color:var(--accent)}
+.card{background:rgba(14,18,28,0.6);border:1px solid rgba(30,58,110,0.08);border-radius:1rem;transition:all .4s cubic-bezier(0.16,1,0.3,1)}
+.card:hover{background:rgba(18,24,40,0.7);border-color:rgba(30,58,110,0.2);transform:translateY(-3px);box-shadow:0 8px 32px rgba(30,58,110,0.1),0 0 0 1px rgba(30,58,110,0.06)}
 
-/* profile */
-.profile{display:flex;flex-direction:column;align-items:center;gap:12px}
-.profile img{width:120px;height:120px;border-radius:50%;border:3px solid var(--accent);object-fit:cover;box-shadow:0 0 30px rgba(212,160,23,.25)}
-.profile h1{font-size:22px;color:var(--accent2);letter-spacing:1px}
-.profile p{font-size:13px;color:var(--muted);text-align:center;line-height:1.5}
+.btn-primary{background:linear-gradient(135deg,#1e3a6e 0%,#162d55 100%);color:#d0dffa;font-weight:600;letter-spacing:.01em;transition:all .3s cubic-bezier(0.16,1,0.3,1);border:1px solid rgba(30,58,110,0.3)}
+.btn-primary:hover{box-shadow:0 4px 20px rgba(30,58,110,0.3),0 0 0 1px rgba(30,58,110,0.4);transform:translateY(-1px);color:#e8edf5}
 
-/* featured grid */
-.featured{display:grid;grid-template-columns:1fr 1fr;gap:12px;width:100%}
-.featured-card{background:var(--panel);border:1px solid var(--border);border-radius:var(--radius);padding:20px 16px;display:flex;flex-direction:column;align-items:center;gap:10px;transition:all .2s;cursor:pointer;text-align:center}
-.featured-card:hover{border-color:var(--accent);transform:translateY(-3px);box-shadow:0 8px 24px rgba(0,0,0,.4)}
-.featured-card .card-icon{width:72px;height:72px;object-fit:contain;border-radius:12px}
-.featured-card .title{font-size:15px;font-weight:700;color:var(--text)}
-.featured-card .desc{font-size:11.5px;color:var(--muted);line-height:1.4}
+.btn-gold{background:linear-gradient(135deg,rgba(212,160,23,0.18) 0%,rgba(212,160,23,0.06) 100%);color:#f0c040;font-weight:600;transition:all .3s cubic-bezier(0.16,1,0.3,1);border:1px solid rgba(212,160,23,0.3)}
+.btn-gold:hover{box-shadow:0 4px 20px rgba(212,160,23,0.18);transform:translateY(-1px);border-color:rgba(212,160,23,0.5);color:#f7d778}
 
-/* section divider */
-.divider{display:flex;align-items:center;gap:10px;width:100%;color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:2px}
-.divider::before,.divider::after{content:'';flex:1;height:1px;background:var(--border)}
+.btn-ghost{border:1px solid rgba(30,58,110,0.15);color:#7a8599;transition:all .3s cubic-bezier(0.16,1,0.3,1)}
+.btn-ghost:hover{border-color:rgba(30,58,110,0.35);color:#c8d0de;background:rgba(30,58,110,0.06);box-shadow:0 2px 12px rgba(30,58,110,0.08)}
 
-/* links */
-.links{display:flex;flex-direction:column;gap:10px;width:100%}
-.link-btn{display:flex;align-items:center;gap:12px;background:var(--panel);border:1px solid var(--border);border-radius:var(--radius);padding:14px 18px;transition:all .2s;cursor:pointer}
-.link-btn:hover{border-color:var(--accent);background:var(--panel2);transform:translateY(-1px)}
-.link-btn .link-emoji{font-size:22px;flex-shrink:0;width:32px;text-align:center}
-.link-btn .link-text{flex:1;min-width:0}
-.link-btn .link-title{font-size:14px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.link-btn .link-sub{font-size:11px;color:var(--muted);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.link-btn .arrow{color:var(--muted);font-size:14px;flex-shrink:0;transition:transform .15s}
-.link-btn:hover .arrow{transform:translateX(3px);color:var(--accent)}
+.divider{width:36px;height:1px;background:linear-gradient(90deg,rgba(30,58,110,0.5),rgba(30,58,110,0.1))}
 
-.empty{text-align:center;color:var(--muted);font-size:13px;padding:20px}
-.hub-footer{text-align:center;font-size:11px;color:var(--muted);margin-top:auto;padding-top:20px}
-.hub-footer a{color:var(--accent);text-decoration:underline}
+.social-link{background:rgba(14,18,28,0.5);border:1px solid rgba(30,58,110,0.08);transition:all .35s cubic-bezier(0.16,1,0.3,1);position:relative;overflow:visible}
+.social-link:hover{background:rgba(18,24,40,0.6);border-color:rgba(30,58,110,0.2);transform:translateY(-4px);box-shadow:0 8px 28px rgba(30,58,110,0.12),0 0 0 1px rgba(30,58,110,0.08)}
 
-.admin-fab{position:fixed;bottom:20px;right:20px;background:var(--panel);border:1px solid var(--border);color:var(--muted);width:40px;height:40px;border-radius:50%;display:none;align-items:center;justify-content:center;font-size:18px;cursor:pointer;transition:all .2s;z-index:50}
-.admin-fab:hover{border-color:var(--accent);color:var(--accent)}
-.admin-fab.show{display:flex}
-
-.skeleton{background:linear-gradient(90deg,var(--panel) 25%,var(--panel2) 50%,var(--panel) 75%);background-size:200% 100%;animation:shimmer 1.5s infinite;border-radius:var(--radius);height:52px;width:100%}
-@keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
-
-@media(max-width:400px){
-  .hub{padding:30px 16px 40px}
-  .profile img{width:100px;height:100px}
-  .featured-card{padding:16px 12px}
-  .featured-card .card-icon{width:56px;height:56px}
+/* Profile Preview Tooltip */
+.profile-preview{position:absolute;bottom:calc(100% + 10px);left:50%;transform:translateX(-50%) translateY(6px);opacity:0;pointer-events:none;transition:opacity .3s cubic-bezier(0.16,1,0.3,1),transform .3s cubic-bezier(0.16,1,0.3,1);z-index:30;width:220px}
+.social-link:hover .profile-preview,.social-link.preview-active .profile-preview{opacity:1;transform:translateX(-50%) translateY(0);pointer-events:auto}
+.profile-preview-inner{background:rgba(10,14,24,0.92);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:1px solid rgba(30,58,110,0.18);border-radius:14px;padding:16px;text-align:center;box-shadow:0 12px 40px rgba(0,0,0,0.4),0 0 0 1px rgba(30,58,110,0.06),0 0 60px rgba(30,58,110,0.06)}
+.profile-preview-inner::after{content:'';position:absolute;bottom:-5px;left:50%;transform:translateX(-50%) rotate(45deg);width:10px;height:10px;background:rgba(10,14,24,0.92);border-right:1px solid rgba(30,58,110,0.18);border-bottom:1px solid rgba(30,58,110,0.18)}
+.preview-avatar{width:48px;height:48px;border-radius:50%;margin:0 auto 10px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:16px;color:#d0dffa;border:2px solid rgba(30,58,110,0.25);box-shadow:0 0 20px rgba(30,58,110,0.15)}
+.preview-avatar-img{width:58px;height:58px;border-radius:50%;object-fit:cover;object-position:center;display:block;margin:0 auto 10px;border:2px solid rgba(30,58,110,0.25);box-shadow:0 0 20px rgba(30,58,110,0.15);background:#0d1525}
+.preview-platform{font-size:10px;font-family:'JetBrains Mono',monospace;text-transform:uppercase;letter-spacing:.15em;color:#4a7bc4;margin-bottom:3px}
+.preview-name{font-size:13px;font-weight:600;color:#e8edf5;line-height:1.3}
+.social-link:first-child .profile-preview{left:0;transform:translateX(0) translateY(6px)}
+.social-link:first-child:hover .profile-preview,.social-link:first-child.preview-active .profile-preview{transform:translateX(0) translateY(0)}
+.social-link:first-child .profile-preview-inner::after{left:30px}
+.social-link:nth-child(2) .profile-preview{left:auto;right:0;transform:translateX(0) translateY(6px)}
+.social-link:nth-child(2):hover .profile-preview,.social-link:nth-child(2).preview-active .profile-preview{transform:translateX(0) translateY(0)}
+.social-link:nth-child(2) .profile-preview-inner::after{left:auto;right:30px}
+@media(max-width:639px){
+  .profile-preview{left:50%!important;right:auto!important;transform:translateX(-50%) translateY(6px)!important}
+  .social-link:hover .profile-preview,.social-link.preview-active .profile-preview{transform:translateX(-50%) translateY(0)!important}
+  .profile-preview-inner::after{left:50%!important;right:auto!important}
 }
+
+.nav-glass{background:rgba(6,8,16,0.88);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-bottom:1px solid rgba(30,58,110,0.06)}
+
+input,textarea{background:rgba(14,18,28,0.5);border:1px solid rgba(30,58,110,0.1);color:#e8edf5;transition:all .3s}
+input:focus,textarea:focus{outline:none;border-color:rgba(30,58,110,0.35);box-shadow:0 0 0 3px rgba(30,58,110,0.08);background:rgba(18,24,40,0.5)}
+input::placeholder,textarea::placeholder{color:#404a5c}
+
+.tag{background:rgba(30,58,110,0.08);border:1px solid rgba(30,58,110,0.12);color:#6d9be0;font-size:11px}
+.tag-gold{background:rgba(212,160,23,0.07);border:1px solid rgba(212,160,23,0.18);color:#f0c040;font-size:11px}
+
+@keyframes pulse-dot{0%,100%{opacity:1}50%{opacity:.4}}
+.pulse-dot{animation:pulse-dot 2.5s ease-in-out infinite}
+
+.section-gap{padding-top:7rem;padding-bottom:7rem}
+@media(min-width:768px){.section-gap{padding-top:9rem;padding-bottom:9rem}}
+
+/* Unicorn Studio Hero Background */
+.hero-unicorn-bg{position:absolute;inset:0;width:100%;height:100%;z-index:0;overflow:hidden;pointer-events:none}
+.hero-unicorn-bg *{pointer-events:none!important}
+#hero{touch-action:pan-y}
+.hero-unicorn-bg>div{width:100%!important;height:100%!important}
+.hero-overlay{position:absolute;inset:0;z-index:1;background:linear-gradient(180deg,rgba(6,8,16,0.55) 0%,rgba(6,8,16,0.35) 40%,rgba(6,8,16,0.5) 70%,rgba(6,8,16,0.95) 100%);pointer-events:none}
+.hero-overlay-radial{position:absolute;inset:0;z-index:1;background:radial-gradient(ellipse at center,transparent 0%,rgba(6,8,16,0.3) 50%,rgba(6,8,16,0.7) 100%);pointer-events:none}
+
+/* ===== LOGO SLOTS (추후 실제 로고 SVG/PNG 로 교체) ===== */
+.nav-logo{display:flex;align-items:center;gap:8px}
+.nav-logo .logo-mark{font-size:18px;line-height:1;filter:drop-shadow(0 0 10px rgba(109,155,224,0.35))}
+.nav-logo .logo-word{font-size:14px;font-weight:800;letter-spacing:.16em;color:#e8edf5}
+.hero-logo{width:min(560px,90vw);margin:0 auto;text-align:center}
+.hero-logo img{width:100%;height:auto;display:block;margin:0 auto;filter:drop-shadow(0 6px 34px rgba(6,8,16,0.75)) drop-shadow(0 0 40px rgba(109,155,224,0.18))}
+.hero-logo .logo-en{margin-top:6px;font-family:'JetBrains Mono',monospace;font-size:clamp(9px,2.2vw,12px);letter-spacing:.42em;color:rgba(160,191,240,0.65);text-transform:uppercase}
+
+/* ===== FEATURED (도감 / T1 아카이브) ===== */
+.featured-card{position:relative;display:flex;flex-direction:column;gap:10px;padding:22px;border-radius:1rem;background:rgba(14,18,28,0.6);border:1px solid rgba(30,58,110,0.1);transition:all .4s cubic-bezier(0.16,1,0.3,1);overflow:hidden}
+.featured-card::after{content:'';position:absolute;inset:0;background:radial-gradient(circle at 85% 0%,rgba(212,160,23,0.09),transparent 55%);opacity:0;transition:opacity .4s;pointer-events:none}
+.featured-card:hover{transform:translateY(-4px);border-color:rgba(212,160,23,0.28);box-shadow:0 12px 40px rgba(0,0,0,0.35)}
+.featured-card:hover::after{opacity:1}
+.featured-card .f-icon{width:52px;height:52px;border-radius:12px;object-fit:contain;padding:6px;background:rgba(13,21,37,0.8);border:1px solid rgba(30,58,110,0.2)}
+.featured-card .f-title{font-size:15px;font-weight:700;color:#e8edf5;display:flex;align-items:center;gap:7px}
+.featured-card .f-desc{font-size:12px;color:#7a8599;line-height:1.65}
+.featured-card .f-go{font-size:10px;font-family:'JetBrains Mono',monospace;letter-spacing:.14em;color:#4a7bc4;text-transform:uppercase}
+
+/* ===== SIGNAL BOARD BENTO ===== */
+.bento-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+@media(max-width:767px){.bento-grid{grid-template-columns:1fr 1fr;gap:10px}}
+@media(max-width:479px){.bento-grid{grid-template-columns:1fr;gap:10px}}
+.bento-card{background:rgba(12,16,26,0.7);border:1px solid rgba(30,58,110,0.08);border-radius:1rem;padding:22px;position:relative;overflow:hidden;transition:all .4s cubic-bezier(0.16,1,0.3,1);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}
+.bento-card:hover{background:rgba(16,22,36,0.8);border-color:rgba(30,58,110,0.18);transform:translateY(-2px);box-shadow:0 8px 32px rgba(0,0,0,0.25),0 0 0 1px rgba(30,58,110,0.06)}
+.bento-card::before{content:'';position:absolute;top:-1px;left:15%;right:15%;height:1px;background:linear-gradient(90deg,transparent,rgba(74,123,196,0.2),rgba(109,155,224,0.3),rgba(74,123,196,0.2),transparent);opacity:0;transition:opacity .4s;pointer-events:none}
+.bento-card:hover::before{opacity:1}
+.bento-label{font-size:9px;font-family:'JetBrains Mono',monospace;text-transform:uppercase;letter-spacing:.18em;color:rgba(74,123,196,0.4);margin-bottom:10px;display:flex;align-items:center;gap:6px}
+.bento-label .bl-dot{width:4px;height:4px;border-radius:50%;background:rgba(74,123,196,0.4)}
+.bento-title{font-size:15px;font-weight:600;color:#e8edf5;margin-bottom:6px;line-height:1.3}
+.bento-desc{font-size:12px;color:#7a8599;line-height:1.6}
+.bento-now{grid-column:span 2}
+@media(max-width:479px){.bento-now{grid-column:span 1}}
+.bento-rotate{display:inline-block;position:relative;height:1.5em;overflow:hidden;vertical-align:bottom;min-width:180px}
+.bento-rotate span{display:block;position:absolute;left:0;top:0;opacity:0;transform:translateY(8px);transition:opacity .5s,transform .5s;white-space:nowrap;color:#6d9be0;font-family:'JetBrains Mono',monospace;font-size:12px}
+.bento-rotate span.active{opacity:1;transform:translateY(0)}
+.bento-cursor{display:inline-block;width:6px;height:14px;background:#4a7bc4;animation:tblink 1s step-end infinite;vertical-align:middle;margin-left:3px}
+@keyframes tblink{0%,50%{opacity:1}51%,100%{opacity:0}}
+
+.node-canvas{position:relative;height:60px;margin-top:10px}
+.node-dot{position:absolute;width:7px;height:7px;border-radius:50%;background:rgba(74,123,196,0.5);box-shadow:0 0 10px rgba(74,123,196,0.2)}
+.node-line{position:absolute;height:1px;background:linear-gradient(90deg,rgba(74,123,196,0.3),rgba(109,155,224,0.15));transform-origin:left center}
+.node-label{position:absolute;font-size:9px;font-family:'JetBrains Mono',monospace;color:rgba(160,191,240,0.5);letter-spacing:.1em}
+@keyframes node-pulse{0%,100%{opacity:.4;transform:scale(1)}50%{opacity:1;transform:scale(1.3)}}
+.node-dot.animated{animation:node-pulse 3s ease-in-out infinite}
+.node-dot:nth-child(2){animation-delay:.5s}
+.node-dot:nth-child(3){animation-delay:1s}
+.node-dot:nth-child(4){animation-delay:1.5s}
+@keyframes signal-travel{0%{left:0%;opacity:0}10%{opacity:1}90%{opacity:1}100%{left:100%;opacity:0}}
+.signal-dot{position:absolute;width:3px;height:3px;border-radius:50%;background:#6d9be0;box-shadow:0 0 6px rgba(109,155,224,0.4);animation:signal-travel 4s linear infinite;top:-1px}
+
+.bento-video-thumb{width:100%;aspect-ratio:16/9;border-radius:8px;background:linear-gradient(135deg,rgba(13,21,37,0.9),rgba(26,45,90,0.4));border:1px solid rgba(30,58,110,0.12);display:flex;align-items:center;justify-content:center;margin-top:10px;position:relative;overflow:hidden;cursor:pointer;transition:all .3s}
+.bento-video-thumb:hover{border-color:rgba(30,58,110,0.25);box-shadow:0 4px 20px rgba(30,58,110,0.12)}
+.bento-video-thumb .play-icon{width:36px;height:36px;border-radius:50%;background:rgba(30,58,110,0.25);border:1px solid rgba(74,123,196,0.2);display:flex;align-items:center;justify-content:center;transition:all .3s;z-index:1}
+.bento-video-thumb:hover .play-icon{background:rgba(30,58,110,0.4);border-color:rgba(74,123,196,0.4)}
+.bento-video-thumb::before{content:'';position:absolute;inset:0;background:repeating-linear-gradient(90deg,transparent,transparent 3px,rgba(74,123,196,0.03) 3px,rgba(74,123,196,0.03) 4px);pointer-events:none}
+
+.bento-cmd{cursor:pointer}
+.bento-cmd:hover{border-color:rgba(30,58,110,0.25)}
+.bento-kbd{display:inline-flex;align-items:center;gap:4px;padding:3px 8px;border-radius:6px;background:rgba(30,58,110,0.1);border:1px solid rgba(30,58,110,0.15);font-size:11px;font-family:'JetBrains Mono',monospace;color:#6d9be0;transition:all .3s}
+.bento-cmd:hover .bento-kbd{background:rgba(30,58,110,0.18);border-color:rgba(30,58,110,0.25)}
+
+.stat-num{font-size:26px;font-weight:800;letter-spacing:-0.02em;color:#e8edf5;background:linear-gradient(135deg,#f7d778 0%,#d4a017 100%);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.stat-sub{font-size:10px;font-family:'JetBrains Mono',monospace;color:#5a6478;letter-spacing:.1em}
+
+.waveform-container{display:flex;align-items:end;gap:2px;height:24px;margin-top:10px}
+.waveform-bar{width:3px;border-radius:2px;background:rgba(74,123,196,0.3);transition:height .3s}
+@keyframes wave{0%,100%{height:4px}50%{height:var(--h,16px)}}
+.waveform-bar.animated{animation:wave var(--d,2s) ease-in-out infinite}
+.bento-card:hover .waveform-bar{background:rgba(109,155,224,0.45)}
+
+/* ===== DOMAINS ===== */
+.domain-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+@media(max-width:639px){.domain-grid{grid-template-columns:repeat(2,1fr);gap:10px}}
+.domain-card{position:relative;padding:18px 16px;border-radius:14px;background:rgba(12,16,26,0.7);border:1px solid rgba(30,58,110,0.1);overflow:hidden;transition:all .4s cubic-bezier(0.16,1,0.3,1)}
+.domain-card::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at 20% 0%,var(--dc),transparent 60%);opacity:.12;transition:opacity .4s}
+.domain-card:hover{transform:translateY(-3px);border-color:var(--dc)}
+.domain-card:hover::before{opacity:.26}
+.domain-card .d-dot{width:10px;height:10px;border-radius:50%;background:var(--dc);box-shadow:0 0 14px var(--dc);margin-bottom:12px}
+.domain-card .d-ko{font-size:16px;font-weight:700;color:#e8edf5;position:relative}
+.domain-card .d-en{font-size:10px;font-family:'JetBrains Mono',monospace;letter-spacing:.2em;text-transform:uppercase;color:var(--dc);margin-top:3px;position:relative;opacity:.85}
+.domain-card .d-note{font-size:11px;color:#7a8599;margin-top:8px;line-height:1.6;position:relative}
+
+.set-chip{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:11px 14px;border-radius:10px;background:rgba(14,18,28,0.55);border:1px solid rgba(30,58,110,0.1);transition:all .3s}
+.set-chip:hover{border-color:rgba(212,160,23,0.25);background:rgba(18,24,40,0.6)}
+.set-chip .s-id{font-size:10px;font-family:'JetBrains Mono',monospace;color:#f0c040;letter-spacing:.14em}
+.set-chip .s-name{font-size:12.5px;color:#c8d0de;font-weight:500}
+.set-chip .s-cnt{font-size:11px;font-family:'JetBrains Mono',monospace;color:#5a6478}
+
+/* ===== VIDEO ===== */
+.video-card{border-radius:1rem;overflow:hidden;background:rgba(14,18,28,0.6);border:1px solid rgba(30,58,110,0.1);transition:all .4s cubic-bezier(0.16,1,0.3,1)}
+.video-card:hover{border-color:rgba(30,58,110,0.22);transform:translateY(-3px);box-shadow:0 10px 36px rgba(0,0,0,0.35)}
+.video-frame{position:relative;padding-bottom:56.25%;height:0;overflow:hidden;background:#0a0d14;cursor:pointer}
+.video-frame iframe{position:absolute;top:0;left:0;width:100%;height:100%;border:0}
+.video-frame img.v-thumb{position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover;display:block;transition:transform .5s cubic-bezier(0.16,1,0.3,1),filter .4s}
+.video-frame:hover img.v-thumb{transform:scale(1.04);filter:brightness(1.08)}
+.video-frame .v-play{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:58px;height:58px;border-radius:50%;background:rgba(10,14,24,0.72);border:1px solid rgba(160,191,240,0.28);display:flex;align-items:center;justify-content:center;backdrop-filter:blur(6px);transition:all .3s cubic-bezier(0.16,1,0.3,1);box-shadow:0 8px 30px rgba(0,0,0,0.45)}
+.video-frame:hover .v-play{background:rgba(226,60,60,0.9);border-color:rgba(255,120,120,0.5);transform:translate(-50%,-50%) scale(1.08)}
+.video-frame .v-shade{position:absolute;inset:0;background:linear-gradient(180deg,rgba(6,8,16,0.1) 0%,rgba(6,8,16,0.45) 100%);pointer-events:none}
+.video-meta{padding:13px 15px}
+.video-meta .v-title{font-size:12.5px;color:#c8d0de;font-weight:500;line-height:1.5}
+.video-meta .v-date{font-size:10px;font-family:'JetBrains Mono',monospace;color:#404a5c;margin-top:5px}
+
+/* ===== FALLING TEXT PHYSICS (히어로=유니콘스튜디오 영역 안에서만 낙하) ===== */
+#falling-text-physics{position:absolute;inset:0;z-index:5;overflow:hidden;pointer-events:none;touch-action:pan-y}
+#falling-words{position:absolute;inset:0;pointer-events:none}
+#falling-words span:active{cursor:grabbing!important}
+@media(prefers-reduced-motion:reduce){#falling-text-physics{display:none}}
+
+/* ===== COMMAND PALETTE ===== */
+.cmd-overlay{position:fixed;inset:0;z-index:9999;background:rgba(6,8,16,0.75);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);opacity:0;pointer-events:none;transition:opacity .2s ease}
+.cmd-overlay.active{opacity:1;pointer-events:auto}
+.cmd-palette{position:fixed;top:min(20vh,160px);left:50%;transform:translateX(-50%) translateY(8px) scale(0.98);z-index:10000;width:min(520px,92vw);background:rgba(10,14,24,0.96);border:1px solid rgba(30,58,110,0.2);border-radius:16px;box-shadow:0 24px 80px rgba(0,0,0,0.6),0 0 0 1px rgba(30,58,110,0.08),0 0 120px rgba(30,58,110,0.06);opacity:0;pointer-events:none;transition:opacity .2s ease,transform .2s cubic-bezier(0.16,1,0.3,1);overflow:hidden}
+.cmd-palette.active{opacity:1;pointer-events:auto;transform:translateX(-50%) translateY(0) scale(1)}
+.cmd-input-wrap{padding:14px 16px;border-bottom:1px solid rgba(30,58,110,0.1);display:flex;align-items:center;gap:10px}
+.cmd-input-wrap svg{color:#4a7bc4;flex-shrink:0}
+.cmd-input{flex:1;background:transparent;border:none;color:#e8edf5;font-size:14px;outline:none}
+.cmd-input::placeholder{color:#404a5c}
+.cmd-list{max-height:320px;overflow-y:auto;padding:8px}
+.cmd-list::-webkit-scrollbar{width:3px}
+.cmd-list::-webkit-scrollbar-thumb{background:rgba(30,58,110,0.3);border-radius:2px}
+.cmd-item{display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:10px;cursor:pointer;transition:background .15s;color:#a0aabb}
+.cmd-item:hover,.cmd-item.selected{background:rgba(30,58,110,0.12);color:#e8edf5}
+.cmd-item-icon{width:32px;height:32px;border-radius:8px;background:rgba(30,58,110,0.08);border:1px solid rgba(30,58,110,0.1);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.cmd-item-icon svg{width:14px;height:14px}
+.cmd-item-text{flex:1;min-width:0}
+.cmd-item-title{font-size:13px;font-weight:500;line-height:1.3}
+.cmd-item-desc{font-size:10px;color:#5a6478;font-family:'JetBrains Mono',monospace;margin-top:1px}
+.cmd-hint{position:fixed;bottom:20px;right:20px;z-index:100;display:flex;align-items:center;gap:6px;padding:6px 12px;border-radius:8px;background:rgba(10,14,24,0.8);border:1px solid rgba(30,58,110,0.12);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);font-size:10px;font-family:'JetBrains Mono',monospace;color:#5a6478;cursor:pointer;transition:all .3s;opacity:0;animation:cmdHintIn .6s ease 2s forwards}
+.cmd-hint:hover{border-color:rgba(30,58,110,0.3);color:#a0bff0;background:rgba(14,18,28,0.9)}
+.cmd-hint kbd{padding:1px 5px;border:1px solid rgba(30,58,110,0.15);border-radius:3px;background:rgba(30,58,110,0.06);color:#6d9be0;font-size:9px}
+@keyframes cmdHintIn{to{opacity:1}}
+@media(max-width:639px){.cmd-hint{bottom:12px;right:12px}}
+
+/* ===== LANG TOGGLE ===== */
+.lang-btn{border:1px solid rgba(30,58,110,0.18);color:#7a8599;font-size:11px;font-family:'JetBrains Mono',monospace;letter-spacing:.1em;padding:5px 11px;border-radius:8px;transition:all .3s}
+.lang-btn:hover{border-color:rgba(212,160,23,0.35);color:#f0c040}
+
+/* ===== ADMIN FAB (기존 유지) ===== */
+.admin-fab{position:fixed;left:16px;bottom:16px;z-index:100;width:34px;height:34px;border-radius:50%;background:rgba(10,14,24,0.8);border:1px solid rgba(30,58,110,0.15);color:#404a5c;font-size:15px;cursor:pointer;transition:all .3s;backdrop-filter:blur(8px)}
+.admin-fab:hover{color:#f0c040;border-color:rgba(212,160,23,0.3)}
+
+/* ===== WHALE CURSOR TRAIL ===== */
+.whale-trail{position:fixed;top:0;left:0;pointer-events:none;z-index:99999;font-size:28px;line-height:1;will-change:transform;filter:drop-shadow(0 2px 6px rgba(30,58,110,0.25))}
+.whale-trail-0{opacity:0;transition:opacity 0.3s}
+.whale-trail-0.visible{opacity:1}
+.whale-trail-1{opacity:0.5;font-size:24px}
+.whale-trail-2{opacity:0.3;font-size:20px}
+.whale-trail-3{opacity:0.18;font-size:17px}
+.whale-trail-4{opacity:0.09;font-size:14px}
+.whale-trail-5{opacity:0.04;font-size:11px}
+@media(max-width:768px){.whale-trail{display:none}}
+@media(prefers-reduced-motion:reduce){.whale-trail{display:none}}
 </style>
 </head>
 <body>
 
-<button class="lang-toggle" id="langBtn">EN</button>
-
-<div class="hub">
-  <div class="profile">
-    <img src="/profile.png" alt="민물고래" width="120" height="120">
-    <h1>민물고래</h1>
-    <p id="profileDesc">Riftbound TCG Collector &amp; Community</p>
-  </div>
-
-  <div class="featured">
-    <a class="featured-card" href="/collection">
-      <img class="card-icon" src="/img-collection.png" alt="Card Collection">
-      <span class="title" data-ko="카드 도감" data-en="Card Collection">카드 도감</span>
-      <span class="desc" data-ko="카드 컬렉션 트래커<br>TCGplayer 시세 · 보유 관리" data-en="Collection Tracker<br>TCGplayer Prices · Inventory">카드 컬렉션 트래커<br>TCGplayer 시세 · 보유 관리</span>
+<!-- NAV -->
+<nav id="navbar" class="fixed top-0 left-0 right-0 z-50 nav-glass">
+  <div class="max-w-5xl mx-auto px-6 h-[60px] flex items-center justify-between">
+    <!-- ===== LOGO SLOT (nav) : 추후 로고 SVG 로 교체 ===== -->
+    <a href="#hero" class="nav-logo" id="nav-logo-slot">
+      <span class="logo-mark">🐋</span>
+      <span class="logo-word">RBWHALE</span>
     </a>
-    <a class="featured-card" href="/t1korean">
-      <img class="card-icon" src="/img-t1.webp" alt="T1" style="background:#fff;padding:8px;border-radius:12px">
-      <span class="title" data-ko="T1 시리얼 아카이브" data-en="T1 Serial Archive">T1 시리얼 아카이브</span>
-      <span class="desc" data-ko="한국판 시그니처 에디션<br>시리얼 넘버 기록" data-en="KR Signature Edition<br>Serial Number Registry">한국판 시그니처 에디션<br>시리얼 넘버 기록</span>
+    <div class="hidden md:flex items-center gap-6 text-[13px] font-medium text-text-500">
+      <a href="#links" class="hover:text-text-200 transition-colors duration-300" data-ko="링크" data-en="Links">링크</a>
+      <a href="#about" class="hover:text-text-200 transition-colors duration-300" data-ko="소개" data-en="About">소개</a>
+      <a href="#experience" class="hover:text-text-200 transition-colors duration-300" data-ko="여정" data-en="Journey">여정</a>
+      <a href="#riftbound" class="hover:text-text-200 transition-colors duration-300" data-ko="리프트바운드" data-en="Riftbound">리프트바운드</a>
+      <a href="#video" class="hover:text-text-200 transition-colors duration-300" data-ko="영상" data-en="Video">영상</a>
+      <button class="lang-btn" id="langBtn">EN</button>
+      <a href="#contact" class="btn-primary px-5 py-[7px] rounded-lg text-[13px]" data-ko="문의" data-en="Contact">문의</a>
+    </div>
+    <div class="flex items-center gap-3 md:hidden">
+      <button class="lang-btn" id="langBtnM">EN</button>
+      <button id="menu-toggle" class="text-text-400 hover:text-text-100 transition-colors">
+        <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 7h14M4 12h14M4 17h14"/></svg>
+      </button>
+    </div>
+  </div>
+  <div id="mobile-menu" class="hidden md:hidden px-6 pb-5 space-y-3 text-sm font-medium text-text-400">
+    <a href="#links" class="block py-1 hover:text-text-100 transition-colors" data-ko="링크" data-en="Links">링크</a>
+    <a href="#about" class="block py-1 hover:text-text-100 transition-colors" data-ko="소개" data-en="About">소개</a>
+    <a href="#experience" class="block py-1 hover:text-text-100 transition-colors" data-ko="여정" data-en="Journey">여정</a>
+    <a href="#riftbound" class="block py-1 hover:text-text-100 transition-colors" data-ko="리프트바운드" data-en="Riftbound">리프트바운드</a>
+    <a href="#video" class="block py-1 hover:text-text-100 transition-colors" data-ko="영상" data-en="Video">영상</a>
+    <a href="#contact" class="block py-1 text-navy-300 hover:text-navy-200 transition-colors" data-ko="문의" data-en="Contact">문의</a>
+  </div>
+</nav>
+
+<!-- HERO with Unicorn Studio Background -->
+<section id="hero" class="relative min-h-screen flex items-center justify-center px-6" style="overflow:hidden">
+  <div class="hero-unicorn-bg">
+    <div data-us-project="OJHLuoDf5CiKPx9YkAAg" data-us-production="true" data-us-lazyload="true" data-us-disablemobile="true" style="width:100%;height:100%"></div>
+  </div>
+  <div class="hero-overlay"></div>
+  <div class="hero-overlay-radial"></div>
+
+  <!-- 도메인 낙하 텍스트: 히어로(유니콘스튜디오) 영역 안에서만 떨어지고 바닥에 쌓임 -->
+  <div id="falling-text-physics">
+    <div id="falling-words"></div>
+  </div>
+
+  <div class="relative z-10 max-w-3xl mx-auto text-center pt-12">
+    <div class="fade-up s1">
+      <div class="inline-flex items-center gap-2.5 px-4 py-1.5 rounded-full border border-navy-800/40 bg-navy-950/50 text-[10px] font-mono tracking-[0.18em] text-text-400 uppercase mb-9" style="backdrop-filter:blur(8px)">
+        <span class="w-1.5 h-1.5 rounded-full bg-navy-500 pulse-dot"></span>
+        RIFTBOUND · TCG · KOREA
+      </div>
+    </div>
+
+    <!-- ===== LOGO (hero) ===== -->
+    <div class="fade-up s2 hero-logo mb-7" id="hero-logo-slot">
+      <img src="/img/brand/whale-logo.png" alt="민물고래 — Riftbound Whale" width="2172" height="724" fetchpriority="high"/>
+      <div class="logo-en">Riftbound Whale</div>
+    </div>
+
+    <p class="fade-up s3 text-[15px] sm:text-lg md:text-xl text-text-300 font-light max-w-xl mx-auto mb-2.5 leading-relaxed tracking-[-0.01em]"
+       data-ko="리프트바운드 크리에이터 · 카드 컬렉터 · 커뮤니티" data-en="Riftbound Creator · Card Collector · Community">리프트바운드 크리에이터 · 카드 컬렉터 · 커뮤니티</p>
+    <p class="fade-up s3 text-sm text-text-500 max-w-md mx-auto mb-3"
+       data-ko="League of Legends TCG · 한국어판 · 영문판 · 중문판 아카이브" data-en="League of Legends TCG · KR · EN · CN card archive">League of Legends TCG · 한국어판 · 영문판 · 중문판 아카이브</p>
+    <p class="fade-up s3 text-[12px] text-navy-300/70 font-mono tracking-[0.08em] max-w-md mx-auto mb-6"
+       data-ko="리프트바운드를 사랑하는 민물고래입니다." data-en="A creator who simply loves Riftbound.">리프트바운드를 사랑하는 민물고래입니다.</p>
+
+    <div class="fade-up s5 flex flex-wrap justify-center gap-3 mt-9">
+      <a href="https://www.youtube.com/@riftbound-whale" target="_blank" rel="noopener" class="btn-primary px-6 py-2.5 rounded-xl text-[13px] flex items-center gap-2" style="backdrop-filter:blur(4px)">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+        <span data-ko="유튜브 구독" data-en="Subscribe">유튜브 구독</span>
+      </a>
+      <a href="/collection" class="btn-gold px-6 py-2.5 rounded-xl text-[13px] flex items-center gap-2" style="backdrop-filter:blur(4px)">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="3" width="13" height="18" rx="2"/><path d="M8 21h10a2 2 0 0 0 2-2V7"/></svg>
+        <span data-ko="카드 도감" data-en="Card Collection">카드 도감</span>
+      </a>
+      <a href="https://www.instagram.com/riftbound_whale/" target="_blank" rel="noopener" class="btn-ghost px-6 py-2.5 rounded-xl text-[13px] flex items-center gap-2" style="backdrop-filter:blur(4px)">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4.4"/><circle cx="17.6" cy="6.4" r="1.1" fill="currentColor" stroke="none"/></svg>
+        Instagram
+      </a>
+      <a href="https://x.com/Riftbound_KR" target="_blank" rel="noopener" class="btn-ghost px-6 py-2.5 rounded-xl text-[13px] flex items-center gap-2" style="backdrop-filter:blur(4px)">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+        X
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- LINKS (링크모음) -->
+<section id="links" class="px-6" style="padding-top:4.5rem;padding-bottom:5rem">
+  <div class="max-w-3xl mx-auto">
+    <div class="fade-up"><div class="divider mb-8"></div></div>
+    <p class="fade-up text-[10px] font-mono tracking-[0.2em] uppercase text-navy-400 mb-4">Links</p>
+    <h2 class="fade-up text-2xl md:text-[2.1rem] font-bold text-text-100 mb-3 tracking-tight" data-ko="링크 모음" data-en="All Links">링크 모음</h2>
+    <p class="fade-up text-text-500 text-[13px] mb-9" data-ko="채널, 도감, 아카이브 — 한 곳에서." data-en="Channels, archives, tools — all in one place.">채널, 도감, 아카이브 — 한 곳에서.</p>
+
+    <!-- Featured: 도감 / T1 아카이브 -->
+    <div class="grid sm:grid-cols-2 gap-3 mb-3">
+      <a href="/collection" class="featured-card fade-up s1">
+        <img class="f-icon" src="/img-collection.png" alt="Card Collection" width="46" height="46">
+        <div class="f-title"><span data-ko="카드 도감" data-en="Card Collection">카드 도감</span><span class="tag-gold font-mono px-2 py-0.5 rounded-md">LIVE</span></div>
+        <div class="f-desc" data-ko="1,275장 카드 트래커 · TCGplayer 실시간 시세 · 한국어/영문/중문판 지원" data-en="1,275-card tracker · live TCGplayer prices · KR / EN / CN support">1,275장 카드 트래커 · TCGplayer 실시간 시세 · 한국어/영문/중문판 지원</div>
+        <div class="f-go">rbwhale.com/collection →</div>
+      </a>
+      <a href="/t1korean" class="featured-card fade-up s2">
+        <img class="f-icon" src="/img-t1.webp" alt="T1" width="46" height="46" style="background:#fff;padding:7px">
+        <div class="f-title"><span data-ko="T1 시리얼 아카이브" data-en="T1 Serial Archive">T1 시리얼 아카이브</span></div>
+        <div class="f-desc" data-ko="한국판 T1 시그니처 에디션 · 시리얼 넘버 기록 및 검색" data-en="T1 Signature Edition (KR) · serial number registry &amp; search">한국판 T1 시그니처 에디션 · 시리얼 넘버 기록 및 검색</div>
+        <div class="f-go">rbwhale.com/t1korean →</div>
+      </a>
+    </div>
+
+    <!-- Channels -->
+    <div class="grid sm:grid-cols-2 gap-3" id="social-grid">
+      <a href="https://www.youtube.com/@riftbound-whale" target="_blank" rel="noopener" class="social-link rounded-2xl p-4 flex items-center gap-4 fade-up s1" data-preview="true" tabindex="0">
+        <div class="profile-preview">
+          <div class="profile-preview-inner">
+            <img src="/img/brand/avatar.jpg" alt="민물고래" class="preview-avatar-img"/>
+            <p class="preview-platform">YouTube</p>
+            <p class="preview-name">@riftbound-whale</p>
+          </div>
+        </div>
+        <div class="w-9 h-9 rounded-lg bg-navy-950/50 border border-navy-800/20 flex items-center justify-center shrink-0">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="#ff4d4d"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+        </div>
+        <div>
+          <p class="text-text-100 font-semibold text-[13px]" data-ko="유튜브 — 리프트바운드" data-en="YouTube — Riftbound">유튜브 — 리프트바운드</p>
+          <p class="text-text-500 text-[10px] font-mono">@riftbound-whale</p>
+        </div>
+      </a>
+
+      <a href="https://www.instagram.com/riftbound_whale/" target="_blank" rel="noopener" class="social-link rounded-2xl p-4 flex items-center gap-4 fade-up s2" data-preview="true" tabindex="0">
+        <div class="profile-preview">
+          <div class="profile-preview-inner">
+            <img src="/img/brand/avatar.jpg" alt="민물고래" class="preview-avatar-img"/>
+            <p class="preview-platform">Instagram</p>
+            <p class="preview-name">@riftbound_whale</p>
+          </div>
+        </div>
+        <div class="w-9 h-9 rounded-lg bg-navy-950/50 border border-navy-800/20 flex items-center justify-center shrink-0">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#e1709c" stroke-width="1.8"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4.4"/><circle cx="17.6" cy="6.4" r="1.1" fill="#e1709c" stroke="none"/></svg>
+        </div>
+        <div>
+          <p class="text-text-100 font-semibold text-[13px]">Instagram</p>
+          <p class="text-text-500 text-[10px] font-mono">@riftbound_whale</p>
+        </div>
+      </a>
+
+      <a href="https://x.com/Riftbound_KR" target="_blank" rel="noopener" class="social-link rounded-2xl p-4 flex items-center gap-4 fade-up s3" data-preview="true" tabindex="0">
+        <div class="profile-preview">
+          <div class="profile-preview-inner">
+            <img src="/img/brand/avatar.jpg" alt="민물고래" class="preview-avatar-img"/>
+            <p class="preview-platform">X</p>
+            <p class="preview-name">@Riftbound_KR</p>
+          </div>
+        </div>
+        <div class="w-9 h-9 rounded-lg bg-navy-950/50 border border-navy-800/20 flex items-center justify-center shrink-0">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+        </div>
+        <div>
+          <p class="text-text-100 font-semibold text-[13px]" data-ko="X — 리프트바운드 KR" data-en="X — Riftbound KR">X — 리프트바운드 KR</p>
+          <p class="text-text-500 text-[10px] font-mono">@Riftbound_KR</p>
+        </div>
+      </a>
+
+      <a href="mailto:riftboundkr@gmail.com" class="social-link rounded-2xl p-4 flex items-center gap-4 fade-up s4" data-preview="true" tabindex="0">
+        <div class="profile-preview">
+          <div class="profile-preview-inner">
+            <div class="preview-avatar" style="background:linear-gradient(135deg,#0d1525,#1a2d5a)"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#a0bff0" stroke-width="1.5"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg></div>
+            <p class="preview-platform">Email</p>
+            <p class="preview-name">riftboundkr@gmail.com</p>
+          </div>
+        </div>
+        <div class="w-9 h-9 rounded-lg bg-navy-950/50 border border-navy-800/20 flex items-center justify-center shrink-0">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+        </div>
+        <div>
+          <p class="text-text-100 font-semibold text-[13px]" data-ko="이메일 / 비즈니스 문의" data-en="Email / Business">이메일 / 비즈니스 문의</p>
+          <p class="text-text-500 text-[10px] font-mono">riftboundkr@gmail.com</p>
+        </div>
+      </a>
+    </div>
+
+    <!-- 관리자 페이지(/admin)에서 등록한 링크 -->
+    <div id="fb-links-wrap" class="mt-10 hidden">
+      <p class="text-[10px] font-mono tracking-[0.2em] uppercase text-navy-400 mb-4">Notice &amp; Events</p>
+      <h3 class="text-lg font-bold text-text-100 mb-5 tracking-tight" data-ko="공지 · 예약 링크" data-en="Notices &amp; Bookings">공지 · 예약 링크</h3>
+      <div class="grid gap-3" id="fb-links"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ABOUT -->
+<section id="about" class="section-gap px-6" style="background:rgba(10,13,20,0.5)">
+  <div class="max-w-3xl mx-auto">
+    <div class="fade-up"><div class="divider mb-8"></div></div>
+    <p class="fade-up text-[10px] font-mono tracking-[0.2em] uppercase text-navy-400 mb-4">About</p>
+    <h2 class="fade-up text-2xl md:text-[2.1rem] font-bold text-text-100 mb-7 tracking-tight leading-tight"
+        data-ko="모으고, 열고, 기록합니다." data-en="Collect. Open. Archive.">모으고, 열고, 기록합니다.</h2>
+    <div class="fade-up space-y-4">
+      <p class="text-text-300 text-[15px] md:text-base leading-[1.8] font-light"
+         data-ko="안녕하세요, <span class='text-text-100 font-medium'>민물고래</span>입니다. 리그 오브 레전드 TCG <span class='text-text-100 font-medium'>리프트바운드(Riftbound)</span>를 중심으로 카드 개봉, 세트 리뷰, 플레이 가이드, 행사 현장 콘텐츠를 만듭니다. 유튜브·인스타그램·X에서 한국 플레이어들에게 가장 빠르고 정확한 리프트바운드 소식을 전하는 것이 목표입니다."
+         data-en="Hi, I'm <span class='text-text-100 font-medium'>Minmulgorae (민물고래)</span> — a creator focused on <span class='text-text-100 font-medium'>Riftbound</span>, the League of Legends TCG. I make pack openings, set reviews, rules guides, and on-site event coverage, with the goal of bringing Korean players the fastest and most accurate Riftbound coverage available.">안녕하세요, <span class="text-text-100 font-medium">민물고래</span>입니다. 리그 오브 레전드 TCG <span class="text-text-100 font-medium">리프트바운드(Riftbound)</span>를 중심으로 카드 개봉, 세트 리뷰, 플레이 가이드, 행사 현장 콘텐츠를 만듭니다. 유튜브·인스타그램·X에서 한국 플레이어들에게 가장 빠르고 정확한 리프트바운드 소식을 전하는 것이 목표입니다.</p>
+      <p class="text-text-400 text-sm leading-[1.8]"
+         data-ko="영상만으로는 부족해서 직접 도구도 만듭니다. <span class='text-text-100 font-medium'>rbwhale.com</span>에서는 한국어판·영문판·중문판 카드를 한 번에 볼 수 있는 카드 도감과 TCGplayer 실시간 시세, 그리고 한국판 T1 시그니처 에디션 시리얼 아카이브를 운영하고 있습니다. 모으는 재미와 기록하는 재미를 같이 나누는 게 이 사이트의 이유입니다."
+         data-en="Videos alone weren't enough, so I build tools too. <span class='text-text-100 font-medium'>rbwhale.com</span> hosts a card collection tracker covering the Korean, English, and Chinese printings with live TCGplayer pricing, plus a serial registry for the Korean T1 Signature Edition. Collecting is fun — documenting it is the other half.">영상만으로는 부족해서 직접 도구도 만듭니다. <span class="text-text-100 font-medium">rbwhale.com</span>에서는 한국어판·영문판·중문판 카드를 한 번에 볼 수 있는 카드 도감과 TCGplayer 실시간 시세, 그리고 한국판 T1 시그니처 에디션 시리얼 아카이브를 운영하고 있습니다. 모으는 재미와 기록하는 재미를 같이 나누는 게 이 사이트의 이유입니다.</p>
+    </div>
+    <div class="fade-up flex flex-wrap gap-2 mt-7">
+      <span class="tag font-mono px-3 py-1.5 rounded-lg">Riftbound</span>
+      <span class="tag font-mono px-3 py-1.5 rounded-lg" data-ko="카드깡 · 개봉" data-en="Pack Opening">카드깡 · 개봉</span>
+      <span class="tag font-mono px-3 py-1.5 rounded-lg" data-ko="플레이 가이드" data-en="Rules Guide">플레이 가이드</span>
+      <span class="tag font-mono px-3 py-1.5 rounded-lg" data-ko="카드 도감" data-en="Collection Tracker">카드 도감</span>
+      <span class="tag font-mono px-3 py-1.5 rounded-lg" data-ko="T1 시그니처" data-en="T1 Signature">T1 시그니처</span>
+      <span class="tag font-mono px-3 py-1.5 rounded-lg" data-ko="한국 커뮤니티" data-en="KR Community">한국 커뮤니티</span>
+    </div>
+  </div>
+</section>
+
+<!-- SIGNAL BOARD -->
+<section id="signal" class="px-6" style="padding-top:4.5rem;padding-bottom:4.5rem">
+  <div class="max-w-3xl mx-auto">
+    <div class="fade-up"><div class="divider mb-8"></div></div>
+    <p class="fade-up text-[10px] font-mono tracking-[0.2em] uppercase text-navy-400 mb-4">Dashboard</p>
+    <h2 class="fade-up text-2xl md:text-[2.1rem] font-bold text-text-100 mb-11 tracking-tight" data-ko="시그널 보드" data-en="Signal Board">시그널 보드</h2>
+    <div class="bento-grid fade-up">
+
+      <!-- Now -->
+      <div class="bento-card bento-now">
+        <div class="bento-label"><span class="bl-dot pulse-dot"></span> live</div>
+        <div class="bento-title" data-ko="요즘 하는 일" data-en="Now Working On">요즘 하는 일</div>
+        <div class="bento-desc" style="margin-bottom:8px" data-ko="현재 진행 중:" data-en="Currently:">현재 진행 중:</div>
+        <div style="display:flex;align-items:center;gap:4px">
+          <span style="color:#3460a8;font-family:'JetBrains Mono',monospace;font-size:12px">&gt;</span>
+          <div class="bento-rotate" id="bento-rotate">
+            <span class="active" data-ko="한국어판 오리진 도감 업데이트" data-en="updating the KR Origins archive">한국어판 오리진 도감 업데이트</span>
+            <span data-ko="카톤 브레이크 · 카드깡 촬영" data-en="filming case breaks &amp; pack openings">카톤 브레이크 · 카드깡 촬영</span>
+            <span data-ko="T1 시그니처 시리얼 수집" data-en="collecting T1 signature serials">T1 시그니처 시리얼 수집</span>
+            <span data-ko="플레이 가이드 시리즈 제작" data-en="building the rules guide series">플레이 가이드 시리즈 제작</span>
+          </div>
+          <span class="bento-cursor"></span>
+        </div>
+      </div>
+
+      <!-- Domains -->
+      <div class="bento-card">
+        <div class="bento-label"><span class="bl-dot"></span> domains</div>
+        <div class="bento-title" style="margin-bottom:12px">6 DOMAINS</div>
+        <div style="display:flex;gap:7px;flex-wrap:wrap">
+          <span style="width:13px;height:13px;border-radius:50%;background:#e5484d;box-shadow:0 0 12px #e5484d66" title="Fury"></span>
+          <span style="width:13px;height:13px;border-radius:50%;background:#46a758;box-shadow:0 0 12px #46a75866" title="Calm"></span>
+          <span style="width:13px;height:13px;border-radius:50%;background:#3e8ede;box-shadow:0 0 12px #3e8ede66" title="Mind"></span>
+          <span style="width:13px;height:13px;border-radius:50%;background:#f76b15;box-shadow:0 0 12px #f76b1566" title="Body"></span>
+          <span style="width:13px;height:13px;border-radius:50%;background:#8e4ec6;box-shadow:0 0 12px #8e4ec666" title="Chaos"></span>
+          <span style="width:13px;height:13px;border-radius:50%;background:#f5d90a;box-shadow:0 0 12px #f5d90a66" title="Order"></span>
+        </div>
+        <div class="bento-desc" style="margin-top:10px" data-ko="분노 · 평온 · 정신 · 신체 · 혼돈 · 질서" data-en="Fury · Calm · Mind · Body · Chaos · Order">분노 · 평온 · 정신 · 신체 · 혼돈 · 질서</div>
+      </div>
+
+      <!-- Archive signal -->
+      <div class="bento-card" style="grid-column:span 2">
+        <div class="bento-label"><span class="bl-dot"></span> signal</div>
+        <div class="bento-title">KR ⇄ EN ⇄ CN ⇄ TCG</div>
+        <div class="bento-desc" data-ko="세 언어판 카드를 한 도감에서. 발매 지역이 달라도 기록은 하나로." data-en="Three printings, one archive — regions differ, the record doesn't.">세 언어판 카드를 한 도감에서. 발매 지역이 달라도 기록은 하나로.</div>
+        <div class="node-canvas">
+          <div class="node-dot animated" style="left:5%;top:50%"></div>
+          <div class="node-dot animated" style="left:32%;top:30%"></div>
+          <div class="node-dot animated" style="left:62%;top:55%"></div>
+          <div class="node-dot animated" style="left:90%;top:35%"></div>
+          <div class="node-line" style="left:6%;top:52%;width:26%;transform:rotate(-8deg)"><div class="signal-dot"></div></div>
+          <div class="node-line" style="left:33%;top:35%;width:29%;transform:rotate(8deg)"><div class="signal-dot" style="animation-delay:1.2s"></div></div>
+          <div class="node-line" style="left:63%;top:52%;width:27%;transform:rotate(-8deg)"><div class="signal-dot" style="animation-delay:2.4s"></div></div>
+          <span class="node-label" style="left:1%;top:0">KR</span>
+          <span class="node-label" style="left:29%;top:0">EN</span>
+          <span class="node-label" style="left:58%;top:0">CN</span>
+          <span class="node-label" style="left:85%;top:0">TCG</span>
+        </div>
+      </div>
+
+      <!-- Card lab -->
+      <div class="bento-card">
+        <div class="bento-label"><span class="bl-dot"></span> lab</div>
+        <div class="bento-title" data-ko="카드깡 연구소" data-en="Pack Opening Lab">카드깡 연구소</div>
+        <div class="bento-video-thumb" onclick="document.getElementById('video').scrollIntoView({behavior:'smooth'})">
+          <div class="play-icon">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="#6d9be0"><path d="M8 5v14l11-7z"/></svg>
+          </div>
+        </div>
+        <div class="bento-desc" style="margin-top:8px;font-size:11px" data-ko="개봉 · 카톤 브레이크 · 시크릿 사냥" data-en="Openings · case breaks · chasing secrets">개봉 · 카톤 브레이크 · 시크릿 사냥</div>
+      </div>
+
+      <!-- Command palette -->
+      <div class="bento-card bento-cmd" id="bento-cmd-card">
+        <div class="bento-label"><span class="bl-dot"></span> utility</div>
+        <div class="bento-title" style="margin-bottom:10px" data-ko="커맨드 팔레트" data-en="Command Palette">커맨드 팔레트</div>
+        <div style="display:flex;align-items:center;gap:6px;margin-bottom:8px">
+          <span class="bento-kbd" id="bento-cmd-kbd">Ctrl+K</span>
+          <span style="font-size:10px;color:#404a5c" data-ko="또는" data-en="or">또는</span>
+          <span class="bento-kbd">/</span>
+        </div>
+        <div class="bento-desc" data-ko="검색 한 번으로 링크·섹션·도감까지 이동." data-en="Jump to any link, section, or the archive.">검색 한 번으로 링크·섹션·도감까지 이동.</div>
+      </div>
+
+      <!-- Collection stats -->
+      <div class="bento-card">
+        <div class="bento-label"><span class="bl-dot"></span> archive</div>
+        <div class="stat-num" id="stat-cards">1,275</div>
+        <div class="stat-sub" data-ko="등록된 카드" data-en="cards indexed">등록된 카드</div>
+        <div class="waveform-container" id="waveform"></div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- JOURNEY -->
+<section id="experience" class="section-gap px-6" style="background:rgba(10,13,20,0.5)">
+  <div class="max-w-3xl mx-auto">
+    <div class="fade-up"><div class="divider mb-8"></div></div>
+    <p class="fade-up text-[10px] font-mono tracking-[0.2em] uppercase text-navy-400 mb-4">Timeline</p>
+    <h2 class="fade-up text-2xl md:text-[2.1rem] font-bold text-text-100 mb-11 tracking-tight" data-ko="여정" data-en="Journey">여정</h2>
+    <div class="space-y-3">
+
+      <div class="fade-up card p-5 md:p-6">
+        <div class="flex items-start gap-4">
+          <div class="shrink-0 mt-1"><span class="text-[11px] font-mono font-semibold text-navy-300 bg-navy-900/40 border border-navy-800/20 rounded-md px-2.5 py-1">2026.08</span></div>
+          <div>
+            <h3 class="text-text-100 font-semibold text-[14px] mb-1" data-ko="채널 시작" data-en="Channel Launch">채널 시작</h3>
+            <p class="text-text-400 text-[13px] leading-relaxed" data-ko="T1 싸인 한정 카드 중국어판 티저 시리즈로 리프트바운드 콘텐츠를 시작했습니다." data-en="Started covering Riftbound with a teaser series on the Chinese-language T1 signed limited cards.">T1 싸인 한정 카드 중국어판 티저 시리즈로 리프트바운드 콘텐츠를 시작했습니다.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="fade-up card p-5 md:p-6">
+        <div class="flex items-start gap-4">
+          <div class="shrink-0 mt-1"><span class="text-[11px] font-mono font-semibold text-navy-300 bg-navy-900/40 border border-navy-800/20 rounded-md px-2.5 py-1">2026.08</span></div>
+          <div>
+            <h3 class="text-text-100 font-semibold text-[14px] mb-1" data-ko="개봉의 시대" data-en="Opening Season">개봉의 시대</h3>
+            <p class="text-text-400 text-[13px] leading-relaxed" data-ko="VENDETTA · NEXUS NIGHT · ORIGIN 개봉 콘텐츠와 T1 시그니처 에디션 구매 가이드를 제작했습니다." data-en="Produced opening content for VENDETTA, NEXUS NIGHT and ORIGIN, plus buying guides for the T1 Signature Edition.">VENDETTA · NEXUS NIGHT · ORIGIN 개봉 콘텐츠와 T1 시그니처 에디션 구매 가이드를 제작했습니다.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="fade-up card p-5 md:p-6">
+        <div class="flex items-start gap-4">
+          <div class="shrink-0 mt-1"><span class="text-[11px] font-mono font-semibold text-gold-400 bg-navy-900/40 border border-navy-800/20 rounded-md px-2.5 py-1">2026.09</span></div>
+          <div>
+            <h3 class="text-text-100 font-semibold text-[14px] mb-1" data-ko="rbwhale.com 도감 오픈" data-en="rbwhale.com Archive">rbwhale.com 도감 오픈</h3>
+            <p class="text-text-400 text-[13px] leading-relaxed" data-ko="영문판·중문판에 이어 한국어판 카드까지 도감에 추가하고, TCGplayer 시세 연동과 T1 시리얼 아카이브를 열었습니다." data-en="Added Korean cards to the archive alongside the English and Chinese printings, wired up TCGplayer pricing, and opened the T1 serial registry.">영문판·중문판에 이어 한국어판 카드까지 도감에 추가하고, TCGplayer 시세 연동과 T1 시리얼 아카이브를 열었습니다.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="fade-up card p-5 md:p-6">
+        <div class="flex items-start gap-4">
+          <div class="shrink-0 mt-1"><span class="text-[11px] font-mono font-semibold text-navy-300 bg-navy-900/40 border border-navy-800/20 rounded-md px-2.5 py-1">2026.09</span></div>
+          <div>
+            <h3 class="text-text-100 font-semibold text-[14px] mb-1" data-ko="GGX 2026 현장" data-en="GGX 2026 On-Site">GGX 2026 현장</h3>
+            <p class="text-text-400 text-[13px] leading-relaxed" data-ko="라이엇 코리아 GGX 행사 현장을 다녀왔고, 세계 최초 한글판 오리진 카톤 브레이크를 기록했습니다." data-en="Covered Riot Korea's GGX event on site, and documented the world's first Korean-language Origins case break.">라이엇 코리아 GGX 행사 현장을 다녀왔고, 세계 최초 한글판 오리진 카톤 브레이크를 기록했습니다.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="fade-up card p-5 md:p-6">
+        <div class="flex items-start gap-4">
+          <div class="shrink-0 mt-1"><span class="text-[11px] font-mono font-semibold text-gold-400 bg-navy-900/40 border border-navy-800/20 rounded-md px-2.5 py-1" data-ko="현재" data-en="Now">현재</span></div>
+          <div>
+            <h3 class="text-text-100 font-semibold text-[14px] mb-1" data-ko="더 쉽게, 더 멀리" data-en="Easier, Further">더 쉽게, 더 멀리</h3>
+            <p class="text-text-400 text-[13px] leading-relaxed" data-ko="규칙을 처음 배우는 사람도 이해할 수 있는 플레이 가이드 시리즈를 만들면서, 한국 리프트바운드 커뮤니티를 키우고 있습니다." data-en="Building a rules guide series for complete beginners while growing the Korean Riftbound community.">규칙을 처음 배우는 사람도 이해할 수 있는 플레이 가이드 시리즈를 만들면서, 한국 리프트바운드 커뮤니티를 키우고 있습니다.</p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- RIFTBOUND -->
+<section id="riftbound" class="section-gap px-6">
+  <div class="max-w-3xl mx-auto">
+    <div class="fade-up"><div class="divider mb-8"></div></div>
+    <p class="fade-up text-[10px] font-mono tracking-[0.2em] uppercase text-navy-400 mb-4">The Game</p>
+    <h2 class="fade-up text-2xl md:text-[2.1rem] font-bold text-text-100 mb-3 tracking-tight" data-ko="리프트바운드란" data-en="What is Riftbound">리프트바운드란</h2>
+    <p class="fade-up text-text-400 text-[14px] leading-[1.8] mb-10 max-w-xl"
+       data-ko="리프트바운드는 리그 오브 레전드 세계관을 바탕으로 한 트레이딩 카드 게임입니다. 여섯 개의 도메인이 카드의 성격과 전략을 결정하고, 룬과 챔피언, 그리고 거점 싸움이 승부를 가릅니다."
+       data-en="Riftbound is the trading card game set in the League of Legends universe. Six domains define a card's identity and strategy, while runes, champions, and the fight over battlefields decide the game.">리프트바운드는 리그 오브 레전드 세계관을 바탕으로 한 트레이딩 카드 게임입니다. 여섯 개의 도메인이 카드의 성격과 전략을 결정하고, 룬과 챔피언, 그리고 거점 싸움이 승부를 가릅니다.</p>
+
+    <div class="domain-grid fade-up mb-12">
+      <div class="domain-card" style="--dc:#e5484d">
+        <div class="d-dot"></div>
+        <div class="d-ko" data-ko="분노" data-en="Fury">분노</div>
+        <div class="d-en">Fury</div>
+        <div class="d-note" data-ko="정면돌파. 속도로 밀어붙이는 공격." data-en="Head-on aggression that wins on tempo.">정면돌파. 속도로 밀어붙이는 공격.</div>
+      </div>
+      <div class="domain-card" style="--dc:#46a758">
+        <div class="d-dot"></div>
+        <div class="d-ko" data-ko="평온" data-en="Calm">평온</div>
+        <div class="d-en">Calm</div>
+        <div class="d-note" data-ko="자원과 흐름. 길게 보고 이기는 쪽." data-en="Resources and flow — the long game.">자원과 흐름. 길게 보고 이기는 쪽.</div>
+      </div>
+      <div class="domain-card" style="--dc:#3e8ede">
+        <div class="d-dot"></div>
+        <div class="d-ko" data-ko="정신" data-en="Mind">정신</div>
+        <div class="d-en">Mind</div>
+        <div class="d-note" data-ko="드로우와 계산. 판을 읽는 힘." data-en="Draw and calculation — reading the board.">드로우와 계산. 판을 읽는 힘.</div>
+      </div>
+      <div class="domain-card" style="--dc:#f76b15">
+        <div class="d-dot"></div>
+        <div class="d-ko" data-ko="신체" data-en="Body">신체</div>
+        <div class="d-en">Body</div>
+        <div class="d-note" data-ko="체급과 지속력. 버티면 이긴다." data-en="Size and staying power — outlast them.">체급과 지속력. 버티면 이긴다.</div>
+      </div>
+      <div class="domain-card" style="--dc:#8e4ec6">
+        <div class="d-dot"></div>
+        <div class="d-ko" data-ko="혼돈" data-en="Chaos">혼돈</div>
+        <div class="d-en">Chaos</div>
+        <div class="d-note" data-ko="변수와 파괴. 계획을 부수는 쪽." data-en="Variance and disruption — break the plan.">변수와 파괴. 계획을 부수는 쪽.</div>
+      </div>
+      <div class="domain-card" style="--dc:#f5d90a">
+        <div class="d-dot"></div>
+        <div class="d-ko" data-ko="질서" data-en="Order">질서</div>
+        <div class="d-en">Order</div>
+        <div class="d-note" data-ko="규칙과 방어. 정석으로 굳히는 판." data-en="Rules and defense — lock the board down.">규칙과 방어. 정석으로 굳히는 판.</div>
+      </div>
+    </div>
+
+    <p class="fade-up text-[10px] font-mono tracking-[0.2em] uppercase text-navy-400 mb-4">Sets</p>
+    <h3 class="fade-up text-lg font-bold text-text-100 mb-6 tracking-tight" data-ko="도감에 등록된 세트" data-en="Sets in the Archive">도감에 등록된 세트</h3>
+    <div class="grid sm:grid-cols-2 gap-2.5 fade-up" id="set-list">
+      <div class="set-chip"><span class="s-id">OGN</span><span class="s-name">Origins</span><span class="s-cnt">—</span></div>
+      <div class="set-chip"><span class="s-id">OGS</span><span class="s-name">Proving Grounds</span><span class="s-cnt">—</span></div>
+      <div class="set-chip"><span class="s-id">VEN</span><span class="s-name">Vendetta</span><span class="s-cnt">—</span></div>
+      <div class="set-chip"><span class="s-id">UNL</span><span class="s-name">Unleashed</span><span class="s-cnt">—</span></div>
+    </div>
+
+    <a href="/collection" class="fade-up btn-gold mt-10 w-full flex items-center justify-between gap-4 px-6 py-5 rounded-2xl">
+      <span>
+        <span class="block text-[15px] font-bold" data-ko="카드 도감 열기" data-en="Open the Card Archive">카드 도감 열기</span>
+        <span class="block text-[11px] font-normal opacity-70 mt-1" data-ko="보유 카드 체크 · 시세 확인 · 도감 가치 계산" data-en="Track what you own · check prices · value your collection">보유 카드 체크 · 시세 확인 · 도감 가치 계산</span>
+      </span>
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
     </a>
   </div>
+</section>
 
-  <div class="divider"><span>Links</span></div>
-  <div class="links" id="links">
-    <div class="skeleton"></div>
-    <div class="skeleton"></div>
+<!-- VIDEOS -->
+<section id="video" class="section-gap px-6" style="background:rgba(10,13,20,0.5)">
+  <div class="max-w-3xl mx-auto">
+    <div class="fade-up"><div class="divider mb-8"></div></div>
+    <p class="fade-up text-[10px] font-mono tracking-[0.2em] uppercase text-navy-400 mb-4">Showreel</p>
+    <h2 class="fade-up text-2xl md:text-[2.1rem] font-bold text-text-100 mb-2.5 tracking-tight" data-ko="유튜브 영상" data-en="YouTube">유튜브 영상</h2>
+    <p class="fade-up text-text-500 text-[13px] mb-11 max-w-md" data-ko="개봉, 행사 현장, 그리고 규칙 가이드까지." data-en="Openings, event coverage, and rules guides.">개봉, 행사 현장, 그리고 규칙 가이드까지.</p>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+      <div class="video-card fade-up">
+        <div class="video-frame" data-yt="RdUPHzoVhF8" role="button" tabindex="0" aria-label="GGX 2026"><img class="v-thumb" src="https://i.ytimg.com/vi/RdUPHzoVhF8/maxresdefault.jpg" alt="GGX 2026" loading="lazy" onerror="this.onerror=null;this.src='https://i.ytimg.com/vi/RdUPHzoVhF8/hqdefault.jpg'"/><div class="v-shade"></div><div class="v-play"><svg width="20" height="20" viewBox="0 0 24 24" fill="#fff"><path d="M8 5v14l11-7z"/></svg></div></div>
+        <div class="video-meta">
+          <p class="v-title" data-ko="감다살 라이엇 코리아! 너무너무너무 재밌었던 GGX 행사 후기" data-en="GGX 2026 event recap — Riot Korea delivered">감다살 라이엇 코리아! 너무너무너무 재밌었던 GGX 행사 후기</p>
+          <p class="v-date">2026.09.19</p>
+        </div>
+      </div>
+
+      <div class="video-card fade-up">
+        <div class="video-frame" data-yt="uYZ_mmE7kfo" role="button" tabindex="0" aria-label="한글판 오리진 카톤브레이크"><img class="v-thumb" src="https://i.ytimg.com/vi/uYZ_mmE7kfo/maxresdefault.jpg" alt="한글판 오리진 카톤브레이크" loading="lazy" onerror="this.onerror=null;this.src='https://i.ytimg.com/vi/uYZ_mmE7kfo/hqdefault.jpg'"/><div class="v-shade"></div><div class="v-play"><svg width="20" height="20" viewBox="0 0 24 24" fill="#fff"><path d="M8 5v14l11-7z"/></svg></div></div>
+        <div class="video-meta">
+          <p class="v-title" data-ko="한글판 오리진 세계최초 카톤브레이크 — 한국 한정 아리가 나오면 얼마?" data-en="World-first Korean Origins case break — what's the KR-exclusive Ahri worth?">한글판 오리진 세계최초 카톤브레이크 — 한국 한정 아리가 나오면 얼마?</p>
+          <p class="v-date">2026.09.17</p>
+        </div>
+      </div>
+
+      <div class="video-card fade-up">
+        <div class="video-frame" data-yt="5MLZlHckBiM" role="button" tabindex="0" aria-label="T1 시그니처 에디션 개봉"><img class="v-thumb" src="https://i.ytimg.com/vi/5MLZlHckBiM/maxresdefault.jpg" alt="T1 시그니처 에디션 개봉" loading="lazy" onerror="this.onerror=null;this.src='https://i.ytimg.com/vi/5MLZlHckBiM/hqdefault.jpg'"/><div class="v-shade"></div><div class="v-play"><svg width="20" height="20" viewBox="0 0 24 24" fill="#fff"><path d="M8 5v14l11-7z"/></svg></div></div>
+        <div class="video-meta">
+          <p class="v-title" data-ko="민물고래도 까봤다 — T1 시그니처 에디션 개봉" data-en="Opening the T1 Signature Edition">민물고래도 까봤다 — T1 시그니처 에디션 개봉</p>
+          <p class="v-date">2026.09.14</p>
+        </div>
+      </div>
+
+      <div class="video-card fade-up">
+        <div class="video-frame" data-yt="udRX35zj4s8" role="button" tabindex="0" aria-label="플레이 가이드 1"><img class="v-thumb" src="https://i.ytimg.com/vi/udRX35zj4s8/maxresdefault.jpg" alt="플레이 가이드 1" loading="lazy" onerror="this.onerror=null;this.src='https://i.ytimg.com/vi/udRX35zj4s8/hqdefault.jpg'"/><div class="v-shade"></div><div class="v-play"><svg width="20" height="20" viewBox="0 0 24 24" fill="#fff"><path d="M8 5v14l11-7z"/></svg></div></div>
+        <div class="video-meta">
+          <p class="v-title" data-ko="플레이 쉽게 이해하기 #1 — 탈진상태와 준비상태" data-en="Riftbound made simple #1 — exhausted vs. ready">플레이 쉽게 이해하기 #1 — 탈진상태와 준비상태</p>
+          <p class="v-date">2026.09.19</p>
+        </div>
+      </div>
+
+      <div class="video-card fade-up">
+        <div class="video-frame" data-yt="E35HZrFKRvQ" role="button" tabindex="0" aria-label="VENDETTA & NEXUS NIGHT ORIGIN"><img class="v-thumb" src="https://i.ytimg.com/vi/E35HZrFKRvQ/maxresdefault.jpg" alt="VENDETTA & NEXUS NIGHT ORIGIN" loading="lazy" onerror="this.onerror=null;this.src='https://i.ytimg.com/vi/E35HZrFKRvQ/hqdefault.jpg'"/><div class="v-shade"></div><div class="v-play"><svg width="20" height="20" viewBox="0 0 24 24" fill="#fff"><path d="M8 5v14l11-7z"/></svg></div></div>
+        <div class="video-meta">
+          <p class="v-title" data-ko="VENDETTA &amp; NEXUS NIGHT ORIGIN 카드깡 — 럭키가이가 될 수 있을까?" data-en="VENDETTA &amp; NEXUS NIGHT ORIGIN pack opening">VENDETTA &amp; NEXUS NIGHT ORIGIN 카드깡 — 럭키가이가 될 수 있을까?</p>
+          <p class="v-date">2026.08.12</p>
+        </div>
+      </div>
+
+      <div class="video-card fade-up">
+        <div class="video-frame" data-yt="M34EIFlw8tY" role="button" tabindex="0" aria-label="도감 한국어 카드 업데이트"><img class="v-thumb" src="https://i.ytimg.com/vi/M34EIFlw8tY/maxresdefault.jpg" alt="도감 한국어 카드 업데이트" loading="lazy" onerror="this.onerror=null;this.src='https://i.ytimg.com/vi/M34EIFlw8tY/hqdefault.jpg'"/><div class="v-shade"></div><div class="v-play"><svg width="20" height="20" viewBox="0 0 24 24" fill="#fff"><path d="M8 5v14l11-7z"/></svg></div></div>
+        <div class="video-meta">
+          <p class="v-title" data-ko="민물고래의 리프트바운드 도감 — 한국어 카드 업데이트 완료!" data-en="rbwhale.com archive — Korean cards are live">민물고래의 리프트바운드 도감 — 한국어 카드 업데이트 완료!</p>
+          <p class="v-date">2026.09.19</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="fade-up mt-8 text-center">
+      <a href="https://www.youtube.com/@riftbound-whale" target="_blank" rel="noopener" class="btn-ghost inline-flex items-center gap-2 px-6 py-2.5 rounded-xl text-[13px]">
+        <span data-ko="채널에서 전체 영상 보기" data-en="See all videos on the channel">채널에서 전체 영상 보기</span>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+      </a>
+    </div>
   </div>
+</section>
 
-  <footer class="hub-footer">
-    &copy; 2025 민물고래 · <a href="https://www.rbwhale.com">rbwhale.com</a>
-  </footer>
-</div>
+<!-- CONTACT -->
+<section id="contact" class="section-gap px-6">
+  <div class="max-w-xl mx-auto">
+    <div class="fade-up"><div class="divider mb-8"></div></div>
+    <p class="fade-up text-[10px] font-mono tracking-[0.2em] uppercase text-navy-400 mb-4">Reach Out</p>
+    <h2 class="fade-up text-2xl md:text-[2.1rem] font-bold text-text-100 mb-2.5 tracking-tight" data-ko="연락하기" data-en="Get in Touch">연락하기</h2>
+    <p class="fade-up text-text-500 text-[13px] mb-10" data-ko="협업, 제품 리뷰, 행사 제안 — 편하게 보내주세요." data-en="Collabs, product reviews, event coverage — say hello.">협업, 제품 리뷰, 행사 제안 — 편하게 보내주세요.</p>
+    <!-- Netlify Forms: 제출 시 Netlify가 수신 → 알림 메일이 riftboundkr@gmail.com 으로 발송됩니다 -->
+    <form id="contact-form" name="contact" method="POST" data-netlify="true" netlify-honeypot="bot-field" class="fade-up space-y-4">
+      <input type="hidden" name="form-name" value="contact"/>
+      <p class="hidden"><label>Don't fill this out: <input name="bot-field"/></label></p>
+      <div>
+        <label class="text-text-400 text-[10px] font-mono uppercase tracking-[0.15em] mb-2 block" data-ko="이름" data-en="Name">이름</label>
+        <input type="text" name="name" required placeholder="이름 / 채널명" class="w-full rounded-xl px-5 py-3 text-sm"/>
+      </div>
+      <div>
+        <label class="text-text-400 text-[10px] font-mono uppercase tracking-[0.15em] mb-2 block" data-ko="이메일" data-en="Email">이메일</label>
+        <input type="email" name="email" required placeholder="your@email.com" class="w-full rounded-xl px-5 py-3 text-sm"/>
+      </div>
+      <div>
+        <label class="text-text-400 text-[10px] font-mono uppercase tracking-[0.15em] mb-2 block" data-ko="내용" data-en="Message">내용</label>
+        <textarea name="message" required rows="4" placeholder="어떤 이야기인지 알려주세요..." class="w-full rounded-xl px-5 py-3 text-sm resize-none"></textarea>
+      </div>
+      <button type="submit" class="btn-primary w-full py-3 rounded-xl text-[13px] tracking-wide mt-1" data-ko="보내기" data-en="Send Message">보내기</button>
+      <div id="form-status" class="text-center text-sm hidden"></div>
+    </form>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="border-t border-white/[0.04] py-10 px-6">
+  <div class="max-w-3xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
+    <p class="text-text-600 text-[12px]">&copy; 2026 민물고래 · <a href="https://www.rbwhale.com" class="hover:text-text-300 transition-colors">rbwhale.com</a></p>
+    <div class="flex items-center gap-5">
+      <a href="https://www.youtube.com/@riftbound-whale" target="_blank" rel="noopener" class="text-text-600 hover:text-text-200 transition-colors duration-300" aria-label="YouTube">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+      </a>
+      <a href="https://www.instagram.com/riftbound_whale/" target="_blank" rel="noopener" class="text-text-600 hover:text-text-200 transition-colors duration-300" aria-label="Instagram">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4.4"/><circle cx="17.6" cy="6.4" r="1.1" fill="currentColor" stroke="none"/></svg>
+      </a>
+      <a href="https://x.com/Riftbound_KR" target="_blank" rel="noopener" class="text-text-600 hover:text-text-200 transition-colors duration-300" aria-label="X">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+      </a>
+      <a href="mailto:riftboundkr@gmail.com" class="text-text-600 hover:text-text-200 transition-colors duration-300" aria-label="Email">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+      </a>
+    </div>
+  </div>
+</footer>
 
 <button class="admin-fab" id="adminFab" title="관리자">&#9881;</button>
 
+<!-- COMMAND PALETTE -->
+<div class="cmd-overlay" id="cmd-overlay"></div>
+<div class="cmd-palette" id="cmd-palette">
+  <div class="cmd-input-wrap">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+    <input class="cmd-input" id="cmd-input" type="text" placeholder="명령을 입력하세요…" autocomplete="off" spellcheck="false"/>
+    <span style="font-size:10px;font-family:'JetBrains Mono',monospace;color:#404a5c">ESC</span>
+  </div>
+  <div class="cmd-list" id="cmd-list"></div>
+</div>
+<div class="cmd-hint" id="cmd-hint" title="커맨드 팔레트 열기">
+  <kbd>⌘K</kbd> <span>or</span> <kbd>/</kbd>
+</div>
+
+<div class="whale-trail whale-trail-0" id="wt0">🐋</div>
+<div class="whale-trail whale-trail-1" id="wt1">🐋</div>
+<div class="whale-trail whale-trail-2" id="wt2">🐋</div>
+<div class="whale-trail whale-trail-3" id="wt3">🐋</div>
+<div class="whale-trail whale-trail-4" id="wt4">🐋</div>
+<div class="whale-trail whale-trail-5" id="wt5">🐋</div>
+
+<!-- Unicorn Studio -->
+<script type="text/javascript">!function(){var u=window.UnicornStudio;if(u&&u.init){if(document.readyState==="loading"){document.addEventListener("DOMContentLoaded",function(){u.init()})}else{u.init()}}else{window.UnicornStudio={isInitialized:!1};var i=document.createElement("script");i.src="https://cdn.jsdelivr.net/gh/hiunicornstudio/unicornstudio.js@v2.2.14/dist/unicornStudio.umd.js",i.onload=function(){if(document.readyState==="loading"){document.addEventListener("DOMContentLoaded",function(){UnicornStudio.init()})}else{UnicornStudio.init()}},(document.head||document.body).appendChild(i)}}();</script>
+
+<script>
+var CONTACT_EMAIL = 'riftboundkr@gmail.com'; /* TODO: 실제 문의 이메일로 교체 */
+
+/* ===== i18n (KO / EN) ===== */
+var LANG = localStorage.getItem('rb_hub_lang') || 'ko';
+function applyLang(){
+  document.documentElement.lang = LANG === 'ko' ? 'ko' : 'en';
+  document.querySelectorAll('[data-ko]').forEach(function(el){
+    var t = el.getAttribute('data-' + LANG);
+    if (t !== null) el.innerHTML = t;
+  });
+  var label = LANG === 'ko' ? 'EN' : 'KO';
+  ['langBtn','langBtnM'].forEach(function(id){ var b=document.getElementById(id); if(b) b.textContent = label; });
+  var ci = document.getElementById('cmd-input');
+  if (ci) ci.placeholder = LANG === 'ko' ? '명령을 입력하세요…' : 'Type a command…';
+  localStorage.setItem('rb_hub_lang', LANG);
+}
+function toggleLang(){ LANG = LANG === 'ko' ? 'en' : 'ko'; applyLang(); if (window.__renderFbLinks) window.__renderFbLinks(); }
+['langBtn','langBtnM'].forEach(function(id){ var b=document.getElementById(id); if(b) b.addEventListener('click', toggleLang); });
+applyLang();
+
+/* ===== Scroll fade-in ===== */
+var obs = new IntersectionObserver(function(entries){
+  entries.forEach(function(e){ if(e.isIntersecting){ e.target.classList.add('visible'); obs.unobserve(e.target); } });
+}, {threshold:0.08, rootMargin:'0px 0px -50px 0px'});
+document.querySelectorAll('.fade-up').forEach(function(el){ obs.observe(el) });
+
+/* ===== Mobile menu ===== */
+var tog = document.getElementById('menu-toggle'), mob = document.getElementById('mobile-menu');
+tog.addEventListener('click', function(){ mob.classList.toggle('hidden') });
+mob.querySelectorAll('a').forEach(function(a){ a.addEventListener('click', function(){ mob.classList.add('hidden') }) });
+
+/* ===== Navbar hide on scroll ===== */
+var ls = 0, nb = document.getElementById('navbar');
+nb.style.transition = 'transform .35s cubic-bezier(0.16,1,0.3,1)';
+window.addEventListener('scroll', function(){
+  var c = window.scrollY;
+  nb.style.transform = (c > 80 && c > ls) ? 'translateY(-100%)' : 'translateY(0)';
+  ls = c;
+}, {passive:true});
+
+/* ===== Smooth scroll ===== */
+document.querySelectorAll('a[href^="#"]').forEach(function(a){
+  a.addEventListener('click', function(e){
+    e.preventDefault();
+    var t = document.querySelector(a.getAttribute('href'));
+    if (t) t.scrollIntoView({behavior:'smooth', block:'start'});
+  });
+});
+
+/* ===== Contact form -> Firestore(관리자 페이지에서 확인) + Netlify Forms 백업 ===== */
+var fm = document.getElementById('contact-form'), st = document.getElementById('form-status');
+function setStatus(msg, tone){
+  st.classList.remove('hidden');
+  st.className = 'text-center text-sm mt-4 ' + (tone === 'ok' ? 'text-green-400/80' : tone === 'err' ? 'text-red-400/80' : 'text-navy-300');
+  st.textContent = msg;
+}
+fm.addEventListener('submit', function(e){
+  e.preventDefault();
+  var d = new FormData(fm);
+  var payload = {
+    name: (d.get('name') || '').toString().slice(0, 100),
+    email: (d.get('email') || '').toString().slice(0, 200),
+    message: (d.get('message') || '').toString().slice(0, 5000)
+  };
+  var btn = fm.querySelector('button[type=submit]');
+  btn.disabled = true; btn.style.opacity = '.6';
+  setStatus(LANG === 'ko' ? '보내는 중...' : 'Sending...');
+
+  var jobs = [];
+
+  /* 1) 관리자 페이지(/admin)에서 볼 수 있도록 Firestore 에 저장 */
+  if (window.__db) {
+    jobs.push(window.__db.collection('contactMessages').add({
+      name: payload.name,
+      email: payload.email,
+      message: payload.message,
+      read: false,
+      createdAt: firebase.firestore.FieldValue.serverTimestamp()
+    }));
+  }
+
+  /* 2) 백업: Netlify Forms 로도 전송 (로컬에서는 실패해도 무시) */
+  jobs.push(fetch('/', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+    body: new URLSearchParams(d).toString()
+  }).then(function(r){ if (!r.ok) throw new Error('netlify ' + r.status) }));
+
+  Promise.allSettled(jobs).then(function(results){
+    var ok = results.some(function(r){ return r.status === 'fulfilled' });
+    if (ok) {
+      setStatus(LANG === 'ko' ? '문의가 접수되었습니다. 확인 후 연락드릴게요!' : 'Message received — I\u2019ll get back to you soon!', 'ok');
+      fm.reset();
+    } else {
+      var sub = encodeURIComponent('[rbwhale.com] ' + payload.name);
+      var body = encodeURIComponent('From: ' + payload.name + ' (' + payload.email + ')\n\n' + payload.message);
+      setStatus((LANG === 'ko' ? '전송에 실패했어요. 메일 앱으로 대신 보냅니다 — ' : 'Send failed. Opening your email app — ') + CONTACT_EMAIL, 'err');
+      window.location.href = 'mailto:' + CONTACT_EMAIL + '?subject=' + sub + '&body=' + body;
+    }
+    btn.disabled = false; btn.style.opacity = '';
+  });
+});
+
+/* ===== YouTube \uC378\uB124\uC77C \u2192 \uD074\uB9AD \uC2DC \uD50C\uB808\uC774\uC5B4 \uB85C\uB4DC (lite embed) ===== */
+document.querySelectorAll('.video-frame[data-yt]').forEach(function(frame){
+  function load(){
+    if (frame.dataset.loaded) return;
+    frame.dataset.loaded = '1';
+    var id = frame.getAttribute('data-yt');
+    frame.innerHTML = '<iframe src="https://www.youtube.com/embed/' + id + '?autoplay=1&rel=0" title="' +
+      (frame.getAttribute('aria-label') || 'YouTube') + '" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>';
+  }
+  frame.addEventListener('click', load);
+  frame.addEventListener('keydown', function(e){ if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); load() } });
+});
+
+/* ===== Social card preview: touch / focus support ===== */
+(function(){
+  var cards = document.querySelectorAll('[data-preview]'), activeCard = null;
+  cards.forEach(function(card){
+    card.addEventListener('touchstart', function(e){
+      if (activeCard === card) return;
+      e.preventDefault();
+      if (activeCard) activeCard.classList.remove('preview-active');
+      card.classList.add('preview-active');
+      activeCard = card;
+    }, {passive:false});
+    card.addEventListener('focus', function(){ card.classList.add('preview-active'); activeCard = card });
+    card.addEventListener('blur', function(){ card.classList.remove('preview-active'); if (activeCard === card) activeCard = null });
+  });
+  document.addEventListener('touchstart', function(e){
+    if (activeCard && !activeCard.contains(e.target)) { activeCard.classList.remove('preview-active'); activeCard = null }
+  }, {passive:true});
+})();
+
+/* ===== Signal board animations ===== */
+(function(){
+  var rotateEl = document.getElementById('bento-rotate');
+  if (rotateEl) {
+    var spans = rotateEl.querySelectorAll('span'), idx = 0;
+    setInterval(function(){
+      spans[idx].classList.remove('active');
+      idx = (idx + 1) % spans.length;
+      spans[idx].classList.add('active');
+    }, 3000);
+  }
+  var waveform = document.getElementById('waveform');
+  if (waveform) {
+    for (var i = 0; i < 28; i++) {
+      var bar = document.createElement('div');
+      bar.className = 'waveform-bar animated';
+      bar.style.setProperty('--h', (4 + Math.random() * 18) + 'px');
+      bar.style.setProperty('--d', (1.5 + Math.random() * 1.5) + 's');
+      bar.style.animationDelay = (Math.random() * 2) + 's';
+      bar.style.height = (4 + Math.random() * 8) + 'px';
+      waveform.appendChild(bar);
+    }
+  }
+  var cmdCard = document.getElementById('bento-cmd-card');
+  if (cmdCard) {
+    cmdCard.addEventListener('click', function(){
+      document.getElementById('cmd-overlay').classList.add('active');
+      document.getElementById('cmd-palette').classList.add('active');
+      var input = document.getElementById('cmd-input');
+      input.value = '';
+      setTimeout(function(){ input.focus() }, 50);
+    });
+    if (navigator.platform.toUpperCase().indexOf('MAC') >= 0) document.getElementById('bento-cmd-kbd').textContent = '\u2318K';
+  }
+})();
+
+/* ===== Live archive stats from /data/cards.json ===== */
+(function(){
+  fetch('/data/cards.json').then(function(r){ return r.json() }).then(function(d){
+    var cards = d.cards || [], sets = d.sets || [];
+    var el = document.getElementById('stat-cards');
+    if (el) el.textContent = cards.length.toLocaleString();
+    var counts = {};
+    cards.forEach(function(c){ counts[c.set] = (counts[c.set] || 0) + 1 });
+    var list = document.getElementById('set-list');
+    if (!list) return;
+    var ordered = sets.slice().sort(function(a, b){ return (counts[b.id] || 0) - (counts[a.id] || 0) });
+    list.innerHTML = '';
+    ordered.forEach(function(s){
+      var n = counts[s.id] || 0;
+      if (!n) return;
+      var div = document.createElement('div');
+      div.className = 'set-chip';
+      div.innerHTML = '<span class="s-id">' + s.id + '</span><span class="s-name">' + s.name + '</span><span class="s-cnt">' + n + '</span>';
+      list.appendChild(div);
+    });
+  }).catch(function(){ /* keep static fallback */ });
+})();
+
+/* ===== Command palette ===== */
+(function(){
+  var overlay = document.getElementById('cmd-overlay');
+  var palette = document.getElementById('cmd-palette');
+  var input = document.getElementById('cmd-input');
+  var list = document.getElementById('cmd-list');
+  var hint = document.getElementById('cmd-hint');
+  var selectedIdx = -1, filtered = [];
+
+  if (navigator.platform.toUpperCase().indexOf('MAC') < 0) hint.querySelector('kbd').textContent = 'Ctrl+K';
+
+  var ICON = {
+    yt:'<svg viewBox="0 0 24 24" fill="currentColor"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>',
+    ig:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4.4"/></svg>',
+    x:'<svg viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>',
+    book:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="3" width="13" height="18" rx="2"/><path d="M8 21h10a2 2 0 0 0 2-2V7"/></svg>',
+    mail:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>',
+    jump:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M5 12h14M13 6l6 6-6 6"/></svg>',
+    up:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="m18 15-6-6-6 6"/></svg>',
+    globe:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3 3.5 3 14 0 18-3-4-3-14.5 0-18z"/></svg>'
+  };
+  function open_(url){ return function(){ window.open(url, '_blank') } }
+  function jump(id){ return function(){ document.getElementById(id).scrollIntoView({behavior:'smooth'}) } }
+
+  var commands = [
+    {ko:'유튜브 채널 열기', en:'Open YouTube', desc:'@riftbound-whale', icon:ICON.yt, action:open_('https://www.youtube.com/@riftbound-whale')},
+    {ko:'인스타그램 열기', en:'Open Instagram', desc:'@riftbound_whale', icon:ICON.ig, action:open_('https://www.instagram.com/riftbound_whale/')},
+    {ko:'X 열기', en:'Open X', desc:'@Riftbound_KR', icon:ICON.x, action:open_('https://x.com/Riftbound_KR')},
+    {ko:'카드 도감 열기', en:'Open Card Collection', desc:'/collection', icon:ICON.book, action:function(){ window.location.href='/collection' }},
+    {ko:'T1 시리얼 아카이브', en:'T1 Serial Archive', desc:'/t1korean', icon:ICON.book, action:function(){ window.location.href='/t1korean' }},
+    {ko:'이메일 보내기', en:'Send Email', desc:CONTACT_EMAIL, icon:ICON.mail, action:function(){ window.location.href='mailto:' + CONTACT_EMAIL }},
+    {ko:'링크 모음으로', en:'Jump to Links', desc:'#links', icon:ICON.jump, action:jump('links')},
+    {ko:'소개로', en:'Jump to About', desc:'#about', icon:ICON.jump, action:jump('about')},
+    {ko:'여정으로', en:'Jump to Journey', desc:'#experience', icon:ICON.jump, action:jump('experience')},
+    {ko:'리프트바운드 소개로', en:'Jump to Riftbound', desc:'#riftbound', icon:ICON.jump, action:jump('riftbound')},
+    {ko:'영상으로', en:'Jump to Videos', desc:'#video', icon:ICON.jump, action:jump('video')},
+    {ko:'문의하기', en:'Contact', desc:'#contact', icon:ICON.jump, action:jump('contact')},
+    {ko:'언어 전환 (KO / EN)', en:'Switch language (KO / EN)', desc:'i18n', icon:ICON.globe, action:toggleLang},
+    {ko:'맨 위로', en:'Back to Top', desc:'#hero', icon:ICON.up, action:jump('hero')}
+  ];
+
+  function title(c){ return LANG === 'ko' ? c.ko : c.en }
+
+  function render(items){
+    list.innerHTML = '';
+    filtered = items;
+    selectedIdx = items.length ? 0 : -1;
+    items.forEach(function(cmd, i){
+      var el = document.createElement('div');
+      el.className = 'cmd-item' + (i === 0 ? ' selected' : '');
+      el.innerHTML = '<div class="cmd-item-icon">' + cmd.icon + '</div><div class="cmd-item-text"><div class="cmd-item-title">' + title(cmd) + '</div><div class="cmd-item-desc">' + cmd.desc + '</div></div>';
+      el.addEventListener('click', function(){ run(cmd) });
+      el.addEventListener('mouseenter', function(){
+        list.querySelectorAll('.cmd-item').forEach(function(e){ e.classList.remove('selected') });
+        el.classList.add('selected');
+        selectedIdx = i;
+      });
+      list.appendChild(el);
+    });
+  }
+  function run(cmd){ close_(); cmd.action() }
+  function open(){ overlay.classList.add('active'); palette.classList.add('active'); input.value=''; render(commands); setTimeout(function(){ input.focus() }, 50) }
+  function close_(){ overlay.classList.remove('active'); palette.classList.remove('active'); input.blur() }
+  function isOpen(){ return palette.classList.contains('active') }
+  function filter(){
+    var q = input.value.toLowerCase().trim();
+    if (!q) { render(commands); return }
+    render(commands.filter(function(c){
+      return c.ko.toLowerCase().indexOf(q) >= 0 || c.en.toLowerCase().indexOf(q) >= 0 || c.desc.toLowerCase().indexOf(q) >= 0;
+    }));
+  }
+  function updateSelection(){
+    var items = list.querySelectorAll('.cmd-item');
+    items.forEach(function(el, i){ el.classList.toggle('selected', i === selectedIdx) });
+    if (items[selectedIdx]) items[selectedIdx].scrollIntoView({block:'nearest'});
+  }
+
+  document.addEventListener('keydown', function(e){
+    if ((e.metaKey || e.ctrlKey) && e.key === 'k') { e.preventDefault(); isOpen() ? close_() : open(); return }
+    if (e.key === '/' && !isOpen() && ['INPUT','TEXTAREA','SELECT'].indexOf(document.activeElement.tagName) < 0) { e.preventDefault(); open(); return }
+    if (!isOpen()) return;
+    if (e.key === 'Escape') { close_(); return }
+    if (e.key === 'ArrowDown') { e.preventDefault(); if (filtered.length) { selectedIdx = (selectedIdx + 1) % filtered.length; updateSelection() } return }
+    if (e.key === 'ArrowUp') { e.preventDefault(); if (filtered.length) { selectedIdx = (selectedIdx - 1 + filtered.length) % filtered.length; updateSelection() } return }
+    if (e.key === 'Enter') { e.preventDefault(); if (filtered[selectedIdx]) run(filtered[selectedIdx]); return }
+  });
+
+  input.addEventListener('input', filter);
+  overlay.addEventListener('click', close_);
+  hint.addEventListener('click', open);
+})();
+
+/* ===== Admin FAB (기존 동작 유지) ===== */
+document.getElementById('adminFab').addEventListener('click', function(){ window.location.href = '/admin' });
+</script>
+
+<!-- Firebase: 링크 모음(hubLinks) + 문의 저장(contactMessages) -->
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <script src="/firebase-config.js"></script>
 <script>
 (function(){
-  var app = firebase.initializeApp(window.FIREBASE_CONFIG);
-  var db = firebase.firestore();
+  if (!window.firebase || !window.FIREBASE_CONFIG) return;
+  firebase.initializeApp(window.FIREBASE_CONFIG);
+  window.__db = firebase.firestore();
 
-  var linksEl = document.getElementById('links');
-  var adminFab = document.getElementById('adminFab');
-  var langBtn = document.getElementById('langBtn');
+  var wrap = document.getElementById('fb-links');
+  var section = document.getElementById('fb-links-wrap');
+  if (!wrap || !section) return;
+  var docs = [];
 
-  /* ---- i18n ---- */
-  var lang = localStorage.getItem('rb_hub_lang') || 'ko';
-  var I = {
-    ko: { desc: 'Riftbound TCG Collector & Community', empty: '아직 등록된 링크가 없습니다.', fail: '링크를 불러오지 못했습니다.' },
-    en: { desc: 'Riftbound TCG Collector & Community', empty: 'No links registered yet.', fail: 'Failed to load links.' }
-  };
+  function esc(x){ var d = document.createElement('div'); d.textContent = x == null ? '' : x; return d.innerHTML }
 
-  function applyLang() {
-    langBtn.textContent = lang === 'ko' ? 'EN' : 'KO';
-    document.getElementById('profileDesc').textContent = I[lang].desc;
-    document.querySelectorAll('[data-ko]').forEach(function(el) {
-      var t = el.getAttribute('data-' + lang) || '';
-      el.innerHTML = t;
+  function render(){
+    if (!docs.length) { section.classList.add('hidden'); return }
+    section.classList.remove('hidden');
+    wrap.innerHTML = '';
+    docs.forEach(function(d){
+      var t = (LANG === 'en' && d.titleEn) ? d.titleEn : d.title;
+      var sub = (LANG === 'en' && d.subtitleEn) ? d.subtitleEn : (d.subtitle || '');
+      var a = document.createElement('a');
+      a.className = 'social-link rounded-2xl p-4 flex items-center gap-4';
+      a.href = d.url; a.target = '_blank'; a.rel = 'noopener';
+      a.innerHTML =
+        '<div class="w-9 h-9 rounded-lg bg-navy-950/50 border border-navy-800/20 flex items-center justify-center shrink-0 text-[15px]">' + (d.emoji || '\uD83D\uDD17') + '</div>' +
+        '<div class="min-w-0 flex-1"><p class="text-text-100 font-semibold text-[13px] leading-snug">' + esc(t) + '</p>' +
+        (sub ? '<p class="text-text-500 text-[10.5px] font-mono mt-0.5">' + esc(sub) + '</p>' : '') + '</div>' +
+        '<span class="text-text-600 text-[15px] shrink-0">\u203A</span>';
+      wrap.appendChild(a);
     });
-    localStorage.setItem('rb_hub_lang', lang);
   }
-  langBtn.addEventListener('click', function() {
-    lang = lang === 'ko' ? 'en' : 'ko';
-    applyLang();
-    loadLinks();
+  window.__renderFbLinks = render;
+
+  window.__db.collection('hubLinks').get().then(function(snap){
+    snap.forEach(function(doc){ var d = doc.data(); if (d.active) docs.push(d) });
+    docs.sort(function(a, b){ return (Number(a.order) || 0) - (Number(b.order) || 0) });
+    render();
+  }).catch(function(err){ console.error('hubLinks load failed:', err) });
+})();
+</script>
+
+<!-- Falling domain words (physics) -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/matter-js/0.20.0/matter.min.js"></script>
+<script>
+(function(){
+  var container = document.getElementById('falling-text-physics');
+  var wordsDiv = document.getElementById('falling-words');
+  var hero = document.getElementById('hero');
+  if (!container || !wordsDiv || !hero || !window.Matter) return;
+  if (window.matchMedia('(prefers-reduced-motion:reduce)').matches) return;
+
+  /* 낙하 영역 = 히어로(유니콘 스튜디오) 박스. 바닥이 히어로 하단이라 그 아래로는 내려가지 않음 */
+  var W, H;
+  function measure(){ W = container.clientWidth; H = container.clientHeight }
+  measure();
+  if (!W || !H) return;
+
+  var Engine = Matter.Engine, World = Matter.World, Bodies = Matter.Bodies, Body = Matter.Body,
+      Mouse = Matter.Mouse, MouseConstraint = Matter.MouseConstraint, Runner = Matter.Runner;
+
+  var engine = Engine.create({ gravity: { x: 0, y: 0.55 } });
+  var runner = Runner.create();
+  var wallOpts = { isStatic: true, render: { visible: false }, friction: 0.8, restitution: 0.2 };
+  var floor = Bodies.rectangle(W/2, H + 14, W + 200, 30, wallOpts);
+  var wallL = Bodies.rectangle(-16, H/2, 30, H * 4, wallOpts);
+  var wallR = Bodies.rectangle(W + 16, H/2, 30, H * 4, wallOpts);
+  World.add(engine.world, [floor, wallL, wallR]);
+
+  var DOMAINS = [
+    {w:'FURY',  c:'#e5484d'},
+    {w:'CALM',  c:'#46a758'},
+    {w:'MIND',  c:'#3e8ede'},
+    {w:'BODY',  c:'#f76b15'},
+    {w:'CHAOS', c:'#8e4ec6'},
+    {w:'ORDER', c:'#f5d90a'}
+  ];
+  var BASE = 'position:absolute;font-family:"JetBrains Mono",monospace;font-size:14px;font-weight:500;letter-spacing:.12em;white-space:nowrap;user-select:none;will-change:transform;padding:4px 9px;border-radius:8px;pointer-events:none;';
+
+  var bodies = [], els = [], sizes = [];
+  DOMAINS.forEach(function(d, i){
+    var probe = document.createElement('span');
+    probe.textContent = d.w;
+    probe.style.cssText = BASE + 'visibility:hidden;';
+    document.body.appendChild(probe);
+    var sz = { w: probe.offsetWidth + 2, h: probe.offsetHeight + 2 };
+    document.body.removeChild(probe);
+    sizes.push(sz);
+
+    var body = Bodies.rectangle(
+      W * 0.18 + Math.random() * Math.max(1, W * 0.64),
+      -60 - Math.random() * 120 - i * 70,
+      sz.w, sz.h,
+      { restitution: 0.3, friction: 0.55, frictionAir: 0.01, density: 0.002, angle: (Math.random() - 0.5) * 0.5 }
+    );
+    Body.setAngularVelocity(body, (Math.random() - 0.5) * 0.08);
+    bodies.push(body);
+
+    var el = document.createElement('span');
+    el.textContent = d.w;
+    el.style.cssText = BASE + 'color:' + d.c + ';background:' + d.c + '14;border:1px solid ' + d.c + '40;box-shadow:0 0 18px ' + d.c + '1f;';
+    wordsDiv.appendChild(el);
+    els.push(el);
   });
-  applyLang();
+  World.add(engine.world, bodies);
 
-  /* ---- links ---- */
-  function loadLinks() {
-    db.collection('hubLinks')
-      .orderBy('order')
-      .get()
-      .then(function(snap) {
-        var docs = [];
-        snap.forEach(function(doc) { var dd = doc.data(); if (dd.active) docs.push(dd); });
-        if (!docs.length) {
-          linksEl.innerHTML = '<div class="empty">' + I[lang].empty + '</div>';
-          return;
-        }
-        linksEl.innerHTML = '';
-        docs.forEach(function(d) {
-          var title = lang === 'en' && d.titleEn ? d.titleEn : d.title;
-          var sub = lang === 'en' && d.subtitleEn ? d.subtitleEn : (d.subtitle || '');
-          var a = document.createElement('a');
-          a.className = 'link-btn';
-          a.href = d.url;
-          a.target = '_blank';
-          a.rel = 'noopener';
-          a.innerHTML =
-            '<span class="link-emoji">' + (d.emoji || '\u{1F517}') + '</span>' +
-            '<div class="link-text">' +
-              '<div class="link-title">' + esc(title) + '</div>' +
-              (sub ? '<div class="link-sub">' + esc(sub) + '</div>' : '') +
-            '</div>' +
-            '<span class="arrow">›</span>';
-          linksEl.appendChild(a);
-        });
-      })
-      .catch(function(err) {
-        console.error('Failed to load links:', err);
-        linksEl.innerHTML = '<div class="empty">' + I[lang].fail + '</div>';
-      });
+  /* 마우스는 히어로 전체에서 받음 (컨테이너가 pointer-events:none 이라 단어 위 이동도 히어로로 버블링됨) */
+  var mouse = Mouse.create(hero);
+  var mc = MouseConstraint.create(engine, { mouse: mouse, constraint: { stiffness: 0.9, render: { visible: false } } });
+  /* 스크롤을 막는 Matter 기본 리스너 해제 (휠 + 터치) */
+  mouse.element.removeEventListener('mousewheel', mouse.mousewheel);
+  mouse.element.removeEventListener('DOMMouseScroll', mouse.mousewheel);
+  mouse.element.removeEventListener('wheel', mouse.mousewheel);
+  mouse.element.removeEventListener('touchstart', mouse.mousedown);
+  mouse.element.removeEventListener('touchmove', mouse.mousemove);
+  mouse.element.removeEventListener('touchend', mouse.mouseup);
+  World.add(engine.world, mc);
+
+  function draw(){
+    for (var i = 0; i < bodies.length; i++) {
+      var b = bodies[i], sz = sizes[i];
+      /* 안전장치: 빠른 드래그로 벏어나가면 영역 안으로 되돌림 */
+      if (b.position.y > H + 80 || b.position.x < -80 || b.position.x > W + 80) {
+        Body.setPosition(b, { x: W/2, y: H - sz.h });
+        Body.setVelocity(b, { x: 0, y: 0 });
+        Body.setAngularVelocity(b, 0);
+      }
+      els[i].style.transform = 'translate(' + (b.position.x - sz.w/2) + 'px,' + (b.position.y - sz.h/2) + 'px) rotate(' + (b.angle * 180 / Math.PI) + 'deg)';
+    }
+    requestAnimationFrame(draw);
   }
 
-  function esc(s) {
-    var d = document.createElement('div');
-    d.textContent = s;
-    return d.innerHTML;
-  }
+  setTimeout(function(){
+    Runner.run(runner, engine);
+    draw();
+    els.forEach(function(el){ el.style.pointerEvents = 'auto'; el.style.cursor = 'grab' });
+  }, 1200);
 
-  adminFab.addEventListener('click', function() {
-    window.location.href = '/admin';
+  var t;
+  window.addEventListener('resize', function(){
+    clearTimeout(t);
+    t = setTimeout(function(){
+      measure();
+      if (!W || !H) return;
+      Body.setVertices(floor, Bodies.rectangle(W/2, H + 14, W + 200, 30).vertices);
+      Body.setPosition(floor, { x: W/2, y: H + 14 });
+      Body.setPosition(wallL, { x: -16, y: H/2 });
+      Body.setPosition(wallR, { x: W + 16, y: H/2 });
+    }, 200);
   });
+})();
+</script>
 
-  loadLinks();
+<script>
+/* ===== Whale cursor trail ===== */
+(function(){
+  if (window.matchMedia('(max-width:768px)').matches) return;
+  if (window.matchMedia('(prefers-reduced-motion:reduce)').matches) return;
+  var TRAIL = 6, els = [], positions = [];
+  for (var i = 0; i < TRAIL; i++) { els.push(document.getElementById('wt' + i)); positions.push({x:-100, y:-100, rot:0}) }
+  if (!els[0]) return;
+  var mouseX = -100, mouseY = -100, visible = false;
+  var easings = [0.25, 0.18, 0.14, 0.10, 0.07, 0.05];
+  document.addEventListener('mousemove', function(e){
+    mouseX = e.clientX; mouseY = e.clientY;
+    if (!visible) { visible = true; els[0].classList.add('visible') }
+  });
+  document.addEventListener('mouseleave', function(){ visible = false; els[0].classList.remove('visible') });
+  (function animate(){
+    for (var i = 0; i < TRAIL; i++) {
+      var p = positions[i];
+      var tx = (i === 0) ? mouseX : positions[i-1].x;
+      var ty = (i === 0) ? mouseY : positions[i-1].y;
+      var dx = tx - p.x, dy = ty - p.y;
+      p.x += dx * easings[i]; p.y += dy * easings[i];
+      var speed = Math.sqrt(dx*dx + dy*dy), targetRot = 0;
+      if (speed > 0.5) {
+        targetRot = Math.atan2(dy, dx) * (180 / Math.PI) + 90;
+        if (targetRot > 180) targetRot -= 360;
+        targetRot = Math.max(-35, Math.min(35, targetRot * 0.4));
+      }
+      p.rot += (targetRot - p.rot) * 0.1;
+      els[i].style.transform = 'translate3d(' + (p.x - 14 + i * 0.5).toFixed(1) + 'px,' + (p.y - 14).toFixed(1) + 'px,0) rotate(' + p.rot.toFixed(1) + 'deg)';
+    }
+    requestAnimationFrame(animate);
+  })();
 })();
 </script>
 </body>

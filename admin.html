@@ -66,6 +66,21 @@ a{color:var(--accent);text-decoration:none}
 .empty{text-align:center;color:var(--muted);font-size:13px;padding:30px}
 .toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--owned);color:#fff;padding:10px 24px;border-radius:20px;font-size:13px;font-weight:500;opacity:0;transition:opacity .3s;pointer-events:none;z-index:100}
 .toast.show{opacity:1}
+/* 문의함 */
+.section-title{font-size:15px;color:var(--accent2);margin:28px 0 12px;display:flex;align-items:center;gap:8px}
+.section-title .count{font-size:11px;background:var(--danger);color:#fff;border-radius:10px;padding:1px 8px;font-weight:700}
+.msg-list{display:flex;flex-direction:column;gap:8px}
+.msg-item{background:var(--panel);border:1px solid var(--border);border-radius:var(--radius);padding:14px}
+.msg-item.unread{border-color:var(--accent)}
+.msg-head{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.msg-head .nm{font-size:13px;font-weight:700}
+.msg-head .em{font-size:11.5px;color:var(--accent)}
+.msg-head .dt{font-size:11px;color:var(--muted);margin-left:auto}
+.msg-body{font-size:13px;color:var(--text);line-height:1.65;margin-top:8px;white-space:pre-wrap;word-break:break-word}
+.msg-actions{display:flex;gap:6px;margin-top:10px}
+.msg-actions button,.msg-actions a{background:var(--panel2);border:1px solid var(--border);color:var(--muted);border-radius:6px;padding:5px 12px;font-size:11.5px;cursor:pointer;transition:all .15s;text-decoration:none;display:inline-block}
+.msg-actions button:hover,.msg-actions a:hover{color:var(--text);border-color:var(--accent)}
+.msg-actions .del:hover{color:var(--danger);border-color:var(--danger)}
 </style>
 </head>
 <body>
@@ -123,12 +138,15 @@ a{color:var(--accent);text-decoration:none}
         <button class="cancel" id="cancelBtn" style="display:none">취소</button>
       </div>
     </div>
+    <div class="section-title">&#9993; 문의함 <span class="count" id="msgCount" style="display:none">0</span><button id="msgLoginBtn" style="margin-left:auto;background:var(--panel2);border:1px solid var(--border);color:var(--muted);border-radius:6px;padding:5px 12px;font-size:11.5px;cursor:pointer">Google 로그인</button></div>
+    <div class="msg-list" id="msgList"><div class="empty">불러오는 중...</div></div>
   </div>
 </div>
 
 <div class="toast" id="toast"></div>
 
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <script src="/firebase-config.js"></script>
 <script>
@@ -136,6 +154,8 @@ a{color:var(--accent);text-decoration:none}
   const ADMIN_PW = '070823';
   const app = firebase.initializeApp(window.FIREBASE_CONFIG);
   const db = firebase.firestore();
+  const auth = firebase.auth();
+  const ADMIN_UID = 'Wh9yv5Jz2eUO8om8H0YNTmz1Qbs1';
 
   const authBox = document.getElementById('auth');
   const panel = document.getElementById('panel');
@@ -322,6 +342,82 @@ a{color:var(--accent);text-decoration:none}
     batch.commit().then(() => {
       toast('\uC21C\uC11C \uBCC0\uACBD');
       loadLinks();
+    });
+  }
+
+
+  /* ===== 문의함 (contactMessages) ===== */
+  const msgList = document.getElementById('msgList');
+  const msgCount = document.getElementById('msgCount');
+
+  function fmtDate(ts){
+    if (!ts || !ts.toDate) return '';
+    const d = ts.toDate();
+    const p = n => String(n).padStart(2, '0');
+    return d.getFullYear() + '.' + p(d.getMonth() + 1) + '.' + p(d.getDate()) + ' ' + p(d.getHours()) + ':' + p(d.getMinutes());
+  }
+
+  const msgLoginBtn = document.getElementById('msgLoginBtn');
+  msgLoginBtn.addEventListener('click', function(){
+    auth.signInWithPopup(new firebase.auth.GoogleAuthProvider()).catch(function(e){
+      console.error(e);
+      msgList.innerHTML = '<div class="empty">로그인에 실패했습니다.</div>';
+    });
+  });
+
+  auth.onAuthStateChanged(function(user){
+    if (!user) {
+      msgLoginBtn.style.display = '';
+      msgList.innerHTML = '<div class="empty">문의 내용에는 개인정보가 포함되어 있어 Google 로그인이 필요합니다.</div>';
+      msgCount.style.display = 'none';
+      return;
+    }
+    if (user.uid !== ADMIN_UID) {
+      msgLoginBtn.style.display = '';
+      msgList.innerHTML = '<div class="empty">관리자 계정이 아닙니다. (uid: ' + user.uid + ')</div>';
+      return;
+    }
+    msgLoginBtn.style.display = 'none';
+    loadMessages();
+  });
+
+  function loadMessages(){
+    db.collection('contactMessages').orderBy('createdAt', 'desc').limit(100).get().then(snap => {
+      const msgs = [];
+      snap.forEach(doc => msgs.push({ id: doc.id, ...doc.data() }));
+      const unread = msgs.filter(m => !m.read).length;
+      if (unread) { msgCount.textContent = unread; msgCount.style.display = ''; }
+      else msgCount.style.display = 'none';
+
+      if (!msgs.length) { msgList.innerHTML = '<div class="empty">받은 문의가 없습니다.</div>'; return; }
+
+      msgList.innerHTML = msgs.map(m =>
+        '<div class="msg-item' + (m.read ? '' : ' unread') + '" data-id="' + m.id + '">' +
+          '<div class="msg-head">' +
+            '<span class="nm">' + esc(m.name) + '</span>' +
+            '<a class="em" href="mailto:' + esc(m.email) + '">' + esc(m.email) + '</a>' +
+            '<span class="dt">' + fmtDate(m.createdAt) + '</span>' +
+          '</div>' +
+          '<div class="msg-body">' + esc(m.message) + '</div>' +
+          '<div class="msg-actions">' +
+            '<a href="mailto:' + esc(m.email) + '?subject=' + encodeURIComponent('Re: rbwhale.com 문의') + '">답장</a>' +
+            (m.read ? '' : '<button class="read">읽음 처리</button>') +
+            '<button class="del">삭제</button>' +
+          '</div>' +
+        '</div>').join('');
+
+      msgList.querySelectorAll('.read').forEach(btn => btn.addEventListener('click', () => {
+        const id = btn.closest('.msg-item').dataset.id;
+        db.collection('contactMessages').doc(id).update({ read: true }).then(() => { toast('읽음 처리'); loadMessages(); });
+      }));
+      msgList.querySelectorAll('.del').forEach(btn => btn.addEventListener('click', () => {
+        const id = btn.closest('.msg-item').dataset.id;
+        if (!confirm('이 문의를 삭제할까요?')) return;
+        db.collection('contactMessages').doc(id).delete().then(() => { toast('삭제됨'); loadMessages(); });
+      }));
+    }).catch(err => {
+      console.error(err);
+      msgList.innerHTML = '<div class="empty">문의를 불러오지 못했습니다. Firestore 규칙에 contactMessages 를 추가했는지 확인하세요.</div>';
     });
   }
 
