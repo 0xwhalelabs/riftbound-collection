@@ -145,15 +145,39 @@ footer { padding: 14px 20px; color: var(--muted); font-size: 11.5px; border-top:
 .auth-box .divider::before, .auth-box .divider::after { content: ''; flex: 1; height: 1px; background: var(--border); }
 .auth-box .err { color: var(--danger); font-size: 12px; margin-bottom: 8px; min-height: 15px; }
 .auth-box .close-auth { float: right; background: none; border: none; color: var(--muted); font-size: 18px; cursor: pointer; }
+/* ===== 헤더 접기 (모바일) ===== */
+.hdr-quick { display: flex; gap: 8px; align-items: center; margin-top: 10px; }
+.hdr-quick #searchInput { flex: 1; width: auto; min-width: 0; }
+#hdrToggle { display: none; align-items: center; gap: 6px; white-space: nowrap; border: 1px solid var(--border); }
+#hdrToggle .chev { display: inline-block; transition: transform .2s; font-size: 10px; }
+#hdrToggle.open .chev { transform: rotate(180deg); }
+#hdrToggle .badge { display: none; background: var(--accent); color: #1a1a1a; font-size: 10.5px; font-weight: 700; border-radius: 9px; padding: 0 6px; min-width: 17px; text-align: center; }
+#hdrToggle .badge.show { display: inline-block; }
+#hdrTools { display: none; gap: 6px; flex-wrap: wrap; margin-bottom: 8px; }
+#hdrTools > span { position: relative; }
+
 @media (max-width: 640px) {
-  header { padding: 10px 10px; }
-  h1 { font-size: 15px; }
+  header { padding: 8px 10px; }
+  h1 { font-size: 14px; gap: 6px; margin-bottom: 4px; }
   h1 small { display: none; }
+  .sns-btn { width: 28px; height: 28px; }
+  .sns-btn svg { width: 15px; height: 15px; }
+  #hdrToggle { display: inline-flex; }
+  #hdrCollapse { display: none; }
+  #hdrCollapse.open { display: block; }
+  #hdrTools { display: flex; }
+  .hdr-quick { margin-top: 8px; }
+  #siteNav { margin: 8px 0 !important; }
+  .toolbar { gap: 6px; }
+  .filter-row { gap: 5px; margin-top: 6px; }
+  .stats-bar { padding: 6px 10px; gap: 2px 10px; font-size: 11.5px; align-items: center; }
+  .stats-bar #statValueWrap small { display: none !important; }
+  .progress { flex: 1; min-width: 70px; max-width: none; height: 6px; margin-left: 4px; }
+  #statPct { font-size: 11px; }
+  .ticker-bar { font-size: 12px; }
   #grid { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 10px; padding: 12px; }
-  input[type=text] { width: 100%; flex: 1; }
   .btn { padding: 8px 10px; font-size: 12.5px; }
   .card-actions button { padding: 11px 0; font-size: 19px; }
-  .stats-bar { padding: 8px 10px; gap: 10px; font-size: 12px; }
   .filter-label { min-width: auto; }
 }
 </style>
@@ -164,18 +188,18 @@ footer { padding: 14px 20px; color: var(--muted); font-size: 11.5px; border-top:
     <a class="sns-btn" href="https://www.youtube.com/@riftbound-whale" target="_blank" rel="noopener" title="민물고래 유튜브"><svg viewBox="0 0 24 24" fill="#FF0000"><path d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.5 3.5 12 3.5 12 3.5s-7.5 0-9.4.6A3 3 0 0 0 .5 6.2 31 31 0 0 0 0 12a31 31 0 0 0 .5 5.8 3 3 0 0 0 2.1 2.1c1.9.6 9.4.6 9.4.6s7.5 0 9.4-.6a3 3 0 0 0 2.1-2.1A31 31 0 0 0 24 12a31 31 0 0 0-.5-5.8zM9.6 15.6V8.4L15.8 12l-6.2 3.6z"/></svg></a>
     <a class="sns-btn" href="https://www.instagram.com/riftbound_whale/" target="_blank" rel="noopener" title="민물고래 인스타그램"><svg viewBox="0 0 24 24" fill="none" stroke="#E1306C" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4.5"/><circle cx="17.5" cy="6.5" r="1.2" fill="#E1306C" stroke="none"/></svg></a>
     <span style="flex:1"></span>
-    <span style="position:relative"><button class="btn outline" id="exportBtn">⬇ 내보내기</button>
+    <span style="position:relative" data-hdr-tool><button class="btn outline" id="exportBtn">⬇ 내보내기</button>
       <div id="exportMenu" style="display:none;position:absolute;top:110%;right:0;background:var(--panel2);border:1px solid var(--border);border-radius:8px;overflow:hidden;z-index:50;min-width:230px;box-shadow:0 6px 20px rgba(0,0,0,.5)">
         <button class="export-opt" id="exportCsvBtn">CSV — 전체 데이터 (엑셀용)</button>
         <button class="export-opt" id="exportTxtBtn">TXT — TCGplayer Mass Entry</button>
       </div></span>
-    <span style="position:relative"><button class="btn outline" id="importBtn2">⬆ 가져오기</button>
+    <span style="position:relative" data-hdr-tool><button class="btn outline" id="importBtn2">⬆ 가져오기</button>
       <div id="importMenu" style="display:none;position:absolute;top:110%;right:0;background:var(--panel2);border:1px solid var(--border);border-radius:8px;overflow:hidden;z-index:50;min-width:230px;box-shadow:0 6px 20px rgba(0,0,0,.5)">
         <button class="export-opt" id="importFileBtn">📂 파일 선택 (CSV/TXT)</button>
         <button class="export-opt" id="tmplCsvBtn">CSV 양식 다운로드</button>
         <button class="export-opt" id="tmplTxtBtn">TXT 양식 다운로드</button>
       </div><input type="file" id="importFile" accept=".csv,.txt" style="display:none"></span>
-    <span style="position:relative"><button class="btn outline" id="curBtn">💱 USD</button>
+    <span style="position:relative" data-hdr-tool><button class="btn outline" id="curBtn">💱 USD</button>
       <div id="curMenu" style="display:none;position:absolute;top:110%;right:0;background:var(--panel2);border:1px solid var(--border);border-radius:8px;overflow:hidden;z-index:50;min-width:110px;box-shadow:0 6px 20px rgba(0,0,0,.5)">
         <button class="export-opt cur-opt" data-cur="USD">USD $</button>
         <button class="export-opt cur-opt" data-cur="EUR">EUR €</button>
@@ -187,7 +211,15 @@ footer { padding: 14px 20px; color: var(--muted); font-size: 11.5px; border-top:
     <span class="sync-dot" id="syncDot"></span>
     <span class="auth-area" id="authArea"><button class="btn outline" id="loginBtn">로그인</button></span>
   </h1>
-  <nav aria-label="사이트 메뉴" style="display:flex;gap:8px;flex-wrap:wrap;margin:12px 0">
+  <div class="hdr-quick">
+    <input type="text" id="searchInput" placeholder="카드 이름/번호 검색...">
+    <button class="btn" id="hdrToggle" type="button" aria-expanded="false" aria-controls="hdrCollapse">
+      <span id="hdrToggleLabel">필터</span><span class="badge" id="hdrBadge">0</span><span class="chev">▼</span>
+    </button>
+  </div>
+  <div id="hdrCollapse">
+  <div id="hdrTools"></div>
+  <nav id="siteNav" aria-label="사이트 메뉴" style="display:flex;gap:8px;flex-wrap:wrap;margin:12px 0">
     <a class="btn active" href="/" aria-current="page" style="text-decoration:none">카드 도감</a>
     <a class="btn outline" href="/t1korean" style="text-decoration:none;color:#ff5269;border-color:#73313e">T1 한국판 시리얼 ↗</a>
   </nav>
@@ -205,7 +237,6 @@ footer { padding: 14px 20px; color: var(--muted); font-size: 11.5px; border-top:
       <option value="rarity">등급별</option>
       <option value="name">이름순</option>
     </select>
-    <input type="text" id="searchInput" placeholder="카드 이름/번호 검색...">
   </div>
   <div class="filter-row">
     <span class="filter-label" id="lblOwn">보유</span>
@@ -220,6 +251,7 @@ footer { padding: 14px 20px; color: var(--muted); font-size: 11.5px; border-top:
     <span id="rarityChips"></span>
     <div class="spacer"></div>
   </div>
+  </div><!-- /#hdrCollapse -->
 </header>
 <div class="stats-bar">
   <span id="statShownWrap">표시 <b id="statShown">0</b>장</span>
@@ -322,7 +354,7 @@ const STR = {
     enPrint: '영문판', krPrint: '한국어판', cnPrint: '중문판', all: '전체', owned: '보유중', unowned: '미보유',
     own: '보유', domain: '도메인', rarity: '등급',
     sortNum: '넘버순', sortDomain: '도메인 색상별', sortRarity: '등급별', sortName: '이름순',
-    searchPh: '카드 이름/번호 검색...',
+    searchPh: '카드 이름/번호 검색...', filters: '필터',
     statShown: '표시 <b id="statShown">0</b>장', statKinds: '전체 도감 <b id="statOwnedKinds">0</b> / <b id="statTotal">0</b>',
     statQty: '총 보유 수량 <b id="statOwnedQty">0</b>장',
     statValue: '내 도감 가치 <b id="statValue" style="color:var(--accent2)">$0</b><small style="display:block;font-size:9.5px;color:var(--muted)">영문판 보유분만 합산(TCGplayer 시세) · 12시간마다 갱신</small>',
@@ -350,7 +382,7 @@ const STR = {
     enPrint: 'EN Print', krPrint: 'KR Print', cnPrint: 'CN Print', all: 'All', owned: 'Owned', unowned: 'Not owned',
     own: 'Owned', domain: 'Domain', rarity: 'Rarity',
     sortNum: 'By number', sortDomain: 'By domain color', sortRarity: 'By rarity', sortName: 'By name',
-    searchPh: 'Search card name/number...',
+    searchPh: 'Search card name/number...', filters: 'Filters',
     statShown: 'Showing <b id="statShown">0</b>', statKinds: 'Collection <b id="statOwnedKinds">0</b> / <b id="statTotal">0</b>',
     statQty: 'Total owned <b id="statOwnedQty">0</b>',
     statValue: 'Collection value <b id="statValue" style="color:var(--accent2)">$0</b><small style="display:block;font-size:9.5px;color:var(--muted)">EN print holdings only (TCGplayer market) · updated every 12h</small>',
@@ -715,6 +747,7 @@ function changeQty(code, delta, div, c) {
 }
 
 function updateStats(shown) {
+  if (window.updateFilterBadge) window.updateFilterBadge();
   // 전체 도감(영문판+중문판) 기준 통계
   const enPool = DATA.cards.filter(c => c.imgEn);
   const krPool = DATA.cards.filter(c => c.imgKr);
@@ -1169,6 +1202,7 @@ function applyUILang() {
   sortSel.options[2].text = t('sortRarity');
   sortSel.options[3].text = t('sortName');
   document.getElementById('searchInput').placeholder = t('searchPh');
+  document.getElementById('hdrToggleLabel').textContent = t('filters');
   document.getElementById('lblOwn').textContent = t('own');
   document.getElementById('lblDomain').textContent = t('domain');
   document.getElementById('lblRarity').textContent = t('rarity');
@@ -1259,6 +1293,58 @@ if (window.FIREBASE_CONFIG) {
 } else {
   window.appHooks.cloudDisabled();
 }
+
+/* ===== 헤더 접기 / 펼치기 (모바일) ===== */
+(function () {
+  const MQ = window.matchMedia('(max-width: 640px)');
+  const collapse = document.getElementById('hdrCollapse');
+  const toggle = document.getElementById('hdrToggle');
+  const badge = document.getElementById('hdrBadge');
+  const toolbox = document.getElementById('hdrTools');
+  const h1 = document.querySelector('header h1');
+  const langBtn = document.getElementById('uiLangBtn');
+  const tools = Array.from(document.querySelectorAll('[data-hdr-tool]'));
+
+  /* 모바일에서는 내보내기/가져오기/통화 버튼을 접이식 패널 안으로 옮겨 헤더를 짧게 유지 */
+  function placeTools() {
+    if (MQ.matches) {
+      tools.forEach(function (t) { if (t.parentNode !== toolbox) toolbox.appendChild(t); });
+    } else {
+      tools.forEach(function (t) { if (t.parentNode !== h1) h1.insertBefore(t, langBtn); });
+    }
+  }
+
+  function setOpen(open) {
+    collapse.classList.toggle('open', open);
+    toggle.classList.toggle('open', open);
+    toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+    try { localStorage.setItem('rb_hdr_open', open ? '1' : '0'); } catch (e) {}
+  }
+
+  toggle.addEventListener('click', function () {
+    setOpen(!collapse.classList.contains('open'));
+  });
+
+  /* 접힌 상태에서도 몇 개의 필터가 걸려 있는지 보이게 */
+  window.updateFilterBadge = function () {
+    if (typeof state === 'undefined') return;
+    let n = 0;
+    if (state.set && state.set !== 'ALL') n++;
+    if (state.own && state.own !== 'all') n++;
+    n += state.domains ? state.domains.size : 0;
+    n += state.rarities ? state.rarities.size : 0;
+    badge.textContent = n;
+    badge.classList.toggle('show', n > 0);
+  };
+
+  let open = false;
+  try { open = localStorage.getItem('rb_hdr_open') === '1'; } catch (e) {}
+  setOpen(open);
+  placeTools();
+  window.updateFilterBadge();
+
+  MQ.addEventListener ? MQ.addEventListener('change', placeTools) : MQ.addListener(placeTools);
+})();
 </script>
 </body>
 </html>
