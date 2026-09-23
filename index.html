@@ -50,6 +50,8 @@ a{text-decoration:none}
 
 .btn-ghost{border:1px solid rgba(30,58,110,0.15);color:#7a8599;transition:all .3s cubic-bezier(0.16,1,0.3,1)}
 .btn-ghost:hover{border-color:rgba(30,58,110,0.35);color:#c8d0de;background:rgba(30,58,110,0.06);box-shadow:0 2px 12px rgba(30,58,110,0.08)}
+.btn-fortune{background:rgba(212,160,23,0.08);border:1px solid rgba(212,160,23,0.28);color:#f0c040;font-weight:600;letter-spacing:.01em;transition:all .3s cubic-bezier(0.16,1,0.3,1)}
+.btn-fortune:hover{background:rgba(212,160,23,0.14);border-color:rgba(212,160,23,0.5);color:#f7d778;transform:translateY(-1px);box-shadow:0 4px 18px rgba(212,160,23,0.18)}
 
 .divider{width:36px;height:1px;background:linear-gradient(90deg,rgba(30,58,110,0.5),rgba(30,58,110,0.1))}
 
@@ -252,6 +254,15 @@ input::placeholder,textarea::placeholder{color:#404a5c}
 .whale-trail-5{opacity:0.04;font-size:11px}
 @media(max-width:768px){.whale-trail{display:none}}
 @media(prefers-reduced-motion:reduce){.whale-trail{display:none}}
+/* 고래 커서 사용 중에는 기본 포인터를 숨기고 전용 화살표를 그린다 */
+html.whale-cursor,html.whale-cursor *{cursor:none!important}
+html.whale-cursor.native-cursor,html.whale-cursor.native-cursor *{cursor:auto!important}
+html.whale-cursor.native-cursor a,html.whale-cursor.native-cursor button,html.whale-cursor.native-cursor .bento-cmd{cursor:pointer!important}
+#whale-pointer{position:fixed;top:0;left:0;width:14px;height:19px;pointer-events:none;z-index:100000;opacity:0;transition:opacity .25s;will-change:transform;filter:drop-shadow(0 1px 3px rgba(0,0,0,.55))}
+#whale-pointer.visible{opacity:1}
+html.native-cursor #whale-pointer{opacity:0}
+@media(max-width:768px){#whale-pointer{display:none}}
+@media(prefers-reduced-motion:reduce){#whale-pointer{display:none}}
 </style>
 </head>
 <body>
@@ -271,6 +282,8 @@ input::placeholder,textarea::placeholder{color:#404a5c}
       <a href="#riftbound" class="hover:text-text-200 transition-colors duration-300" data-ko="리프트바운드" data-en="Riftbound">리프트바운드</a>
       <a href="#video" class="hover:text-text-200 transition-colors duration-300" data-ko="영상" data-en="Video">영상</a>
       <button class="lang-btn" id="langBtn">EN</button>
+      <span data-rb-auth></span>
+      <a href="/fortune" class="btn-fortune px-4 py-[7px] rounded-lg text-[13px]" data-ko="오늘의 운세보기" data-en="Daily Fortune">오늘의 운세보기</a>
       <a href="#contact" class="btn-primary px-5 py-[7px] rounded-lg text-[13px]" data-ko="문의" data-en="Contact">문의</a>
     </div>
     <div class="flex items-center gap-3 md:hidden">
@@ -286,6 +299,8 @@ input::placeholder,textarea::placeholder{color:#404a5c}
     <a href="#experience" class="block py-1 hover:text-text-100 transition-colors" data-ko="여정" data-en="Journey">여정</a>
     <a href="#riftbound" class="block py-1 hover:text-text-100 transition-colors" data-ko="리프트바운드" data-en="Riftbound">리프트바운드</a>
     <a href="#video" class="block py-1 hover:text-text-100 transition-colors" data-ko="영상" data-en="Video">영상</a>
+    <span data-rb-auth class="block py-1"></span>
+    <a href="/fortune" class="block py-1 text-gold-400 hover:text-gold-300 transition-colors" data-ko="오늘의 운세보기" data-en="Daily Fortune">오늘의 운세보기</a>
     <a href="#contact" class="block py-1 text-navy-300 hover:text-navy-200 transition-colors" data-ko="문의" data-en="Contact">문의</a>
   </div>
 </nav>
@@ -834,6 +849,7 @@ input::placeholder,textarea::placeholder{color:#404a5c}
   <kbd>⌘K</kbd> <span>or</span> <kbd>/</kbd>
 </div>
 
+<svg id="whale-pointer" viewBox="0 0 14 19" fill="none" aria-hidden="true"><path d="M1.2 1.1 12.2 10.2 7.2 10.7 9.9 16.6 7.6 17.7 4.9 11.8 1.2 15z" fill="#f2f6ff" stroke="#0b1122" stroke-width="1.1" stroke-linejoin="round"/></svg>
 <div class="whale-trail whale-trail-0" id="wt0">🐋</div>
 <div class="whale-trail whale-trail-1" id="wt1">🐋</div>
 <div class="whale-trail whale-trail-2" id="wt2">🐋</div>
@@ -861,7 +877,7 @@ function applyLang(){
   if (ci) ci.placeholder = LANG === 'ko' ? '명령을 입력하세요…' : 'Type a command…';
   localStorage.setItem('rb_hub_lang', LANG);
 }
-function toggleLang(){ LANG = LANG === 'ko' ? 'en' : 'ko'; applyLang(); if (window.__renderFbLinks) window.__renderFbLinks(); }
+function toggleLang(){ LANG = LANG === 'ko' ? 'en' : 'ko'; applyLang(); if (window.__renderFbLinks) window.__renderFbLinks(); if (window.RBAuth) window.RBAuth.render(); }
 ['langBtn','langBtnM'].forEach(function(id){ var b=document.getElementById(id); if(b) b.addEventListener('click', toggleLang); });
 applyLang();
 
@@ -1069,6 +1085,7 @@ document.querySelectorAll('.video-frame[data-yt]').forEach(function(frame){
     {ko:'X 열기', en:'Open X', desc:'@Riftbound_KR', icon:ICON.x, action:open_('https://x.com/Riftbound_KR')},
     {ko:'카드 도감 열기', en:'Open Card Collection', desc:'/collection', icon:ICON.book, action:function(){ window.location.href='/collection' }},
     {ko:'T1 시리얼 아카이브', en:'T1 Serial Archive', desc:'/t1korean', icon:ICON.book, action:function(){ window.location.href='/t1korean' }},
+    {ko:'오늘의 운세보기', en:'Daily Fortune', desc:'/fortune', icon:ICON.book, action:function(){ window.location.href='/fortune' }},
     {ko:'이메일 보내기', en:'Send Email', desc:CONTACT_EMAIL, icon:ICON.mail, action:function(){ window.location.href='mailto:' + CONTACT_EMAIL }},
     {ko:'링크 모음으로', en:'Jump to Links', desc:'#links', icon:ICON.jump, action:jump('links')},
     {ko:'소개로', en:'Jump to About', desc:'#about', icon:ICON.jump, action:jump('about')},
@@ -1138,11 +1155,12 @@ document.getElementById('adminFab').addEventListener('click', function(){ window
 <!-- Firebase: 링크 모음(hubLinks) + 문의 저장(contactMessages) -->
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <script src="/firebase-config.js"></script>
 <script>
 (function(){
   if (!window.firebase || !window.FIREBASE_CONFIG) return;
-  firebase.initializeApp(window.FIREBASE_CONFIG);
+  if (!firebase.apps.length) firebase.initializeApp(window.FIREBASE_CONFIG);
   window.__db = firebase.firestore();
 
   var wrap = document.getElementById('fb-links');
@@ -1179,6 +1197,9 @@ document.getElementById('adminFab').addEventListener('click', function(){ window
   }).catch(function(err){ console.error('hubLinks load failed:', err) });
 })();
 </script>
+
+<!-- 공용 로그인 위젯 (도감 계정) -->
+<script src="/auth-widget.js"></script>
 
 <!-- Falling domain words (physics) -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/matter-js/0.20.0/matter.min.js"></script>
@@ -1301,11 +1322,24 @@ document.getElementById('adminFab').addEventListener('click', function(){ window
   if (!els[0]) return;
   var mouseX = -100, mouseY = -100, visible = false;
   var easings = [0.25, 0.18, 0.14, 0.10, 0.07, 0.05];
+  /* 고래가 포인터에 가려지지 않도록 고래를 오른쪽 아래로 밀고, 좌측 상단에 전용 화살표를 그린다 */
+  var OFFSET_X = 18, OFFSET_Y = 20;
+  var pointer = document.getElementById('whale-pointer');
+  var root = document.documentElement;
+  root.classList.add('whale-cursor');
+  var TEXT_FIELD = 'input,textarea,select,[contenteditable="true"]';
   document.addEventListener('mousemove', function(e){
     mouseX = e.clientX; mouseY = e.clientY;
-    if (!visible) { visible = true; els[0].classList.add('visible') }
+    if (pointer) pointer.style.transform = 'translate3d(' + mouseX + 'px,' + mouseY + 'px,0)';
+    if (!visible) { visible = true; els[0].classList.add('visible'); if (pointer) pointer.classList.add('visible') }
+    /* 입력창 위에서는 기본 커서(텍스트 캐럿)를 되살린다 */
+    var overField = !!(e.target && e.target.closest && e.target.closest(TEXT_FIELD));
+    root.classList.toggle('native-cursor', overField);
   });
-  document.addEventListener('mouseleave', function(){ visible = false; els[0].classList.remove('visible') });
+  document.addEventListener('mouseleave', function(){
+    visible = false; els[0].classList.remove('visible');
+    if (pointer) pointer.classList.remove('visible');
+  });
   (function animate(){
     for (var i = 0; i < TRAIL; i++) {
       var p = positions[i];
@@ -1320,7 +1354,7 @@ document.getElementById('adminFab').addEventListener('click', function(){ window
         targetRot = Math.max(-35, Math.min(35, targetRot * 0.4));
       }
       p.rot += (targetRot - p.rot) * 0.1;
-      els[i].style.transform = 'translate3d(' + (p.x - 14 + i * 0.5).toFixed(1) + 'px,' + (p.y - 14).toFixed(1) + 'px,0) rotate(' + p.rot.toFixed(1) + 'deg)';
+      els[i].style.transform = 'translate3d(' + (p.x - 14 + OFFSET_X + i * 0.5).toFixed(1) + 'px,' + (p.y - 14 + OFFSET_Y).toFixed(1) + 'px,0) rotate(' + p.rot.toFixed(1) + 'deg)';
     }
     requestAnimationFrame(animate);
   })();

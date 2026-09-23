@@ -5,3 +5,10 @@
   for = "/data/*"
   [headers.values]
     Cache-Control = "public, max-age=3600"
+
+# 카드 이미지 동일 출처 프록시 (운세 결과 이미지 캡처 시 canvas 오염 방지)
+[[redirects]]
+  from = "/rgimg/*"
+  to = "https://cmsassets.rgpub.io/:splat"
+  status = 200
+  force = true

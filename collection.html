@@ -61,6 +61,12 @@ input[type=text]:focus, select:focus { border-color: var(--accent); }
 .ticker-item .tk-flat { color: var(--muted); }
 .export-opt { display: block; width: 100%; text-align: left; background: none; border: none; color: var(--text); padding: 10px 14px; cursor: pointer; font-size: 12.5px; font-weight: 400; }
 .export-opt:hover { background: var(--panel); }
+.export-head { font-size: 10.5px; color: var(--muted); padding: 9px 14px 6px; letter-spacing: .06em; }
+.export-langs { display: flex; gap: 4px; padding: 0 10px 9px; border-bottom: 1px solid var(--border); }
+.lang-opt { flex: 1; padding: 6px 0; font-size: 11.5px; border: 1px solid var(--border); background: var(--panel); color: var(--muted); border-radius: 6px; cursor: pointer; font-family: inherit; }
+.lang-opt:hover { color: var(--text); }
+.lang-opt.active { background: var(--accent); border-color: var(--accent); color: #1a1405; font-weight: 600; }
+.export-note { font-size: 10.5px; color: var(--muted); padding: 8px 14px 10px; line-height: 1.55; border-top: 1px solid var(--border); }
 .card .imgwrap:hover .qty-badge { opacity: .15; }
 .progress { flex: 1; min-width: 150px; max-width: 300px; align-self: center; height: 8px; background: var(--panel2); border-radius: 4px; overflow: hidden; }
 .progress > div { height: 100%; background: linear-gradient(90deg, var(--owned), #56d364); transition: width .3s; }
@@ -190,14 +196,23 @@ footer { padding: 14px 20px; color: var(--muted); font-size: 11.5px; border-top:
     <span style="flex:1"></span>
     <span style="position:relative" data-hdr-tool><button class="btn outline" id="exportBtn">⬇ 내보내기</button>
       <div id="exportMenu" style="display:none;position:absolute;top:110%;right:0;background:var(--panel2);border:1px solid var(--border);border-radius:8px;overflow:hidden;z-index:50;min-width:230px;box-shadow:0 6px 20px rgba(0,0,0,.5)">
+        <div class="export-head" id="exportLangLabel">카드 이름 언어</div>
+        <div class="export-langs" id="exportLangs">
+          <button class="lang-opt" data-elang="kr">한국어</button>
+          <button class="lang-opt" data-elang="en">영문</button>
+          <button class="lang-opt" data-elang="cn">중문</button>
+          <button class="lang-opt" data-elang="all">전체</button>
+        </div>
         <button class="export-opt" id="exportCsvBtn">CSV — 전체 데이터 (엑셀용)</button>
         <button class="export-opt" id="exportTxtBtn">TXT — TCGplayer Mass Entry</button>
+        <div class="export-note" id="exportNote">TCGplayer 대량 입력에는 영문 이름이 필요합니다.</div>
       </div></span>
     <span style="position:relative" data-hdr-tool><button class="btn outline" id="importBtn2">⬆ 가져오기</button>
       <div id="importMenu" style="display:none;position:absolute;top:110%;right:0;background:var(--panel2);border:1px solid var(--border);border-radius:8px;overflow:hidden;z-index:50;min-width:230px;box-shadow:0 6px 20px rgba(0,0,0,.5)">
         <button class="export-opt" id="importFileBtn">📂 파일 선택 (CSV/TXT)</button>
         <button class="export-opt" id="tmplCsvBtn">CSV 양식 다운로드</button>
         <button class="export-opt" id="tmplTxtBtn">TXT 양식 다운로드</button>
+        <div class="export-note" id="importNote">한국어 · 영문 · 중문 카드 이름을 모두 인식합니다.</div>
       </div><input type="file" id="importFile" accept=".csv,.txt" style="display:none"></span>
     <span style="position:relative" data-hdr-tool><button class="btn outline" id="curBtn">💱 USD</button>
       <div id="curMenu" style="display:none;position:absolute;top:110%;right:0;background:var(--panel2);border:1px solid var(--border);border-radius:8px;overflow:hidden;z-index:50;min-width:110px;box-shadow:0 6px 20px rgba(0,0,0,.5)">
@@ -367,6 +382,9 @@ const STR = {
     nickPrompt: '사용할 닉네임을 입력하세요 (비우면 이메일 표시)', nickTitle: '클릭해서 닉네임 변경', user: '사용자',
     saving: '저장 중...', saved: '클라우드 저장됨', saveFail: '저장 실패 - 재시도 예정',
     exportBtn: '⬇ 내보내기', exportCsv: 'CSV — 전체 데이터 (엑셀용)', exportTxt: 'TXT — TCGplayer Mass Entry', exportEmpty: '보유 카드가 없습니다.',
+    exportLangLabel: '카드 이름 언어', eLangKr: '한국어', eLangEn: '영문', eLangCn: '중문', eLangAll: '전체',
+    exportNote: 'TCGplayer 대량 입력에는 영문 이름이 필요합니다.',
+    importNote: '한국어 · 영문 · 중문 카드 이름을 모두 인식합니다.',
     importBtn2: '⬆ 가져오기', importFile: '📂 파일 선택 (CSV/TXT)', tmplCsv: 'CSV 양식 다운로드', tmplTxt: 'TXT 양식 다운로드', importConfirm: '{n}개 항목을 가져옵니다. 해당 카드의 기존 수량은 덮어씨집니다. 계속할까요?', importDone: '{n}개 항목을 가져왔습니다.', importNone: '가져올 항목을 찾지 못했습니다.',
     signup: '회원가입', googleBtn: 'Google로 계속', orEmail: '또는 이메일로',
     emailPh: '이메일', pwPh: '비밀번호 (6자 이상)',
@@ -395,6 +413,9 @@ const STR = {
     nickPrompt: 'Enter a nickname (leave empty to show email)', nickTitle: 'Click to change nickname', user: 'User',
     saving: 'Saving...', saved: 'Saved to cloud', saveFail: 'Save failed - will retry',
     exportBtn: '⬇ Export', exportCsv: 'CSV — full data (for Excel)', exportTxt: 'TXT — TCGplayer Mass Entry', exportEmpty: 'No owned cards to export.',
+    exportLangLabel: 'Card name language', eLangKr: 'Korean', eLangEn: 'English', eLangCn: 'Chinese', eLangAll: 'All',
+    exportNote: 'TCGplayer mass entry requires English card names.',
+    importNote: 'Korean, English and Chinese card names are all recognized.',
     importBtn2: '⬆ Import', importFile: '📂 Choose file (CSV/TXT)', tmplCsv: 'Download CSV template', tmplTxt: 'Download TXT template', importConfirm: 'Import {n} entries? Existing quantities for these cards will be overwritten.', importDone: 'Imported {n} entries.', importNone: 'No valid entries found.',
     signup: 'Sign up', googleBtn: 'Continue with Google', orEmail: 'or with email',
     emailPh: 'Email', pwPh: 'Password (6+ characters)',
@@ -982,24 +1003,46 @@ function csvEsc(v) {
   v = String(v == null ? '' : v);
   return /[",\n]/.test(v) ? '"' + v.replace(/"/g, '""') + '"' : v;
 }
+// 내보내기에 사용할 카드 이름 언어 (kr / en / cn / all)
+let EXPORT_LANG = localStorage.getItem('rb_export_lang') || 'kr';
+function cardNameIn(c, lang) {
+  if (lang === 'kr') return c.nameKr || c.nameEn || c.nameCn || c.code;
+  if (lang === 'cn') return c.nameCn || c.nameEn || c.nameKr || c.code;
+  return c.nameEn || c.nameKr || c.nameCn || c.code;
+}
+function renderExportLangs() {
+  const keys = { kr: 'eLangKr', en: 'eLangEn', cn: 'eLangCn', all: 'eLangAll' };
+  document.querySelectorAll('#exportLangs .lang-opt').forEach(b => {
+    b.classList.toggle('active', b.dataset.elang === EXPORT_LANG);
+    b.textContent = t(keys[b.dataset.elang]);
+  });
+}
 function exportCollection(fmt) {
   const rows = ownedRows();
   if (!rows.length) { showToast(t('exportEmpty')); return; }
   const today = new Date().toISOString().slice(0, 10);
+  const lang = EXPORT_LANG;
   if (fmt === 'csv') {
-    const head = ['Code', 'Name', 'Set', 'Rarity', 'Print', 'Qty', 'Price(USD)', 'Total(USD)'];
+    const all = lang === 'all';
+    const head = all
+      ? ['Code', 'Name(EN)', 'Name(KR)', 'Name(CN)', 'Set', 'Rarity', 'Print', 'Qty', 'Price(USD)', 'Total(USD)']
+      : ['Code', 'Name', 'Set', 'Rarity', 'Print', 'Qty', 'Price(USD)', 'Total(USD)'];
     const lines = rows.map(r => {
       const price = r.print === 'EN' ? priceOf(r.c.code) : 0;
-      return [r.c.code, r.c.nameEn || r.c.nameCn, r.c.set, r.c.rarity, r.print, r.qty,
-        price ? price.toFixed(2) : '', price ? (price * r.qty).toFixed(2) : ''].map(csvEsc).join(',');
+      const names = all
+        ? [cardNameIn(r.c, 'en'), cardNameIn(r.c, 'kr'), cardNameIn(r.c, 'cn')]
+        : [cardNameIn(r.c, lang)];
+      return [r.c.code].concat(names, [r.c.set, r.c.rarity, r.print, r.qty,
+        price ? price.toFixed(2) : '', price ? (price * r.qty).toFixed(2) : '']).map(csvEsc).join(',');
     });
-    downloadFile('rbwhale_collection_' + today + '.csv', '\uFEFF' + head.join(',') + '\n' + lines.join('\n'), 'text/csv;charset=utf-8');
+    downloadFile('rbwhale_collection_' + today + '_' + lang + '.csv', '\uFEFF' + head.join(',') + '\n' + lines.join('\n'), 'text/csv;charset=utf-8');
   } else {
-    // TCGplayer Mass Entry: "수량 카드이름" (영문판만)
-    const lines = rows.filter(r => r.print === 'EN' && r.c.nameEn)
-      .map(r => r.qty + ' ' + r.c.nameEn);
+    // "수량 카드이름" — 영문/전체 선택 시에는 TCGplayer 대량 입력 형식(영문판 보유분만)
+    const nameLang = lang === 'all' ? 'en' : lang;
+    const src = nameLang === 'en' ? rows.filter(r => r.print === 'EN' && r.c.nameEn) : rows;
+    const lines = src.map(r => r.qty + ' ' + cardNameIn(r.c, nameLang));
     if (!lines.length) { showToast(t('exportEmpty')); return; }
-    downloadFile('rbwhale_tcgplayer_' + today + '.txt', lines.join('\n'), 'text/plain;charset=utf-8');
+    downloadFile('rbwhale_tcgplayer_' + today + '_' + nameLang + '.txt', lines.join('\n'), 'text/plain;charset=utf-8');
   }
   document.getElementById('exportMenu').style.display = 'none';
 }
@@ -1038,6 +1081,13 @@ document.querySelectorAll('.cur-opt').forEach(b => b.onclick = () => {
   closeMenus();
   if (typeof DATA !== 'undefined' && DATA) { render(); renderTicker(); }
 });
+document.querySelectorAll('#exportLangs .lang-opt').forEach(b => b.onclick = e => {
+  e.stopPropagation();
+  EXPORT_LANG = b.dataset.elang;
+  localStorage.setItem('rb_export_lang', EXPORT_LANG);
+  renderExportLangs();
+});
+renderExportLangs();
 document.getElementById('exportCsvBtn').onclick = () => exportCollection('csv');
 document.getElementById('exportTxtBtn').onclick = () => exportCollection('txt');
 
@@ -1093,7 +1143,10 @@ function importCollection(text) {
   const head = parseCsvLine(lines[0]).map(h => simplify(h));
   const findCol = keys => head.findIndex(h => keys.some(k => h === k || (h && h.includes(k))));
   const codeIdx = findCol(['code', 'number', 'cardno', '카드번호', '번호', '코드']);
-  const nameIdx = findCol(['name', 'cardname', '이름', '카드명']);
+  // 이름 열이 여러 개(Name(EN)/Name(KR)/Name(CN))일 수 있으므로 전부 수집
+  const nameKeys = ['name', 'cardname', '이름', '카드명', '名称', '名字'];
+  const nameIdxs = head.map((h, i) => (h && nameKeys.some(k => h.includes(k))) ? i : -1).filter(i => i >= 0);
+  const nameIdx = nameIdxs.length ? nameIdxs[0] : -1;
   const qtyIdx = findCol(['qty', 'quantity', 'count', '수량', '개수', '장수']);
   const printIdx = findCol(['print', 'lang', '판본', '언어']);
   if (head.length >= 2 && (codeIdx >= 0 || nameIdx >= 0)) {
@@ -1101,13 +1154,21 @@ function importCollection(text) {
       const f = parseCsvLine(lines[i]);
       let q = qtyIdx >= 0 ? parseInt(f[qtyIdx], 10) : 1;
       if (isNaN(q)) q = 1;
-      let lang = printIdx >= 0 && /cn|중문|중국/i.test(f[printIdx] || '') ? 'cn' : printIdx >= 0 && /kr|한국|한글/i.test(f[printIdx] || '') ? 'kr' : 'en';
+      const printVal = printIdx >= 0 ? String(f[printIdx] || '') : '';
+      let lang = /cn|중문|중국|中文/i.test(printVal) ? 'cn'
+               : /kr|한국|한글|국내/i.test(printVal) ? 'kr'
+               : printVal ? 'en' : '';
       let card = null;
       if (codeIdx >= 0) { const cc = normCode(f[codeIdx] || ''); if (cc) card = codeMap[cc]; }
-      if (!card && nameIdx >= 0) {
-        const hit = nameMap[simplify(f[nameIdx] || '')];
-        if (hit) { card = codeMap[hit.code.toUpperCase()]; if (printIdx < 0) lang = hit.lang; }
+      // 판본 열이 없으면 이름이 매칭된 언어를 그대로 사용
+      for (let k = 0; k < nameIdxs.length; k++) {
+        const hit = nameMap[simplify(f[nameIdxs[k]] || '')];
+        if (!hit) continue;
+        if (!card) card = codeMap[hit.code.toUpperCase()];
+        if (!lang) lang = hit.lang;
+        break;
       }
+      if (!lang) lang = 'en';
       addU(card, lang, q);
     }
   } else {
@@ -1120,7 +1181,7 @@ function importCollection(text) {
       else if ((m = raw.match(/^(.+?)[\s,;:]+[xX]?\s*(\d{1,3})$/))) { qty = +m[2]; rest = m[1]; }
       rest = rest.trim();
       const cc = normCode(rest);
-      if (cc) { addU(codeMap[cc], 'en', qty); continue; }
+      if (cc) { const cd = codeMap[cc]; addU(cd, (cd && !cd.imgEn && cd.imgKr) ? 'kr' : 'en', qty); continue; }
       const hit = nameMap[simplify(rest)];
       if (hit) addU(codeMap[hit.code.toUpperCase()], hit.lang, qty);
     }
@@ -1134,7 +1195,7 @@ function importCollection(text) {
 }
 document.getElementById('importFileBtn').onclick = () => { document.getElementById('importFile').click(); };
 document.getElementById('tmplCsvBtn').onclick = () => {
-  const tmpl = 'Code,Name,Print,Qty\nOGN-001,"Annie, Dark Child",EN,4\nVEN-189*,"Akali, Rogue Assassin",EN,1\n';
+  const tmpl = 'Code,Name,Print,Qty\nOGN-001,"Annie, Dark Child",EN,4\nOGN-119,아리,KR,2\nVEN-189*,"Akali, Rogue Assassin",EN,1\n';
   downloadFile('rbwhale_import_template.csv', '\uFEFF' + tmpl, 'text/csv;charset=utf-8');
 };
 document.getElementById('tmplTxtBtn').onclick = () => {
@@ -1191,6 +1252,10 @@ function applyUILang() {
   document.getElementById('exportTxtBtn').textContent = t('exportTxt');
   document.getElementById('importBtn2').textContent = t('importBtn2');
   document.getElementById('importFileBtn').textContent = t('importFile');
+  document.getElementById('exportLangLabel').textContent = t('exportLangLabel');
+  document.getElementById('exportNote').textContent = t('exportNote');
+  document.getElementById('importNote').textContent = t('importNote');
+  renderExportLangs();
   document.getElementById('tmplCsvBtn').textContent = t('tmplCsv');
   document.getElementById('tmplTxtBtn').textContent = t('tmplTxt');
   document.querySelector('#langTabs [data-lang="en"]').textContent = t('enPrint');
