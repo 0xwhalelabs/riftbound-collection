@@ -60,6 +60,34 @@ http.createServer((req, res) => {
     return;
   }
 
+  // 카드 이미지 프록시 (/rgimg/*) — 운세 결과 이미지 캡처 시 canvas 오염 방지용 동일 출처 경유
+  if (urlPath.startsWith('/rgimg/')) {
+    const imgPath = urlPath.slice('/rgimg'.length);
+    if (req.method !== 'GET' || !/^\/sanity\/images\/[A-Za-z0-9_.\/-]+\.(png|jpg|jpeg|webp)$/.test(imgPath)) {
+      res.writeHead(400); res.end('Invalid image path'); return;
+    }
+    const upstream = https.get({
+      hostname: 'cmsassets.rgpub.io',
+      path: imgPath + '?accountingTag=RB',
+      timeout: 15000,
+    }, image => {
+      if (image.statusCode !== 200) {
+        image.resume(); res.writeHead(404, {'Cache-Control':'no-store'}); res.end('Image unavailable'); return;
+      }
+      res.writeHead(200, {
+        'Content-Type': image.headers['content-type'] || 'image/png',
+        'Cache-Control': 'public, max-age=86400',
+        'X-Content-Type-Options': 'nosniff',
+      });
+      image.on('error', () => res.destroy());
+      image.pipe(res);
+    });
+    upstream.on('timeout', () => upstream.destroy());
+    upstream.on('error', () => { if (!res.headersSent) res.writeHead(502); res.end('Image unavailable'); });
+    res.on('close', () => upstream.destroy());
+    return;
+  }
+
   // Firebase 인증 핸들러 프록시
   if (urlPath.startsWith('/__/')) {
     const opts = {
