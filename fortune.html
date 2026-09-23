@@ -105,8 +105,8 @@ h1 .gold{background:linear-gradient(135deg,var(--gold2),var(--gold));-webkit-bac
 .tag{font-size:10.5px;padding:4px 9px;border-radius:7px;border:1px solid var(--line);background:rgba(13,21,37,.7);font-family:'JetBrains Mono',monospace}
 
 .luck{margin-top:14px;display:flex;align-items:center;gap:12px}
-.luck-bar{flex:1;height:8px;border-radius:99px;background:rgba(30,58,110,.28);overflow:hidden}
-.luck-fill{height:100%;border-radius:99px;background:linear-gradient(90deg,#3460a8,#f0c040);width:0;transition:width 1.1s cubic-bezier(.16,1,.3,1)}
+.luck-bar{display:block;flex:1;height:8px;border-radius:99px;background:rgba(30,58,110,.28);overflow:hidden}
+.luck-fill{display:block;height:100%;border-radius:99px;background:linear-gradient(90deg,#3460a8,#f0c040);width:0;transition:width 1.1s cubic-bezier(.16,1,.3,1)}
 .luck-num{font-family:'JetBrains Mono',monospace;font-size:15px;font-weight:600;color:var(--gold2);min-width:46px;text-align:right}
 
 .sec{margin-top:16px;padding:22px;border:1px solid var(--line);border-radius:20px;background:rgba(10,13,20,.62)}
@@ -119,8 +119,8 @@ h1 .gold{background:linear-gradient(135deg,var(--gold2),var(--gold));-webkit-bac
 .stats{display:grid;gap:10px}
 .stat{display:grid;grid-template-columns:52px 1fr 34px;align-items:center;gap:10px}
 .stat span:first-child{font-size:11.5px;color:var(--t500)}
-.stat .track{height:7px;border-radius:99px;background:rgba(30,58,110,.25);overflow:hidden}
-.stat .fill{height:100%;border-radius:99px;width:0;transition:width .9s cubic-bezier(.16,1,.3,1)}
+.stat .track{display:block;height:7px;border-radius:99px;background:rgba(30,58,110,.25);overflow:hidden}
+.stat .fill{display:block;height:100%;border-radius:99px;width:0;transition:width .9s cubic-bezier(.16,1,.3,1)}
 .stat .val{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--t500);text-align:right}
 
 .grid2{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
@@ -157,10 +157,10 @@ h1 .gold{background:linear-gradient(135deg,var(--gold2),var(--gold));-webkit-bac
 #shot .s-logo{font-size:12px;font-weight:800;letter-spacing:.15em;color:#e8edf5}
 #shot .s-date{font-family:'JetBrains Mono',monospace;font-size:11px;color:#6d9be0;letter-spacing:.1em}
 #shot .s-mid{flex:1;display:flex;gap:22px;align-items:center;margin-top:18px}
-#shot .s-art{width:196px;flex-shrink:0;border-radius:11px;overflow:hidden;border:1px solid rgba(109,155,224,.3);
+#shot .s-art{width:246px;flex-shrink:0;border-radius:11px;overflow:hidden;border:1px solid rgba(109,155,224,.3);
   box-shadow:0 20px 44px rgba(0,0,0,.6);background:#0d1525}
 #shot .s-art img{width:100%;display:block}
-#shot .s-art .ph{width:100%;height:274px;display:flex;align-items:center;justify-content:center;
+#shot .s-art .ph{width:100%;height:344px;display:flex;align-items:center;justify-content:center;
   background:linear-gradient(150deg,#13224a,#0d1525);color:#6d9be0;font-size:13px;font-weight:700;text-align:center;padding:14px}
 #shot .s-txt{flex:1;min-width:0}
 #shot .s-kick{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.2em;color:#4a7bc4;text-transform:uppercase}
@@ -169,8 +169,8 @@ h1 .gold{background:linear-gradient(135deg,var(--gold2),var(--gold));-webkit-bac
 #shot .s-head{margin-top:16px;font-size:15px;font-weight:700;line-height:1.55;color:#f7d778}
 #shot .s-desc{margin-top:12px;font-size:12.5px;line-height:1.7;color:#c8d0de}
 #shot .s-luck{margin-top:16px;display:flex;align-items:center;gap:9px}
-#shot .s-luck .lb{flex:1;height:7px;border-radius:99px;background:rgba(30,58,110,.35);overflow:hidden}
-#shot .s-luck .lf{height:100%;border-radius:99px;background:linear-gradient(90deg,#3460a8,#f0c040)}
+#shot .s-luck .lb{display:block;flex:1;height:7px;border-radius:99px;background:rgba(30,58,110,.35);overflow:hidden}
+#shot .s-luck .lf{display:block;height:100%;border-radius:99px;background:linear-gradient(90deg,#3460a8,#f0c040)}
 #shot .s-luck .ln{font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:600;color:#f7d778}
 #shot .s-bot{border-top:1px solid rgba(30,58,110,.35);padding-top:15px;display:flex;justify-content:space-between;align-items:flex-end}
 #shot .s-site{font-size:15px;font-weight:800;letter-spacing:.01em;color:#fff}
