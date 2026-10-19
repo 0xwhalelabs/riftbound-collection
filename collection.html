@@ -450,8 +450,8 @@ const RARITY_META = {
   promo:    { ko: '프로모',    en: 'Promo',    color: '#e04080', shape: '★' }, // 핑크 별
 };
 function rarityName(k) { const m = RARITY_META[k]; return m ? (UI === 'en' ? m.en : m.ko) : k; }
-const SET_NAME_KO = { ARC: 'Project K 아케인 콜라보', FND: 'Project K 프로모', OGN: 'Origins', OGS: 'Proving Grounds', SFD: 'Spiritforged', UNL: 'Unleashed', VEN: 'Vendetta' };
-const SET_NAME_EN = { ARC: 'Project K Arcane Collab', FND: 'Project K Promo', OGN: 'Origins', OGS: 'Proving Grounds', SFD: 'Spiritforged', UNL: 'Unleashed', VEN: 'Vendetta' };
+const SET_NAME_KO = { ARC: 'Project K 아케인 콜라보', FND: 'Project K 프로모', OGN: 'Origins', OGS: 'Proving Grounds', RAD: 'Radiance', SFD: 'Spiritforged', UNL: 'Unleashed', VEN: 'Vendetta' };
+const SET_NAME_EN = { ARC: 'Project K Arcane Collab', FND: 'Project K Promo', OGN: 'Origins', OGS: 'Proving Grounds', RAD: 'Radiance', SFD: 'Spiritforged', UNL: 'Unleashed', VEN: 'Vendetta' };
 function setName(id, fallback) { return (UI === 'en' ? SET_NAME_EN[id] : SET_NAME_KO[id]) || fallback || id; }
 const TYPE_NAMES = {
   unit: { ko: '유닛', en: 'Unit' }, spell: { ko: '스펠', en: 'Spell' }, legend: { ko: '레전드', en: 'Legend' },

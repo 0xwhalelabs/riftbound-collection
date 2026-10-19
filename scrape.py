@@ -143,6 +143,20 @@ def fetch_tcg_images():
     return imgs
 
 
+def load_manual_cards():
+    """data/manual_cards.json: 공식 데이터에 없는 카드를 직접 등록한다.
+
+    스크래퍼는 data/cards.json 을 통째로 다시 쓰기 때문에, 이 파일이 없으면
+    한국 한정 카드처럼 갤러리에 올라오지 않는 카드가 매번 사라진다.
+    """
+    import os
+    path = os.path.join("data", "manual_cards.json")
+    if not os.path.exists(path):
+        return []
+    with open(path, encoding="utf-8") as f:
+        return json.load(f)
+
+
 def build():
     sets, en_items, = fetch_en()
     cn_items = fetch_cn()
@@ -283,6 +297,17 @@ def build():
             card["nameEn"] = hit[1]
         backfilled += 1
     print("Backfilled EN images from TCGplayer: %d" % backfilled)
+
+    # 공식 갤러리에 없는 수동 등록 카드(한국 한정 등)를 병합
+    manual = load_manual_cards()
+    for mc in manual:
+        mcode = mc["code"]
+        if mcode in merged:
+            merged[mcode].update(mc)
+        else:
+            merged[mcode] = mc
+            order.append(mcode)
+    print("Merged manual cards: %d" % len(manual))
 
     # ensure set names include CN-only sets
     for code in order:

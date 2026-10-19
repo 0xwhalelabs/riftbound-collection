@@ -1,0 +1,70 @@
+[
+ {
+  "code": "OGN-303a",
+  "set": "OGN",
+  "num": 303,
+  "nameEn": "",
+  "nameKr": "구미호",
+  "nameCn": "",
+  "typeIds": [
+   "unit"
+  ],
+  "rarity": "showcase",
+  "rarityEn": "Showcase",
+  "rarityCn": "",
+  "domains": [
+   "calm",
+   "mind"
+  ],
+  "imgEn": "",
+  "imgKr": "img/kr/OGN-303a.png",
+  "imgCn": "",
+  "energy": null,
+  "publicCode": "OGN-303a/298"
+ },
+ {
+  "code": "OGN-303a*",
+  "set": "OGN",
+  "num": 303,
+  "nameEn": "",
+  "nameKr": "구미호",
+  "nameCn": "",
+  "typeIds": [
+   "unit"
+  ],
+  "rarity": "showcase",
+  "rarityEn": "Showcase",
+  "rarityCn": "",
+  "domains": [
+   "calm",
+   "mind"
+  ],
+  "imgEn": "",
+  "imgKr": "img/kr/OGN-303aS.png",
+  "imgCn": "",
+  "energy": null,
+  "publicCode": "OGN-303a*/298"
+ },
+ {
+  "code": "OGN-076b",
+  "set": "OGN",
+  "num": 76,
+  "nameEn": "",
+  "nameKr": "야스오",
+  "nameCn": "",
+  "typeIds": [
+   "unit"
+  ],
+  "rarity": "promo",
+  "rarityEn": "Promo",
+  "rarityCn": "",
+  "domains": [
+   "calm"
+  ],
+  "imgEn": "",
+  "imgKr": "img/kr/OGN-076b.png",
+  "imgCn": "",
+  "energy": null,
+  "publicCode": "OGN-076b/298"
+ }
+]
