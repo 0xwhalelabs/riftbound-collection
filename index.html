@@ -1034,7 +1034,7 @@ document.querySelectorAll('.video-frame[data-yt]').forEach(function(frame){
 
 /* ===== Live archive stats from /data/cards.json ===== */
 (function(){
-  fetch('/data/cards.json').then(function(r){ return r.json() }).then(function(d){
+  fetch('/data/cards.json', { cache: 'no-cache' }).then(function(r){ return r.json() }).then(function(d){
     var cards = d.cards || [], sets = d.sets || [];
     var el = document.getElementById('stat-cards');
     if (el) el.textContent = cards.length.toLocaleString();

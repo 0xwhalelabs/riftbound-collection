@@ -811,7 +811,7 @@ function legacyCopy(text, cb) {
 }
 
 /* ===================== 부트 ===================== */
-fetch('/data/cards.json').then(function (r) { return r.json() }).then(function (d) {
+fetch('/data/cards.json', { cache: 'no-cache' }).then(function (r) { return r.json() }).then(function (d) {
   POOL = (d.cards || []).filter(function (c) { return c.imgKr });
   POOL.sort(function (a, b) { return a.code < b.code ? -1 : 1 });
   document.getElementById('poolCount').textContent = POOL.length;

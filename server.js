@@ -112,10 +112,24 @@ http.createServer((req, res) => {
     if (err || !st.isFile()) { res.writeHead(404); res.end('Not Found'); return; }
     const ext = path.extname(filePath).toLowerCase();
     const noCache = ['.html', '.js', '.css', '.json'].includes(ext);
-    res.writeHead(200, {
+    // no-cache 는 "쓰기 전에 재검증"이라 검증자(ETag)가 없으면 브라우저가
+    // 멋대로 캐시를 재사용한다. 카드 데이터가 갱신돼도 안 보이는 원인.
+    const etag = '"' + st.size.toString(16) + '-' + st.mtimeMs.toString(16) + '"';
+    const lastMod = st.mtime.toUTCString();
+    const headers = {
       'Content-Type': MIME[ext] || 'application/octet-stream',
       'Cache-Control': noCache ? 'no-cache' : 'public, max-age=86400',
-    });
+      'ETag': etag,
+      'Last-Modified': lastMod,
+    };
+    const ifNoneMatch = req.headers['if-none-match'];
+    const ifModSince = req.headers['if-modified-since'];
+    if (ifNoneMatch ? ifNoneMatch.split(',').some(v => v.trim() === etag) : ifModSince === lastMod) {
+      res.writeHead(304, headers);
+      res.end();
+      return;
+    }
+    res.writeHead(200, headers);
     fs.createReadStream(filePath).pipe(res);
   });
 }).listen(PORT, '0.0.0.0', () => console.log('listening on ' + PORT));

@@ -957,12 +957,12 @@ document.getElementById('resetPw').onclick = () => {
 };
 
 Promise.all([
-  fetch('data/cards.json').then(r => r.json()),
+  fetch('data/cards.json', { cache: 'no-cache' }).then(r => r.json()),
   // 가격: GitHub 최신본 우선(12시간마다 자동 갱신), 실패 시 로컬 파일
   fetch('https://raw.githubusercontent.com/0xwhalelabs/riftbound-collection/master/data/prices.json', { cache: 'no-cache' })
     .then(r => { if (!r.ok) throw 0; return r.json(); })
-    .catch(() => fetch('data/prices.json').then(r => r.json()).catch(() => ({}))),
-  fetch('data/ads.json').then(r => r.json()).catch(() => null),
+    .catch(() => fetch('data/prices.json', { cache: 'no-cache' }).then(r => r.json()).catch(() => ({}))),
+  fetch('data/ads.json', { cache: 'no-cache' }).then(r => r.json()).catch(() => null),
 ])
   .then(([d, prices, ads]) => {
     DATA = d;
